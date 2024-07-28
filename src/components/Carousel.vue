@@ -19,12 +19,12 @@ export default {
     props: {
         slides: {
             type: Array,
-            required: true
-        }
+            required: true,
+        },
     },
     data() {
         return {
-            currentSlide: 0
+            currentSlide: 0,
         };
     },
     mounted() {
@@ -41,35 +41,40 @@ export default {
         },
         goToSlide(index) {
             this.currentSlide = index;
-        }
+        },
     },
     beforeDestroy() {
         clearInterval(this.interval);
-    }
+    },
 };
 </script>
   
 <style scoped>
 .carousel-container {
+    margin: 10px;
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: calc(100% - 20px);
+    height: calc(100vh - 20px);
     overflow: hidden;
 }
 
 .carousel-wrapper {
+    height: 100%;
     display: flex;
     transition: transform 0.5s ease-in-out;
 }
 
 .carousel-slide {
+    position: relative;
     min-width: 100%;
+    height: 100%;
     box-sizing: border-box;
 }
 
 .carousel-slide img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
 }
 
 .carousel-pagination {
@@ -91,42 +96,22 @@ export default {
 }
 
 .pagination-dot.active {
-    background-color: #333;
+    background: linear-gradient(to right, red, purple, blue);
 }
 
-span {
-    z-index: 1;
-    font-size: inherit;
-    font-family: inherit;
+.quote {
+    position: absolute;
+    bottom: 100px;
+    left: 20px;
     color: white;
-    padding: 0.5em 1em;
-    outline: none;
-    border: none;
-    background-color: hsl(236, 32%, 26%);
+    font-size: 1em;
 }
 
-span:hover {
-    cursor: pointer;
-    animation: jelly 0.5s;
+.author {
+    position: absolute;
+    bottom: 70px;
+    left: 20px;
+    color: white;
+    font-size: 1em;
 }
-
-@keyframes jelly {
-
-    0%,
-    100% {
-        transform: scale(1, 1);
-    }
-
-    25% {
-        transform: scale(0.9, 1.1);
-    }
-
-    50% {
-        transform: scale(1.1, 0.9);
-    }
-
-    75% {
-        transform: scale(0.95, 1.05);
-    }
-}</style>
-  
+</style>

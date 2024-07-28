@@ -40,11 +40,11 @@
 </template>
   
 <script>
-import Carousel from '@/components/Carousel.vue';
+import Carousel from '../components/Carousel.vue'; // 导入 Carousel 组件
 
 export default {
     components: {
-        Carousel
+        Carousel, // 注册 Carousel 组件
     },
     data() {
         return {
@@ -52,128 +52,81 @@ export default {
                 country: '',
                 phone: '',
                 email: '',
-                password: ''
+                password: '',
             },
             carouselItems: [
-                { id: 1, src: 'demoimg.png', quote: '“The 66chat\'s flexibility is truly remarkable. It effortlessly adapts to a wide range of research methodologies and study designs.”', author: 'Pablo Escanor - UX Researcher' },
-                { id: 2, src: 'demoimg.png', quote: '“Another quote here.”', author: 'Author 2' },
-                { id: 3, src: 'demoimg.png', quote: '“Yet another quote here.”', author: 'Author 3' }
-            ]
+                { id: 1, src: '1.jpg', quote: '“The 66chat\'s flexibility is truly remarkable. It effortlessly adapts to a wide range of research methodologies and study designs.”', author: 'Pablo Escanor - UX Researcher' },
+                { id: 2, src: '1.jpg', quote: '“Another quote here.”', author: 'Author 2' },
+                { id: 3, src: '1.jpg', quote: '“Yet another quote here.”', author: 'Author 3' }
+            ],
         };
     },
     methods: {
         handleSubmit() {
-            console.log('Form submitted:', this.form);
-            // Handle form submission logic here
-        }
-    }
+            // Handle form submission
+        },
+    },
 };
 </script>
   
 <style scoped>
-html,
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-#app {
-    height: 100%;
-}
-
 .login-container {
     display: flex;
     height: 100vh;
-    overflow: hidden;
-    background-color: #f5f5f5;
-    flex-direction: column;
-    /* Default to column for mobile */
 }
 
 .carousel-container {
-    width: 100%;
-    height: 50%;
-    /* Adjust height for mobile */
+    flex: 1;
+    /* background: #000; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+
 }
 
 .form-container {
-    width: 100%;
-    padding: 20px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-sizing: border-box;
-}
-
-.form-container h2 {
-    margin-bottom: 20px;
-}
-
-.signin-link {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.social-buttons {
-    margin-top: 20px;
-}
-
-.social-buttons .el-button {
-    margin-bottom: 10px;
-}
-
-/* Media query for larger screens */
-@media (min-width: 768px) {
-    .login-container {
-        flex-direction: row;
-    }
-
-    .carousel-container {
-        width: 50%;
-        height: 100%;
-    }
-
-    .form-container {
-        width: 50%;
-        padding: 30px;
-    }
-}
-
-.BtnAft {
-    z-index: 1;
-    position: relative;
-    font-size: inherit;
-    font-family: inherit;
-    color: white;
-    padding: 0.5em 1em;
-    outline: none;
-    border: none;
-    background-color: hsl(236, 32%, 26%);
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.BtnAft::after {
-    content: '';
-    z-index: -1;
-    background-color: hsla(0, 0%, 100%, 0.2);
-    position: absolute;
-    top: -50%;
-    bottom: -50%;
-    width: 1.25em;
-    transform: translate3d(-560%, 0, 0) rotate(35deg);
-}
-
-.BtnAft:hover::after {
-    transition: transform 0.45s ease-in-out;
-    transform: translate3d(200%, 0, 0) rotate(35deg);
+    padding: 2rem;
+    background: #fff;
 }
 
 .ELFronDiv {
-
     position: relative;
+}
 
+.ELFronDiv .ElInp {
+    width: 100%;
+}
+
+.ELFronDiv span {
+    position: absolute;
+    background-color: #000;
+    transition: all 0.3s;
+}
+
+
+
+/* 媒体查询确保移动设备的兼容性 */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .carousel-container {
+        order: 1;
+        /* 轮播图在上面 */
+        height: 415px;
+    }
+
+    .form-container {
+        order: 2;
+        /* 表单在下面 */
+        padding: 1rem;
+    }
 }
 </style>
+  
