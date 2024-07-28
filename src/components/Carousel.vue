@@ -86,7 +86,7 @@ export default {
 }
 
 .pagination-dot {
-    width: 20px;
+    width: 20%;
     height: 5px;
     margin: 0 5px;
     background-color: #ccc;

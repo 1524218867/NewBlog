@@ -5,7 +5,7 @@
         </div>
         <div class="form-container">
             <h2>Welcome back!</h2>
-            <el-form @submit.native.prevent="handleSubmit">
+            <el-form @submit.native.prevent="handleSubmit" class="ElFrom">
                 <el-form-item>
                     <el-select v-model="form.country" placeholder="Select country">
                         <el-option label="Indonesia (+62)" value="Indonesia (+62)"></el-option>
@@ -14,26 +14,28 @@
                 </el-form-item>
                 <el-form-item class="ELFronDiv">
                     <el-input class="ElInp" v-model="form.phone" placeholder="Phone number"></el-input>
-                    <span class="bottom"></span>
-                    <span class="right"></span>
-                    <span class="top"></span>
-                    <span class="left"></span>
+
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="form.email" placeholder="Email"></el-input>
+                    <el-input class="ElInp" v-model="form.email" placeholder="Email"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="form.password" type="password" placeholder="Password"></el-input>
+                    <el-input class="ElInp" v-model="form.password" type="password" placeholder="Password"></el-input>
                 </el-form-item>
                 <el-button type="primary" class="BtnAft" @click="handleSubmit" block>Create account</el-button>
             </el-form>
+            <div class="divider">
+                <span class="line"></span>
+                <span class="text">or</span>
+                <span class="line"></span>
+            </div>
             <div class="signin-link">
                 <small>Already have an account? <a href="#">Sign in</a></small>
             </div>
             <div class="social-buttons">
-                <el-button type="default" block>Continue with Google</el-button>
-                <el-button type="default" block>Continue with Apple</el-button>
-                <el-button type="default" block>Continue with Twitter</el-button>
+                <el-button class="FengXiangBtn" type="default" block>Continue with Google</el-button>
+                <el-button class="FengXiangBtn" type="default" block>Continue with Apple</el-button>
+                <el-button class="FengXiangBtn" type="default" block>Continue with Twitter</el-button>
             </div>
         </div>
     </div>
@@ -92,23 +94,90 @@ export default {
     justify-content: center;
     padding: 2rem;
     background: #fff;
+
 }
 
-.ELFronDiv {
-    position: relative;
+.form-container>h2 {
+    text-align: center !important;
+    margin-bottom: 2rem !important;
+    font-size: 2.5rem;
+    font-weight: 600;
 }
 
-.ELFronDiv .ElInp {
-    width: 100%;
+.ElFrom {
+    text-align: center;
 }
 
-.ELFronDiv span {
-    position: absolute;
-    background-color: #000;
-    transition: all 0.3s;
+.ElInp {
+    width: 60% !important;
+    margin: auto;
+
+}
+
+.ElInp>>>.el-input__inner {
+    border-radius: 8px !important;
+    padding: 23px;
 }
 
 
+.BtnAft {
+    width: 60% !important;
+    background-color: black !important;
+    color: white;
+    border-radius: 8px !important;
+    padding: 16px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px auto;
+    width: 60%;
+}
+
+.line {
+    flex: 1;
+    height: 1px;
+    background-color: #ccc;
+}
+
+.text {
+    margin: 0 10px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.signin-link {
+    text-align: center;
+    width: 60%;
+    margin: 0px auto 20px;
+}
+
+.signin-link>small>a {
+    font-size: 16px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #ff6b6b, #ffcc33);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.signin-link>small>a:hover {
+    background: linear-gradient(45deg, #ffcc33, #ff6b6b);
+    -webkit-background-clip: text;
+}
+
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.social-buttons>button {
+    width: 60% !important;
+    margin: 10px auto;
+    border-radius: 8px !important;
+    padding: 16px;
+}
 
 /* 媒体查询确保移动设备的兼容性 */
 @media (max-width: 768px) {
@@ -129,4 +198,5 @@ export default {
     }
 }
 </style>
+
   
