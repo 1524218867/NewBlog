@@ -1,0 +1,174 @@
+.slideshow-box {
+    width: 100%;
+   height: 100vh;
+   
+}
+
+.swiper-container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    .swiper-slide {
+        width: 1920px;
+        height: 100%;
+        
+       
+        img {
+            width: 1920px;
+            height: 100vh;
+            object-fit: cover;
+         
+        }
+    }
+}
+.swiper-wrapper{
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.Entry {
+    position: relative;
+  }
+  
+  .Entry-card img {
+    width: 100%;
+    margin: auto;
+    margin-bottom: 20px;
+  }
+  
+  .Entry-box {
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 1;
+    user-select: none;
+    right: 200px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 7px;
+  }
+  
+  .text {
+    font-size: 14px;
+  }
+  
+  .item {
+    padding: 18px 0;
+  }
+  
+  .Entry-card {
+    width: 430px;
+    height: 400px;
+    background-color: rgba(0, 0, 0, 0, 0.5) !important;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    border: 0px;
+  }
+  
+  .Entry-from {
+    height: 100%;
+    display: flex;
+    width: 300px;
+    margin: auto;
+    flex-direction: column;
+    el-input{
+        outline-style: none;
+        border-color: #45489a;
+    }
+  }
+  
+  .Entry-input {
+    width: 100%;
+    margin: 10px 0 10px 0;
+  }
+  
+  .el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 200px;
+    margin: 0;
+  }
+  
+  .el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+  }
+  
+  .el-carousel__item:nth-child(2n + 1) {
+    background-color: #d3dce6;
+  }
+  
+  .Entry-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  h1{
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  }
+  
+  .Entry-card {
+    width: 300px;
+    padding: 20px;
+  }
+  
+  .Entry-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .Entry-form a {
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
+    display: block;
+  }
+  .FroBtn{
+    display: flex;
+    justify-content: center;
+  }
+  .custom-input .el-input__inner:focus {
+    border-color: #45489a; /* 聚焦时的边框颜色为红色 */
+    // box-shadow: 0 0 0 1px #ff0000; /* 聚焦时的边框阴影颜色为红色 */
+  }
+  .custom-button {
+    background-color:#45489a!important;
+    color: #ffffff;
+   border-color: #45489a!important;
+  }
+  .custom-button:hover {
+    background-color: #45489a; /* 悬停时的背景颜色为绿色 */
+     /* 悬停时的文本颜色为黑色 */
+     border-color: #45489a;
+  }
+  .danmu {
+    position: absolute;
+    white-space: nowrap;
+    font-size: 18px;
+    color: white;
+    text-shadow: 1px 1px 1px black;
+    animation: move 30s linear;
+    opacity: 0;
+  }
+
+  @keyframes move {
+    from {
+      transform: translateX(100%);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+  .BacktoHome{
+    position: absolute;
+    top: 13px;
+    right:  13px;
+    
+ 
+  }
+  
+  
