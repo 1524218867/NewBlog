@@ -1,5 +1,5 @@
 <template>
-    <div class="login-container">
+    <div class="login-container" @mousedown="handleMouseDown" @mousemove="handleMouseMove" @mouseup="handleMouseUp">
         <div class="carousel-container">
             <Carousel :slides="carouselItems" />
         </div>
@@ -8,6 +8,7 @@
                 <div v-if="isLoginForm" class="card">
                     <div class="card-inner">
                         <div class="card-front">
+
                             <LoginForm :form="form" :toggleForm="toggleForm" @submit="handleLoginSubmit" />
                         </div>
                     </div>
@@ -31,7 +32,7 @@
 import Carousel from '../components/Carousel.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
-
+import { Notification } from 'element-ui'; // 引入 Element UI 的 Notification
 export default {
     components: {
         Carousel,
@@ -52,6 +53,9 @@ export default {
                 { id: 3, src: '1.jpg', quote: '“Yet another quote here.”', author: 'Author 3' }
             ],
             isLoginForm: true,
+            mouseDownX: 0,
+            mouseUpX: 0,
+            isMouseDown: false,
         };
     },
     methods: {
@@ -64,6 +68,40 @@ export default {
         toggleForm() {
             this.isLoginForm = !this.isLoginForm;
         },
+        handleMouseDown(event) {
+            this.isMouseDown = true;
+            this.mouseDownX = event.screenX;
+        },
+        handleMouseMove(event) {
+            if (this.isMouseDown) {
+                this.mouseUpX = event.screenX;
+            }
+        },
+        handleMouseUp() {
+            this.isMouseDown = false;
+            if (this.mouseUpX - this.mouseDownX > 100) {
+                this.goBack();
+            }
+        },
+        goBack() {
+            window.history.back();
+        },
+        showWelcomeNotification() {
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    Notification({
+                        title: 'Welcome!',
+                        message: 'Welcome 如需退出按住鼠标右滑.',
+                        type: 'info',
+                        duration: 4000, // 显示4秒
+                        offset: 20, // 距离顶部20px
+                    });
+                }, 2000); // 延迟2秒显示弹框
+            });
+        },
+    },
+    mounted() {
+        this.showWelcomeNotification();
     },
 };
 
