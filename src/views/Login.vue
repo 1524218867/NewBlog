@@ -3,50 +3,40 @@
         <div class="carousel-container">
             <Carousel :slides="carouselItems" />
         </div>
-        <div class="form-container">
-            <h2>Welcome back!</h2>
-            <el-form @submit.native.prevent="handleSubmit" class="ElFrom">
-                <el-form-item>
-                    <el-select v-model="form.country" placeholder="Select country">
-                        <el-option label="Indonesia (+62)" value="Indonesia (+62)"></el-option>
-                        <!-- Add more options as needed -->
-                    </el-select>
-                </el-form-item>
-                <el-form-item class="ELFronDiv">
-                    <el-input class="ElInp" v-model="form.phone" placeholder="Phone number"></el-input>
-
-                </el-form-item>
-                <el-form-item>
-                    <el-input class="ElInp" v-model="form.email" placeholder="Email"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-input class="ElInp" v-model="form.password" type="password" placeholder="Password"></el-input>
-                </el-form-item>
-                <el-button type="primary" class="BtnAft" @click="handleSubmit" block>Create account</el-button>
-            </el-form>
-            <div class="divider">
-                <span class="line"></span>
-                <span class="text">or</span>
-                <span class="line"></span>
-            </div>
-            <div class="signin-link">
-                <small>Already have an account? <a href="#">Sign in</a></small>
-            </div>
-            <div class="social-buttons">
-                <el-button class="FengXiangBtn" type="default" block>Continue with Google</el-button>
-                <el-button class="FengXiangBtn" type="default" block>Continue with Apple</el-button>
-                <el-button class="FengXiangBtn" type="default" block>Continue with Twitter</el-button>
-            </div>
+        <div class="card-container">
+            <transition name="fade">
+                <div v-if="isLoginForm" class="card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <LoginForm :form="form" :toggleForm="toggleForm" @submit="handleLoginSubmit" />
+                        </div>
+                    </div>
+                </div>
+            </transition>
+            <transition name="fade">
+                <div v-if="!isLoginForm" class="card">
+                    <div class="card-inner">
+                        <div class="card-back">
+                            <RegisterForm :form="form" :toggleForm="toggleForm" @submit="handleRegisterSubmit" />
+                        </div>
+                    </div>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
-  
+
+
 <script>
-import Carousel from '../components/Carousel.vue'; // 导入 Carousel 组件
+import Carousel from '../components/Carousel.vue';
+import LoginForm from './LoginForm.vue';
+import RegisterForm from './RegisterForm.vue';
 
 export default {
     components: {
-        Carousel, // 注册 Carousel 组件
+        Carousel,
+        LoginForm,
+        RegisterForm
     },
     data() {
         return {
@@ -61,125 +51,88 @@ export default {
                 { id: 2, src: '1.jpg', quote: '“Another quote here.”', author: 'Author 2' },
                 { id: 3, src: '1.jpg', quote: '“Yet another quote here.”', author: 'Author 3' }
             ],
+            isLoginForm: true,
         };
     },
     methods: {
-        handleSubmit() {
-            // Handle form submission
+        handleLoginSubmit() {
+            // 处理登录表单提交
+        },
+        handleRegisterSubmit() {
+            // 处理注册表单提交
+        },
+        toggleForm() {
+            this.isLoginForm = !this.isLoginForm;
         },
     },
 };
+
 </script>
-  
+
 <style scoped>
 .login-container {
     display: flex;
     height: 100vh;
+    justify-content: center;
 }
 
 .carousel-container {
     flex: 1;
-    /* background: #000; */
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 15px;
-
 }
 
-.form-container {
+.card-container {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2rem;
-    background: #fff;
-
+    position: relative;
+    overflow: hidden;
+    border: 0 !important;
 }
 
-.form-container>h2 {
-    text-align: center !important;
-    margin-bottom: 2rem !important;
-    font-size: 2.5rem;
-    font-weight: 600;
+.card {
+    width: 100%;
+    position: absolute;
 }
 
-.ElFrom {
-    text-align: center;
-}
-
-.ElInp {
-    width: 60% !important;
+.card-inner {
+    position: relative;
+    width: 95%;
+    height: 100%;
     margin: auto;
-
 }
 
-.ElInp>>>.el-input__inner {
-    border-radius: 8px !important;
-    padding: 23px;
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
 }
 
-
-.BtnAft {
-    width: 60% !important;
-    background-color: black !important;
-    color: white;
-    border-radius: 8px !important;
-    padding: 16px;
+.card-front {
+    background: #fff;
 }
 
-.divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 20px auto;
-    width: 60%;
+.card-back {
+    background: #f0f0f0;
 }
 
-.line {
-    flex: 1;
-    height: 1px;
-    background-color: #ccc;
+/* 定义淡入淡出效果 */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
 }
 
-.text {
-    margin: 0 10px;
-    color: #000000;
-    font-weight: bold;
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active in <2.1.8 */
+    {
+    opacity: 0;
 }
 
-.signin-link {
-    text-align: center;
-    width: 60%;
-    margin: 0px auto 20px;
-}
-
-.signin-link>small>a {
-    font-size: 16px;
-    font-weight: bold;
-    background: linear-gradient(45deg, #ff6b6b, #ffcc33);
-    -webkit-background-clip: text;
-    color: transparent;
-}
-
-.signin-link>small>a:hover {
-    background: linear-gradient(45deg, #ffcc33, #ff6b6b);
-    -webkit-background-clip: text;
-}
-
-.social-buttons {
-    display: flex;
-    flex-direction: column;
-}
-
-.social-buttons>button {
-    width: 60% !important;
-    margin: 10px auto;
-    border-radius: 8px !important;
-    padding: 16px;
-}
-
-/* 媒体查询确保移动设备的兼容性 */
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
@@ -187,16 +140,13 @@ export default {
 
     .carousel-container {
         order: 1;
-        /* 轮播图在上面 */
         height: 415px;
     }
 
-    .form-container {
+    .card-container {
         order: 2;
-        /* 表单在下面 */
-        padding: 1rem;
+        width: 100%;
+        max-width: 100%;
     }
 }
 </style>
-
-  
