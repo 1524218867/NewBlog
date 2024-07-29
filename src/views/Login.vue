@@ -29,8 +29,8 @@
 
 <script>
 import Carousel from '../components/Carousel.vue';
-import LoginForm from './LoginForm.vue';
-import RegisterForm from './RegisterForm.vue';
+import LoginForm from '../components/LoginForm.vue';
+import RegisterForm from '../components/RegisterForm.vue';
 
 export default {
     components: {
@@ -87,37 +87,42 @@ export default {
 .card-container {
     flex: 1;
     position: relative;
-    overflow: hidden;
+
     border: 0 !important;
 }
 
 .card {
     width: 100%;
     position: absolute;
+    height: 100%;
+    border: 0;
 }
 
 .card-inner {
     position: relative;
-    width: 95%;
+    width: 100%;
     height: 100%;
     margin: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .card-front,
 .card-back {
     position: absolute;
     width: 100%;
-    height: 100%;
+
     border-radius: 10px;
 }
 
 .card-front {
     background: #fff;
+
+
 }
 
-.card-back {
-    background: #f0f0f0;
-}
+.card-back {}
 
 /* 定义淡入淡出效果 */
 .fade-enter-active,
@@ -141,6 +146,11 @@ export default {
     .carousel-container {
         order: 1;
         height: 415px;
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        border-radius: 15px;
     }
 
     .card-container {
@@ -148,5 +158,16 @@ export default {
         width: 100%;
         max-width: 100%;
     }
+
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
 }
 </style>

@@ -3,19 +3,17 @@
         <h2>Welcome back!</h2>
         <el-form @submit.prevent="handleSubmit" class="ElFrom">
             <el-form-item>
-                <el-select v-model="form.country" placeholder="Select country">
-                    <el-option label="Indonesia (+62)" value="Indonesia (+62)"></el-option>
-                    <!-- Add more options as needed -->
-                </el-select>
-            </el-form-item>
-            <el-form-item class="ELFronDiv">
-                <el-input class="ElInp" v-model="form.phone" placeholder="Phone number"></el-input>
+                <el-input class="ElInp" v-model="form.name" placeholder="Name"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-input class="ElInp" v-model="form.email" placeholder="Email"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-input class="ElInp" v-model="form.password" type="password" placeholder="Password"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input class="ElInp" v-model="form.confirmPassword" type="password"
+                    placeholder="Confirm Password"></el-input>
             </el-form-item>
             <el-button type="primary" class="BtnAft" @click="handleSubmit" block>Create account</el-button>
         </el-form>
@@ -29,11 +27,7 @@
                 Already have an account? <a href="#" @click.prevent="toggleForm">Sign in</a>
             </small>
         </div>
-        <div class="social-buttons">
-            <el-button class="FengXiangBtn" type="default" block>Continue with Google</el-button>
-            <el-button class="FengXiangBtn" type="default" block>Continue with Apple</el-button>
-            <el-button class="FengXiangBtn" type="default" block>Continue with Twitter</el-button>
-        </div>
+
     </div>
 </template>
 
@@ -55,6 +49,7 @@ export default {
     justify-content: center;
     padding: 2rem;
     background: #fff;
+
 }
 
 .form-container2>h2 {
@@ -78,12 +73,46 @@ export default {
     padding: 23px;
 }
 
+
 .BtnAft {
     width: 60%;
     background-color: black;
     color: white;
     border-radius: 8px;
     padding: 16px;
+    z-index: 1;
+    font-size: inherit;
+    font-family: inherit;
+
+
+    outline: none;
+    border: none;
+
+}
+
+.BtnAft:hover {
+    cursor: pointer;
+    animation: jelly 0.5s;
+}
+
+@keyframes jelly {
+
+    0%,
+    100% {
+        transform: scale(1, 1);
+    }
+
+    25% {
+        transform: scale(0.9, 1.1);
+    }
+
+    50% {
+        transform: scale(1.1, 0.9);
+    }
+
+    75% {
+        transform: scale(0.95, 1.05);
+    }
 }
 
 .divider {
@@ -123,17 +152,5 @@ export default {
 .signin-link>small>a:hover {
     background: linear-gradient(45deg, #ffcc33, #ff6b6b);
     -webkit-background-clip: text;
-}
-
-.social-buttons {
-    display: flex;
-    flex-direction: column;
-}
-
-.social-buttons>button {
-    width: 60%;
-    margin: 10px auto;
-    border-radius: 8px;
-    padding: 16px;
 }
 </style>

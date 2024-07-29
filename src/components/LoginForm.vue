@@ -20,6 +20,11 @@
                 Don't have an account? <a href="#" @click.prevent="toggleForm">Create account</a>
             </small>
         </div>
+        <div class="social-buttons">
+            <el-button class="FengXiangBtn" type="default" block>Continue with Google</el-button>
+            <el-button class="FengXiangBtn" type="default" block>Continue with Apple</el-button>
+            <el-button class="FengXiangBtn" type="default" block>Continue with Twitter</el-button>
+        </div>
     </div>
 </template>
 
@@ -41,6 +46,7 @@ export default {
     justify-content: center;
     padding: 2rem;
     background: #fff;
+
 }
 
 .form-container>h2 {
@@ -64,13 +70,48 @@ export default {
     padding: 23px;
 }
 
+
 .BtnAft {
     width: 60%;
     background-color: black;
     color: white;
     border-radius: 8px;
     padding: 16px;
+    z-index: 1;
+    font-size: inherit;
+    font-family: inherit;
+
+
+    outline: none;
+    border: none;
+
 }
+
+.BtnAft:hover {
+    cursor: pointer;
+    animation: jelly 0.5s;
+}
+
+@keyframes jelly {
+
+    0%,
+    100% {
+        transform: scale(1, 1);
+    }
+
+    25% {
+        transform: scale(0.9, 1.1);
+    }
+
+    50% {
+        transform: scale(1.1, 0.9);
+    }
+
+    75% {
+        transform: scale(0.95, 1.05);
+    }
+}
+
 
 .divider {
     display: flex;
@@ -109,5 +150,17 @@ export default {
 .signin-link>small>a:hover {
     background: linear-gradient(45deg, #ffcc33, #ff6b6b);
     -webkit-background-clip: text;
+}
+
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.social-buttons>button {
+    width: 60%;
+    margin: 10px auto;
+    border-radius: 8px;
+    padding: 16px;
 }
 </style>
