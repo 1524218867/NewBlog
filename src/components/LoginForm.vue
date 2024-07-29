@@ -17,7 +17,7 @@
         </div>
         <div class="signin-link">
             <small>
-                Don't have an account? <a href="#" @click.prevent="toggleForm">Create account</a>
+                没有账户? <a href="#" @click.prevent="toggleForm">Create account</a>
             </small>
         </div>
         <div class="social-buttons">
@@ -54,6 +54,8 @@ export default {
     margin-bottom: 2rem;
     font-size: 2.5rem;
     font-weight: 600;
+    user-select: none;
+    /* 禁止文本选择 */
 }
 
 .ElFrom {
@@ -119,6 +121,8 @@ export default {
     text-align: center;
     margin: 20px auto;
     width: 60%;
+    user-select: none;
+    /* 禁止文本选择 */
 }
 
 .line {
@@ -137,6 +141,8 @@ export default {
     text-align: center;
     width: 60%;
     margin: 0 auto 20px;
+    user-select: none;
+    /* 禁止文本选择 */
 }
 
 .signin-link>small>a {

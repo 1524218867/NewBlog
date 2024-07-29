@@ -24,7 +24,7 @@
         </div>
         <div class="signin-link">
             <small>
-                Already have an account? <a href="#" @click.prevent="toggleForm">Sign in</a>
+                已经有账户了吗? <a href="#" @click.prevent="toggleForm">Sign in</a>
             </small>
         </div>
 
@@ -57,6 +57,8 @@ export default {
     margin-bottom: 2rem;
     font-size: 2.5rem;
     font-weight: 600;
+    user-select: none;
+    /* 禁止文本选择 */
 }
 
 .ElFrom {
@@ -121,6 +123,8 @@ export default {
     text-align: center;
     margin: 20px auto;
     width: 60%;
+    user-select: none;
+    /* 禁止文本选择 */
 }
 
 .line {
@@ -139,6 +143,8 @@ export default {
     text-align: center;
     width: 60%;
     margin: 0 auto 20px;
+    user-select: none;
+    /* 禁止文本选择 */
 }
 
 .signin-link>small>a {

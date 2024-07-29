@@ -1,7 +1,7 @@
 <template>
     <div class="login-container" @mousedown="handleMouseDown" @mousemove="handleMouseMove" @mouseup="handleMouseUp">
         <div class="carousel-container">
-            <Carousel :slides="carouselItems" />
+            <Carousel :carousel-items="carouselItems" />
         </div>
         <div class="card-container">
             <transition name="fade">
@@ -48,9 +48,13 @@ export default {
                 password: '',
             },
             carouselItems: [
-                { id: 1, src: '1.jpg', quote: '“The 66chat\'s flexibility is truly remarkable. It effortlessly adapts to a wide range of research methodologies and study designs.”', author: 'Pablo Escanor - UX Researcher' },
-                { id: 2, src: '1.jpg', quote: '“Another quote here.”', author: 'Author 2' },
-                { id: 3, src: '1.jpg', quote: '“Yet another quote here.”', author: 'Author 3' }
+                {
+                    id: 1, src: 'LunBoTuImg1.jpg', quote: '“你在哪里投入，结果就在哪里显现.”', author: '(Where you invest, results will show.)'
+                },
+                { id: 2, src: 'LunBoTuImg2.jpg', quote: '“做你热爱的事，然后把它做得尽善尽美.”', author: '(Do what you love and do it well)' },
+                { id: 3, src: 'LunBoTuImg3.jpg', quote: '“如果你对某件事情充满热情，就不要担心失败。坚持下去，成功自然会来.”', author: "(If you're passionate about something, don't worry about failure. Keep at it and success will come naturally)" },
+                { id: 4, src: 'LunBoTuImg4.jpg', quote: '“梦想不会逃跑，逃跑的只是你自己.”', author: "(Dreams don't run away, only you run away)" },
+                { id: 5, src: 'LunBoTuImg5.jpg', quote: '“你不能改变过去，但你可以改变未来.” ', author: "(You can't change the past, but you can change the future)" }
             ],
             isLoginForm: true,
             mouseDownX: 0,
@@ -79,7 +83,7 @@ export default {
         },
         handleMouseUp() {
             this.isMouseDown = false;
-            if (this.mouseUpX - this.mouseDownX > 100) {
+            if (this.mouseUpX - this.mouseDownX > 500) {
                 this.goBack();
             }
         },
@@ -102,6 +106,15 @@ export default {
     },
     mounted() {
         this.showWelcomeNotification();
+        window.addEventListener('touchstart', this.handleTouchStart);
+        window.addEventListener('touchmove', this.handleTouchMove);
+        window.addEventListener('touchend', this.handleTouchEnd);
+    },
+    beforeDestroy() {
+        // 移除触摸事件监听
+        window.removeEventListener('touchstart', this.handleTouchStart);
+        window.removeEventListener('touchmove', this.handleTouchMove);
+        window.removeEventListener('touchend', this.handleTouchEnd);
     },
 };
 
@@ -112,21 +125,21 @@ export default {
     display: flex;
     height: 100vh;
     justify-content: center;
+    align-items: center;
+    position: relative;
 }
 
+/* 轮播图外视图的宽高，控制轮播图的位置，父元素有flex */
 .carousel-container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px;
+    /* flex: 1; */
+    width: 50%;
+    height: 98vh;
+    margin: 10px 10px 10px 10px;
 }
 
 .card-container {
     flex: 1;
     position: relative;
-
-    border: 0 !important;
 }
 
 .card {
@@ -150,17 +163,16 @@ export default {
 .card-back {
     position: absolute;
     width: 100%;
-
     border-radius: 10px;
 }
 
 .card-front {
     background: #fff;
-
-
 }
 
-.card-back {}
+.card-back {
+    /* card-back 的样式可以根据需要自定义 */
+}
 
 /* 定义淡入淡出效果 */
 .fade-enter-active,
@@ -181,9 +193,11 @@ export default {
         flex-direction: column;
     }
 
+    /* 轮播图在移动端的宽高这里是外视图 */
     .carousel-container {
         order: 1;
         height: 415px;
+        width: 95%;
         flex: 1;
         display: flex;
         align-items: flex-start;
@@ -206,6 +220,5 @@ export default {
         flex-direction: column;
         align-items: center;
     }
-
 }
 </style>
