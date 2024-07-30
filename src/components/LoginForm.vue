@@ -31,7 +31,7 @@
 <script>
 import axios from 'axios'; // 引入 axios
 import { Notification } from 'element-ui';
-
+import { mapActions } from 'vuex'; // 用于 map Vuex actions
 export default {
     props: {
         toggleForm: {
@@ -49,7 +49,7 @@ export default {
     },
 
     methods: {
-
+        ...mapActions(['updateUser']), // 映射 Vuex actions
         async handleSubmit() {
             try {
                 // 构建请求数据
@@ -57,7 +57,7 @@ export default {
                     email: this.form.email,
                     password: this.form.password
                 };
-                console.log(requestData);
+                // console.log(requestData);
                 // 发送登录请求到后端
                 const response = await axios.post('http://localhost:5000/api/auth/login', requestData, {
                     headers: {
@@ -74,8 +74,30 @@ export default {
 
                 // 处理成功登录后的操作，如保存 token 和跳转页面
                 const token = response.data.token;
-                localStorage.setItem('authToken', token);
-                this.$router.push('/dashboard'); // 假设你有一个/dashboard 路由
+                const userDetails = response.data.user; // 假设响应中包含用户详细信息
+
+                localStorage.setItem('token', token);
+
+                // 更新 Vuex 状态
+                this.$store.dispatch('updateUser', { token, details: userDetails });
+
+                // 登录成功后获取用户详细信息
+                axios.get('http://localhost:5000/api/user', {
+                    headers: { Authorization: `Bearer ${token}` }
+                }).then(userResponse => {
+                    // 处理用户详细信息
+                    console.log("登录处获得了信息", userResponse);
+                    const userDetails = userResponse.data;
+
+
+                    // 更新 Vuex 状态
+                    this.$store.dispatch('updateUser', { token, details: userDetails });
+                }).catch(userError => {
+                    console.error('Get user details error:', userError);
+                });
+
+                // 跳转页面
+                this.$router.push('/Index'); // 登录成功切换到/Index 路由
             } catch (error) {
                 // 处理错误响应
                 console.log(error); // 查看错误详情

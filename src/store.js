@@ -31,6 +31,7 @@ const store = new Vuex.Store({
             commit('setSharedData', data);
         },
         updateUser({ commit }, { token, details }) {
+            // console.log('Updating user with:', { token, details }); //会先打印此处的数据，然后打印登录的数据
             commit('setUser', { token, details });
         },
         logout({ commit }) {

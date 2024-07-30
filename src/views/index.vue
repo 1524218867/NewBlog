@@ -522,11 +522,7 @@
 
 <script>
 
-// // import 'popper.js';
-// import $ from 'jquery';
 
-// import '../utils/dist/owl.carousel.min.js';
-// import '../utils/dist/assets/owl.carousel.min.css';
 import 'slick-carousel';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -534,6 +530,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { mapGetters, mapActions } from 'vuex';
 
 import ForActicle from './ForActicle.vue';
+import { Notification } from 'element-ui'; // 确保你已经引入了 Notification
 
 
 
@@ -541,13 +538,10 @@ import ForActicle from './ForActicle.vue';
 export default {
     data() {
         return {
-
-        }
+            user: null // 确保在这里初始化为 null
+        };
     },
-    props: {
 
-
-    },
     components: {
         ForActicle
     },
@@ -559,7 +553,7 @@ export default {
     },
 
     mounted() {
-
+        // console.log('User:', this.getUser);
 
         $(".Modern-Slider").slick({
             // 自动播放
@@ -752,16 +746,32 @@ export default {
         },
         async logout() {
             try {
-                alert('退出登录成功');
-                await this.$store.dispatch('logout'); // 调用 Vuex 的 logout action
-                localStorage.removeItem('authToken'); // 清除本地存储中的 token
-                this.$router.push('/Entry'); // 跳转到登录页面
+                // 调用 Vuex 的 logout action
+                await this.$store.dispatch('logout');
+
+                // 清除本地存储中的 token
+                localStorage.removeItem('token');
+
+                // 显示退出登录成功的通知
+                Notification.success({
+                    title: '退出登录成功',
+                    message: '您已成功退出登录。',
+                    duration: 3000, // 设置显示时间
+                });
+
+                // 跳转到登录页面
+                this.$router.push('/Login');
             } catch (error) {
+                // 显示错误通知
+                Notification.error({
+                    title: '退出登录失败',
+                    message: '退出登录过程中出现错误，请稍后重试。',
+                    duration: 3000,
+                });
                 console.error('Error:', error);
             }
         }
     }
 }
-
 </script>
 <style></style>

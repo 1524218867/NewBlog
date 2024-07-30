@@ -58,13 +58,13 @@ export default {
                 const articleId = this.$route.params.id;
 
                 const token = localStorage.getItem('token'); // 从 localStorage 获取 Token
-
+                console.log(token);
                 const response = await axios.get(`http://localhost:5000/api/articles/${articleId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-
+                console.log(token);
                 this.article = response.data;
             } catch (error) {
                 console.error('Error fetching article data:', error);

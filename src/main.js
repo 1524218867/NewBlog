@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import App from './App.vue';
 import store from './store'; // 引入创建的 Vuex Store
-
+import axios from 'axios'; // 引入 axios
 // 确保 jQuery 为全局变量，以便在 Vue 组件中使用
 
 window.$ = window.jQuery = $;
@@ -52,7 +52,25 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp); 3
 const database = getDatabase(firebaseApp); // Realtime Database 服务
+// 从 localStorage 获取 token
+const token = localStorage.getItem('token');
 
+if (token) {
+  // 通过 Vuex 更新用户状态
+  store.dispatch('updateUser', { token, details: {} });
+
+  // 可以添加请求用户详细信息的逻辑
+  axios.get('http://localhost:5000/api/user', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(response => {
+      const userDetails = response.data;
+      store.dispatch('updateUser', { token, details: userDetails });
+    })
+    .catch(error => {
+      console.error('Fetch user details error:', error);
+    });
+}
 
 Vue.prototype.$firebaseApp = firebaseApp;
 Vue.prototype.$auth = auth;
