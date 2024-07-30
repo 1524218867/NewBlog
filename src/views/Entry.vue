@@ -1,11 +1,11 @@
-<template>
+<!-- <template>
     <div class="Entry">
 
         <div class="Entry-box">
             <el-card shadow="hover" class="Entry-card">
 
                 <el-form ref="form" :model="form" :rules="rules" class="Entry-form">
-                    <!-- 登录表单 -->
+                  
                     <el-form-item v-show="!showRegister" prop="loginUsername">
                         <h1>Login</h1>
                         <el-input class="custom-input" v-model="form.loginUsername" placeholder="请输入登录邮箱"
@@ -18,7 +18,7 @@
                     <el-form-item v-show="!showRegister" class="FroBtn">
                         <el-button class="custom-button" type="primary" @click="login">登录</el-button>
                     </el-form-item>
-                    <!-- 注册表单 -->
+                   
                     <el-form-item v-show="showRegister" prop="registerUsername">
                         <h1>Register</h1>
                         <el-input class="custom-input" v-model="form.registerUsername" placeholder="请输入用户名"
@@ -69,9 +69,9 @@
         <div class="danmu" style="top: 600px;right: 600px;color:#ffff00 ;">比新游戏还好Van哦(︶.̮︶✽)</div>
         <div class="danmu" style="top: 300px;right: 1500px;color:#22ec08 ;font-size: 30px;">杰哥我还要啊ᕦ(･ㅂ･)ᕤ!</div>
     </div>
-</template>
+</template> -->
 
-<script>
+<!-- <script>
 import Swiper from 'swiper'
 import { Message } from 'element-ui';
 
@@ -417,8 +417,8 @@ export default {
     },
 
 }
-</script>
-<style>
+</script> -->
+<!-- <style>
 /* 修改element-ui文本框点击后的样式 */
 .nm-skin-pretty .el-input.is-active .el-input__inner,
 .nm-skin-pretty .el-input__inner:focus {
@@ -429,7 +429,7 @@ export default {
     /* transition: 1s; */
     /* width: 610px; */
 }
-</style>
-<style lang="less">
+</style> -->
+<!-- <style lang="less">
 @import '../styles/Entry.less';
-</style>
+</style> -->

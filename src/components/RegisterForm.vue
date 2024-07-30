@@ -32,12 +32,85 @@
 </template>
 
 <script>
+import axios from 'axios'; // 引入 axios
+import { Notification } from 'element-ui';
+
 export default {
-    props: ['form', 'toggleForm'],
-    methods: {
-        handleSubmit() {
-            this.$emit('submit');
+    props: {
+        toggleForm: {
+            type: Function,
+            required: true
         }
+    },
+    data() {
+        return {
+            form: {
+                name: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+            }
+        };
+    },
+    methods: {
+
+        async handleSubmit() {
+            try {
+                // 构建请求数据
+                const requestData = {
+                    username: this.form.name,
+                    email: this.form.email,
+                    password: this.form.password
+                };
+
+                // 检查确认密码是否匹配
+                if (this.form.password !== this.form.confirmPassword) {
+                    Notification.error({
+                        title: '注册失败',
+                        message: '密码和确认密码不匹配。',
+                        duration: 3000
+                    });
+                    return;
+                }
+
+                // 发送注册请求到后端
+                const response = await axios.post('http://localhost:5000/api/auth/register', requestData, {
+                    headers: {
+                        'Content-Type': 'application/json' // 设置请求头
+                    }
+                });
+
+                // 处理成功响应
+                Notification.success({
+                    title: '注册成功',
+                    message: '您已经成功注册，请登录。',
+                    duration: 3000
+                });
+
+                // 切换到登录表单
+                this.toggleForm();
+            } catch (error) {
+                // 处理错误响应
+                if (error.response && error.response.data && error.response.data.errors) {
+                    // 后端返回的错误信息
+                    error.response.data.errors.forEach(err => {
+                        Notification.error({
+                            title: '注册失败',
+                            message: err.msg,
+                            duration: 3000
+                        });
+                    });
+                } else {
+                    // 其他未知错误
+                    Notification.error({
+                        title: '注册失败',
+                        message: '注册过程中出现错误，请稍后重试。',
+                        duration: 3000
+                    });
+                }
+            }
+        }
+
     }
 };
 </script>

@@ -29,11 +29,74 @@
 </template>
 
 <script>
+import axios from 'axios'; // 引入 axios
+import { Notification } from 'element-ui';
+
 export default {
-    props: ['form', 'toggleForm'],
+    props: {
+        toggleForm: {
+            type: Function,
+            required: true
+        }
+    },
+    data() {
+        return {
+            form: {
+                email: '',
+                password: ''
+            }
+        };
+    },
+
     methods: {
-        handleSubmit() {
-            this.$emit('submit');
+
+        async handleSubmit() {
+            try {
+                // 构建请求数据
+                const requestData = {
+                    email: this.form.email,
+                    password: this.form.password
+                };
+                console.log(requestData);
+                // 发送登录请求到后端
+                const response = await axios.post('http://localhost:5000/api/auth/login', requestData, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // 处理成功响应
+                Notification.success({
+                    title: '登录成功',
+                    message: '您已成功登录。',
+                    duration: 3000
+                });
+
+                // 处理成功登录后的操作，如保存 token 和跳转页面
+                const token = response.data.token;
+                localStorage.setItem('authToken', token);
+                this.$router.push('/dashboard'); // 假设你有一个/dashboard 路由
+            } catch (error) {
+                // 处理错误响应
+                console.log(error); // 查看错误详情
+                if (error.response && error.response.data) {
+                    // 后端返回的错误信息
+                    const errorMsg = error.response.data.msg || '登录失败';
+                    Notification.error({
+                        title: '登录失败',
+                        message: errorMsg,
+                        duration: 3000
+                    });
+                } else {
+                    // 其他未知错误
+                    console.log(error); // 查看错误详情
+                    Notification.error({
+                        title: '登录失败',
+                        message: '登录过程中出现错误，请稍后重试。',
+                        duration: 3000
+                    });
+                }
+            }
         }
     }
 };

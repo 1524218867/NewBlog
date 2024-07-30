@@ -8,8 +8,7 @@
                 <div v-if="isLoginForm" class="card">
                     <div class="card-inner">
                         <div class="card-front">
-
-                            <LoginForm :form="form" :toggleForm="toggleForm" @submit="handleLoginSubmit" />
+                            <LoginForm :form="form" :toggleForm="toggleForm" />
                         </div>
                     </div>
                 </div>
@@ -18,7 +17,7 @@
                 <div v-if="!isLoginForm" class="card">
                     <div class="card-inner">
                         <div class="card-back">
-                            <RegisterForm :form="form" :toggleForm="toggleForm" @submit="handleRegisterSubmit" />
+                            <RegisterForm :form="form" :toggleForm="toggleForm" />
                         </div>
                     </div>
                 </div>
@@ -27,12 +26,12 @@
     </div>
 </template>
 
-
 <script>
 import Carousel from '../components/Carousel.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
-import { Notification } from 'element-ui'; // 引入 Element UI 的 Notification
+import { Notification } from 'element-ui';
+
 export default {
     components: {
         Carousel,
@@ -63,12 +62,6 @@ export default {
         };
     },
     methods: {
-        handleLoginSubmit() {
-            // 处理登录表单提交
-        },
-        handleRegisterSubmit() {
-            // 处理注册表单提交
-        },
         toggleForm() {
             this.isLoginForm = !this.isLoginForm;
         },
@@ -97,12 +90,15 @@ export default {
                         title: 'Welcome!',
                         message: 'Welcome 如需退出按住鼠标右滑.',
                         type: 'info',
-                        duration: 4000, // 显示4秒
-                        offset: 20, // 距离顶部20px
+                        duration: 4000,
+                        offset: 20,
                     });
-                }, 2000); // 延迟2秒显示弹框
+                }, 2000);
             });
         },
+        handleTouchStart() { /* Implement touch start logic */ },
+        handleTouchMove() { /* Implement touch move logic */ },
+        handleTouchEnd() { /* Implement touch end logic */ }
     },
     mounted() {
         this.showWelcomeNotification();
@@ -111,13 +107,11 @@ export default {
         window.addEventListener('touchend', this.handleTouchEnd);
     },
     beforeDestroy() {
-        // 移除触摸事件监听
         window.removeEventListener('touchstart', this.handleTouchStart);
         window.removeEventListener('touchmove', this.handleTouchMove);
         window.removeEventListener('touchend', this.handleTouchEnd);
     },
 };
-
 </script>
 
 <style scoped>

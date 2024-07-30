@@ -42,8 +42,8 @@
             <div>
                 <!-- 如果用户未登录，显示登录和注册链接 -->
                 <div v-if="!isLoggedIn" id="loginSection" class="logo">
-                    <div @click="goToLogin" class="glass-container" id="glass">登录</div>
-                    <div @click="goToRegister" class="glass-container" id="glass">注册</div>
+                    <div v-on:click="goToLogin" class="glass-container" id="glass">登录</div>
+                    <div v-on:click="goToRegister" class="glass-container" id="glass">注册</div>
                 </div>
 
                 <!-- 如果用户已登录，显示欢迎信息和注销按钮 -->
@@ -726,11 +726,11 @@ export default {
         const loginSection = document.getElementById("loginSection");
 
         // 根据用户状态修改登录区域内容
-        if (isLoggedIn) {
-            loginSection.innerHTML = "欢迎光临";
-        } else {
-            loginSection.innerHTML = '<a v-on:click="GoEntry" href="#">登录</a>  <a v-on:click="GoEntry" href="#">注册</a>';
-        }
+        // if (isLoggedIn) {
+        //     loginSection.innerHTML = "欢迎光临";
+        // } else {
+        //     loginSection.innerHTML = ' <div v-on:click="goToLogin" class="glass-container" id="glass">登录</div><div v-on:click="goToRegister" class="glass-container" id="glass">注册</div>';
+        // }
 
 
     },
@@ -745,10 +745,10 @@ export default {
 
         ...mapActions(['logout']),
         goToLogin() {
-            this.$router.push('/Entry');
+            this.$router.push('/Login');
         },
         goToRegister() {
-            this.$router.push('/Entry');
+            this.$router.push('/Login');
         },
         async logout() {
             try {
