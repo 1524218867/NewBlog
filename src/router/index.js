@@ -29,6 +29,14 @@ const routes = [
         path: '/Index',
         component: Index,
         name: 'Index',
+        children: [
+
+            {
+                path: '/Content',
+                component: Content,
+                name: 'Content'
+            }
+        ]
     },
     // 定义Entry页面路由
     {
@@ -41,11 +49,7 @@ const routes = [
         component: Login,
         name: 'Login'
     },
-    {
-        path: '/Content',
-        component: Content,
-        name: 'Content'
-    },
+
     {
         path: '/Article/:id', // 动态路由，:id 是路由参数
         name: 'Article',

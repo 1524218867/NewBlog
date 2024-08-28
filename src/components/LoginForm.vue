@@ -74,6 +74,7 @@ export default {
 
                 // 处理成功登录后的操作，如保存 token 和跳转页面
                 const token = response.data.token;
+                console.log(response.data);
                 const userDetails = response.data.user; // 假设响应中包含用户详细信息
 
                 localStorage.setItem('token', token);

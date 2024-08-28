@@ -1,13 +1,9 @@
-const { defineConfig } = require('@vue/cli-service')
+const { defineConfig } = require('@vue/cli-service');
 const path = require('path');
 
-
 module.exports = defineConfig({
+  transpileDependencies: true,
 
-  transpileDependencies: true
-})
-// vue.config.js
-module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
@@ -15,7 +11,15 @@ module.exports = {
       },
     },
   },
+
   lintOnSave: false, // 关闭 ESLint
-};
 
-
+  devServer: {
+    proxy: {
+      '/uploads': {
+        target: 'http://localhost:5000',//处理前端8080后端5000跨域问题
+        changeOrigin: true,
+      },
+    },
+  },
+});

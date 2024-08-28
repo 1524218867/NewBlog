@@ -78,7 +78,7 @@ Vue.prototype.$database = database;
 // 引入其他样式
 import './styles/fontAwesome.css';
 import './styles/light-box.css';
-import './styles/owl-carousel.css';
+// import './styles/owl-carousel.css';
 import './styles/index.css';
 
 // 创建 Vuetify 实例

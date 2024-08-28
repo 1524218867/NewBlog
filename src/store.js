@@ -9,7 +9,8 @@ const store = new Vuex.Store({
         user: {
             token: null, // 用于存储 JWT token
             details: {} // 用于存储用户详细信息
-        }
+        },
+
     },
     mutations: {
         setSharedData(state, data) {
@@ -40,7 +41,10 @@ const store = new Vuex.Store({
     },
     getters: {
         isLoggedIn(state) {
+            console.log("在vuex中判断用户是否登录", !!state.user.token);
             return !!state.user.token; // 判断用户是否登录
+
+
         },
         getUser(state) {
             return state.user.details; // 获取用户详细信息

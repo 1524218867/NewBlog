@@ -32,6 +32,7 @@ export default {
                     }
                 });
                 this.articles = response.data;
+                console.log(this.articles);
             } catch (error) {
                 console.error('Error fetching articles:', error);
             }
