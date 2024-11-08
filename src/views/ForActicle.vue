@@ -10,7 +10,7 @@
         </ul>
     </div>
 </template>
-  
+
 <script>
 import axios from 'axios';
 
@@ -26,11 +26,7 @@ export default {
     methods: {
         async fetchArticles() {
             try {
-                const response = await axios.get('http://localhost:5000/api/articles', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+                const response = await axios.get('http://localhost:5000/api/articles');
                 this.articles = response.data;
                 console.log(this.articles);
             } catch (error) {
@@ -40,4 +36,3 @@ export default {
     }
 };
 </script>
-  

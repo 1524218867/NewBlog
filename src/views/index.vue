@@ -1,482 +1,315 @@
 <template>
     <div>
-        <div class="container">
+
+        <transition name="fade">
+            <Loader v-if="isLoading" :visible="isLoading" />
+        </transition>
+        <div v-if="!isLoading" class="container">
+            <!-- 左侧页 -->
             <div class="sidebar">
                 <div class="LogoAndMenu">
                     <div class="logo">
-                        <img src="../../public/logo.png" alt="Logo" />
+                        <img src="../../public/logo2.png" alt="Logo" />
+                        <span>云端轻语</span>
                     </div>
                     <ul class="menu">
-                        <li v-for="(image, key, index) in currentImages" :key="key" @click="
-                            index === Object.keys(currentImages).length - 1
-                                ? logout()
-                                : changeImage(key)
-                            " :class="{ active: key === activeSection }">
-                            <img :src="key === activeSection ? activeImages[key] : image" :alt="key" />
+                        <li :class="{ active: activeSection === 'home' }">
+                            <router-link :to="getPath(0)" @click.native="setActive('home')">
+                                <span>首页</span>
+                            </router-link>
+                        </li>
+                        <li :class="{ active: activeSection === 'content' }">
+                            <router-link :to="getPath(1)" @click.native="setActive('content')">
+                                <span>社区</span>
+                            </router-link>
+                        </li>
+                        <li :class="{ active: activeSection === 'categories' }">
+                            <template v-if="!isDisabled">
+                                <router-link :to="getPath(2)" @click.native="setActive('categories')">
+                                    <span>发布</span>
+                                </router-link>
+                            </template>
+                            <span v-else>发布</span>
                         </li>
                     </ul>
                 </div>
-            </div>
+                <div class="Index-Login">
+                    <div class="wrapper">
+                        <!-- <input type="checkbox" name="checkbox" class="switch" @click="toggleTheme"
+                            :checked="currentTheme === 'dark'"> -->
 
-            <div class="content-wrapper">
-                <div class="main-content" id="main-content">
-                    <div class="content-section" v-if="currentSection === 'home'" id="section1">
-                        <!-- <ForActicle></ForActicle> -->
-                        <div class="Zhong-container">
-                            <header>
-                                <div class="Input-but">
-                                    <input type="text" placeholder="Search article you want..." class="search-bar"
-                                        @focus="highlightButton" @blur="resetButton" />
-                                    <button class="search-button" :class="{ highlight: isButtonHighlighted }">
-                                        <img src="../../public/SouSuo.png" alt="搜索" />
-                                    </button>
-                                </div>
+                        <label aria-checked="false" role="switch" class="switch">
+                            <input type="checkbox" @click="toggleTheme" :checked="currentTheme === 'dark'" />
+                            <span class="slider">
+                                <span class="slider-inner"></span>
+                            </span>
+                        </label>
 
-                                <div class="icons">
-                                    <img src="../../public/Xiaoxi.png" alt="消息" />
-                                    <img src="../../public/ShouCang.png" alt="收藏" />
-                                </div>
-                            </header>
 
-                            <section class="article-of-the-day">
-                                <div class="section-header">
-                                    <h2>今日文章</h2>
-                                    <button class="view-more">查看更多</button>
-                                </div>
-                                <div class="main-article">
-                                    <router-link :to="{
-                                        name: 'Article',
-                                        params: { id: latestArticle._id || '' },
-                                    }">
-                                        <div class="article-cover">
-                                            <!-- 确保图片路径包含 '/uploads/' 前缀 -->
-                                            <div>
-                                                <h2 class="article-title">
-                                                    {{ latestArticle.title || 'No title available' }}
-                                                </h2>
-                                                <button class="article-button">现在阅读</button>
-                                            </div>
-                                            <div>
-                                                <img :src="getImageUrl(latestArticle.coverImage || '')" alt="Article Cover"
-                                                    class="cover-image" />
-                                            </div>
-                                        </div>
-                                    </router-link>
-                                </div>
-                            </section>
-
-                            <section class="topic-match">
-                                <h2>适合你的话题</h2>
-                                <div class="tags">
-                                    <!-- 遍历分类按钮 -->
-                                    <button v-for="category in articleCategories" :key="category._id"
-                                        @click="filterArticlesByCategory(category)" :class="{
-                                            active:
-                                                selectedCategory &&
-                                                selectedCategory._id === category._id,
-                                        }" class="tag">
-                                        {{ category.name }}
-                                    </button>
-                                </div>
-
-                                <div class="articles">
-                                    <router-link v-for="article in filteredArticles" :key="article._id"
-                                        :to="{ name: 'Article', params: { id: article._id } }" class="article-link">
-                                        <div class="article">
-                                            <!-- 确保图片路径包含 '/uploads/' 前缀 -->
-                                            <div class="article-img">
-                                                <img :src="getImageUrl(article.coverImage)" alt="Article Image" />
-                                            </div>
-
-                                            <h3>{{ article.title }}</h3>
-                                            <p>{{ article.author }}</p>
-                                            <!-- <div class="author-info">
-                                                <span>by {{ article.author }}</span>
-                                                <span>{{ article.readingTime }} min read</span>
-                                            </div> -->
-                                        </div>
-                                    </router-link>
-                                </div>
-                            </section>
-                        </div>
                     </div>
-                    <div class="content-section" v-if="currentSection === 'categories'" id="section2">
-                        <!-- 第二个内容块 -->
-                        <h2>第二个内容块</h2>
-                    </div>
-                    <div class="content-section" v-if="currentSection === 'favorites'" id="section3">
-                        <Content></Content>
-                    </div>
-                    <div class="content-section" v-if="currentSection === 'settings'" id="section4">
-                        <!-- 第三个内容块 -->
-                        <h2>第4个内容块</h2>
-                        <img :src="getUser.avatar" alt="当前头像" />
-                        <input type="file" @change="uploadAvatar" />
-                    </div>
+
                 </div>
-            </div>
-
-            <div class="user-info-wrapper">
-                <div class="user-info">
-                    <div class="user-card">
-                        <!-- <img src="user.jpg" alt="User Image">
-                        <h3>Emir Abiyy</h3>
-                        <p>Member</p> -->
-                        <div v-if="!isLoggedIn" id="loginSection" class="logo">
-                            <div v-on:click="goToLogin" class="glass-container" id="glass">
-                                登录
-                            </div>
-                            <!-- <div v-on:click="goToRegister" class="glass-container" id="glass">注册</div> -->
-                        </div>
-
-                        <div v-else id="welcomeSection" class="userlogo">
-                            <div class="LogoImg">
-                                <img :src="getUser.avatar" alt="用户头像" />
-                            </div>
-
-                            <span> 欢迎, {{ getUser.username }}! </span>
-                        </div>
-                    </div>
-                    <div class="premium-promo">
-                        <p>Wanna read more? Be a Premium Member</p>
-                        <button>Learn more</button>
-                    </div>
-                    <div class="continue-reading">
-                        <h4>继续阅读</h4>
-                        <div v-if="!noArticlesMessage" class="reading-article">
-                            <!-- 显示最近浏览的未完成文章 -->
-                            <div v-if="lastViewedArticle" class="article-preview">
-                                <router-link :to="`/article/${lastViewedArticle.articleId}`">
-                                    <div class="article-image">
-                                        <img :src="getImageUrl(lastViewedArticle.coverImage)" alt="Article Cover">
-                                    </div>
-                                    <div class="article-info">
-                                        <h3>{{ lastViewedArticle.title }}</h3>
-                                        <div class="progress-container">
-                                            <div class="progress"
-                                                :style="{ width: calculateProgress(lastViewedArticle.scrollPosition, lastViewedArticle.maxScrollPosition) + '%' }">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </router-link>
-                            </div>
-                        </div>
-                        <div v-else>
-                            <p>继续去发现好的文章吧</p>
-                        </div>
-                    </div>
-
-
-
-
-                    <div class="more-topics">
-                        <h4>More Interesting Topic</h4>
-                        <div class="tags">
-                            <span>Health</span>
-                            <span>Social Media</span>
-                            <span>Politics</span>
-                            <span>Productivity</span>
-                            <span>Business</span>
-                            <span>Money</span>
-                            <span>Self Development</span>
-                            <span>Programming</span>
-                        </div>
-                    </div>
-                    <div class="user-card">
-                        <!-- <img src="user.jpg" alt="User Image"> -->
-                        <h3>Emir Abiyy</h3>
-                        <p>Member</p>
-                    </div>
-
-                    <div class="continue-reading">
-                        <h4>Continue Reading</h4>
-                        <div class="reading-article">
-                            <!-- <img src="robot.jpg" alt="Robot Image"> -->
-                            <h4>Why You Need AI Robot for Your Office and How It Works</h4>
-                            <p>
-                                In this article, we'll learn about how to discuss about robot
-                                and future work.
-                            </p>
-                            <button>Continue</button>
-                        </div>
-                    </div>
-                    <div class="more-topics">
-                        <h4>More Interesting Topic</h4>
-                        <div class="tags">
-                            <span>Health</span>
-                            <span>Social Media</span>
-                            <span>Politics</span>
-                            <span>Productivity</span>
-                            <span>Business</span>
-                            <span>Money</span>
-                            <span>Self Development</span>
-                            <span>Programming</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- 轮播图 -->
             </div>
         </div>
+        <!-- 中页 -->
+        <div class="Index-content">
+            <div class="content-section-Foather">
+                <transition name="fade">
+                    <router-view :getImageUrl="getImageUrl" :key="$route.fullPath"
+                        @themeChanged="updateTheme"></router-view>
+                </transition>
+            </div>
+            <!-- 右侧页 -->
+            <div class="user-info-wrapper">
+                <LeftUser :DisplayContinueReadingZi="DisplayContinueReading" :noArticlesMessageZi="noArticlesMessage"
+                    :lastViewedArticleZi="lastViewedArticle" :JingDuTiaoZi="JingDuTiao">
+                </LeftUser>
+            </div>
+
+        </div>
+
     </div>
+
 </template>
 
 <script>
-import 'slick-carousel'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
+import "slick-carousel";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 // import '../utils/index'
-import { mapGetters, mapActions } from 'vuex'
-import Content from './Content.vue'
-import ForActicle from './ForActicle.vue'
-import { Notification } from 'element-ui' // 确保你已经引入了 Notification
-import axios from 'axios'
-import { jwtDecode } from 'jwt-decode';
-
+import { mapGetters, mapActions } from "vuex";
+import ForActicle from "./ForActicle.vue";
+import { Notification } from "element-ui"; // 确保你已经引入了 Notification
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import Loader from "@/components/Loader.vue";
+import LeftUser from "@/components/LeftUser.vue";
 export default {
     data() {
         return {
+
             articles: [], // 用于存储文章列表
-            latestArticle: {}, // 最新文章，初始化为空对象
-            user: null, // 用户信息，初始化为 null
-            currentSection: 'home', // 当前显示的内容块，默认显示 'home'
-            activeSection: 'home', // 当前激活的菜单项
-            isButtonHighlighted: false, // 按钮高亮状态
-            articleCategories: [], // 存储文章分类
             filteredArticles: [], // 根据分类筛选后的文章
-            selectedCategory: null, // 默认选中“全部”分类
-            defaultCategoryId: 'all', // 默认分类 ID
-            viewedArticles: [],//浏览记录
+            latestArticle: {}, // 最新文章，初始化为空对象
+
+            isDisabled: false, // 控制按钮是否禁用，初始化为 false
+            activeSection: "home", // 当前激活的菜单项
+            LoginActive: null,
+            currentTheme: 'light',  // 默认主题，updateTheme（）函数会根据用户设置的主题更新这个值
+
+            DisplayContinueReading: false, // 是否显示“继续阅读”部分
+            // defaultCategoryId: "all", // 默认分类 ID
+            viewedArticles: [], //浏览记录
             lastViewedArticle: null, // 要显示的文章
-            noArticlesMessage: false,// 是否显示“继续去发现好的文章”消息
+            noArticlesMessage: false, // 是否显示“继续去发现好的文章”消息
             scrollPosition: 0, // 当前文章的滚动位置
-            maxScrollPosition: 0,// 当前文章的最大滚动高度
-            currentImages: {
-                home: require('../../public/home.png'),
-                categories: require('../../public/home.png'),
-                favorites: require('../../public/home.png'),
-                settings: require('../../public/settings.png'),
-                logout: require('../../public/logout.png'),
+            maxScrollPosition: 0, // 当前文章的最大滚动高度
+            isLoading: true, // 是否显示加载器
+            JingDuTiao: 0, // 进度条
+
+            themes: {
+                light: {
+                    '--primary-color': '#3498db',
+                    '--ZiBaiBgc': "#f8f9ff",
+                    '--ActiveBgc': '#f7f7f8',
+                    '--background-color': '#ffffff',
+                    '--Border': ' #f0f1fb',
+                    '--text-color': '#000000',//文本颜色
+                    '--active-background-color': '#1988fa',//按钮颜色
+                    '--article-card-background-color': ' #f5f5f5',//边框颜色
+                    '--Business-card-gradient': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'
+                },
+                dark: {
+                    '--primary-color': '#e74c3c',
+                    '--ActiveBgc': '#1a1a1a',
+                    '--ZiBaiBgc': "#1f1f1f",
+                    '--background-color': '#000000',
+                    '--Border': ' #2c2c2c',
+                    '--text-color': '#ecf0f1',//文本颜色
+                    '--active-background-color': '#015aea',//按钮颜色
+                    '--article-card-background-color': ' #212121',//边框颜色
+                    '--Business-card-gradient': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
+                }
             },
-            activeImages: {
-                home: require('../../public/home-Bai.png'),
-                categories: require('../../public/home-Bai.png'),
-                favorites: require('../../public/home-Bai.png'),
-                settings: require('../../public/settings-Bai.png'),
-                logout: require('../../public/logout-Bai.png'),
-            },
-        }
+        };
     },
 
     components: {
         ForActicle,
-        Content,
+        Loader,
+        LeftUser
     },
 
     computed: {
-        ...mapGetters(['isLoggedIn', 'getUser']),
-        // 计算属性，用于确保按钮的 active 类名
-        activeCategory() {
-            return this.selectedCategory ? this.selectedCategory._id : null;
-        },
+        ...mapGetters(["isLoggedIn", "getUser"]),
 
     },
 
-
     created() {
-
-        this.fetchArticles() // 获取文章
-        this.fetchCategories() // 获取分类
-        this.fetchViewedArticles();
-        // 默认选择“全部”分类
-        this.selectedCategory = { _id: 'all', name: '全部' }
-        this.filterArticlesByCategory(this.selectedCategory) // 根据默认分类筛选文章
-
-        const token = localStorage.getItem('authToken')
+        const token = localStorage.getItem("authToken");
         if (token) {
-            this.$store.dispatch('updateUser', { token, details: {} }) // 更新用户信息
+            this.$store.dispatch("updateUser", { token, details: {} }); // 更新用户信息
         }
+
+
     },
 
     methods: {
-        ...mapActions(['logout']),
+        ...mapActions(["logout"]),
 
-        goToLogin() {
-            this.$router.push('/Login')
-        },
+        // goToLogin() {
+        //     this.$router.push("/Login");
+        // },
 
         goToRegister() {
-            this.$router.push('/Login')
+            this.$router.push("/Login");
         },
 
-        goToSettings() {
-            this.activeSection = 'settings' // 更新当前显示内容块为设置
-        },
 
         async logout() {
             try {
+
                 if (!this.$store.getters.isLoggedIn) {
                     Notification.warning({
-                        title: '未登录',
-                        message: '您尚未登录，无法执行退出操作。',
+                        title: "未登录",
+                        message: "您尚未登录，无法执行退出操作。",
                         duration: 3000,
-                    })
-                    return
+                    });
+                    return;
                 }
-                await this.$store.dispatch('logout') // 调用 Vuex 的 logout action
-                localStorage.removeItem('token') // 清除本地存储中的 token
+                await this.$store.dispatch("logout"); // 调用 Vuex 的 logout action
+                localStorage.removeItem("token"); // 清除本地存储中的 token
                 Notification.success({
-                    title: '退出登录成功',
-                    message: '您已成功退出登录。',
+                    title: "退出登录成功",
+                    message: "您已成功退出登录。",
                     duration: 3000,
-                })
-                this.$router.push('/Login') // 跳转到登录页面
+                });
+                this.$router.push("/Login"); // 跳转到登录页面
             } catch (error) {
                 Notification.error({
-                    title: '退出登录失败',
-                    message: '退出登录过程中出现错误，请稍后重试。',
+                    title: "退出登录失败",
+                    message: "退出登录过程中出现错误，请稍后重试。",
                     duration: 3000,
-                })
-                console.error('Error:', error)
+                });
+                console.error("Error:", error);
             }
         },
-
-        changeImage(section) {
-            this.currentSection = section // 设置当前显示的内容块
-            this.activeSection = section // 更新激活的菜单项
+        // 拼接图片 URL
+        getImageUrl(imageName) {
+            return `http://localhost:5000/uploads/${imageName}`;
         },
-
-        highlightButton() {
-            this.isButtonHighlighted = true // 设置按钮高亮
-        },
-
-        resetButton() {
-            this.isButtonHighlighted = false // 重置按钮高亮
-        },
-
+        //获取文章
         async fetchArticles() {
-
             try {
-                const response = await axios.get('http://localhost:5000/api/articles', {
+                const response = await axios.get("http://localhost:5000/api/articles");
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 2000);
 
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-                })
-                this.articles = response.data // 存储文章列表
-                console.log(response.data)
-                this.filteredArticles = this.articles // 默认显示所有文章
+                this.articles = response.data; // 存储文章列表
+                console.log(response.data);
+                this.filteredArticles = this.articles; // 默认显示所有文章
                 this.latestArticle =
                     this.articles.length > 0
                         ? this.articles[this.articles.length - 1]
-                        : {} // 设置最新文章
+                        : {}; // 设置最新文章
+
             } catch (error) {
-                console.error('Error fetching articles:', error)
+                console.error("Error fetching articles:", error);
             }
         },
 
-        async fetchCategories() {
-            try {
-                const response = await axios.get('http://localhost:5000/api/categories')
-                // console.log(response.data);
-                this.articleCategories = response.data // 存储文章分类
 
-                // 默认选择第一个分类作为“全部”分类
-                if (this.articleCategories.length > 0) {
-                    this.selectedCategory = this.articleCategories[0] // 默认选择第一个分类
-                    this.filterArticlesByCategory(this.selectedCategory) // 根据默认分类筛选文章
-                }
-            } catch (error) {
-                console.error('Error fetching categories:', error)
-            }
-        },
-
-        filterArticlesByCategory(selectedCategory) {
-            this.selectedCategory = selectedCategory // 更新当前选择的分类
-
-            if (selectedCategory.name === '全部') {
-                this.filteredArticles = this.articles // 显示所有文章
-            } else {
-                this.filteredArticles = this.articles.filter((article) =>
-                    // 遍历文章的分类，判断是否有匹配选中的分类
-                    article.categories.some(
-                        (category) => category._id === selectedCategory._id
-                    )
-                )
-            }
-        },
-
-        getImageUrl(imageName) {
-            return `http://localhost:5000/uploads/${imageName}` // 拼接图片 URL
-        },
-        async uploadAvatar(event) {
-
-            const file = event.target.files[0]
-            const formData = new FormData()
-            formData.append('avatar', file)
-            try {
-                const response = await axios.post(
-                    'http://localhost:5000/api/user/update-avatar',
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        },
-                    }
-                )
-                this.getUser.avatar = response.data.avatar
-            } catch (error) {
-                console.error('Error updating avatar:', error)
-            }
-        },
         //获取浏览记录
         async fetchViewedArticles() {
+
+            //如果没有登陆不让获取浏览记录
+            if (localStorage.getItem("token") == null) {
+                return;
+            }
+            this.DisplayContinueReading = true;//有token时显示继续阅读，无时显示请登录
             try {
-                const response = await axios.get('http://localhost:5000/api/user/viewed-articles', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
+                const response = await axios.get(
+                    "http://localhost:5000/api/user/viewed-articles",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    }
+                );
+
                 console.log("获取到了浏览记录", response);
                 this.viewedArticles = response.data; // 假设 API 返回的数据是一个数组
 
+
+                console.log('222', this.viewedArticles.length);
                 // 更新 noArticlesMessage 的状态
                 if (this.viewedArticles.length === 0) {
                     this.noArticlesMessage = true; // 没有文章时显示消息
                     this.lastViewedArticle = null; // 没有文章时清空 lastViewedArticle
                     return;
                 }
+                console.log('222');
 
                 // 根据 lastViewedAt 时间排序
-                const sortedArticles = [...this.viewedArticles].sort((a, b) => new Date(b.lastViewedAt) - new Date(a.lastViewedAt));
+                const sortedArticles = [...this.viewedArticles].sort(
+                    (a, b) => new Date(b.lastViewedAt) - new Date(a.lastViewedAt)
+                );
+                console.log('打印了sortedArticles', sortedArticles);
 
-                // 查找未完成的文章
-                const unfinishedArticles = sortedArticles.filter(article => this.calculateProgress(article.scrollPosition, article.maxScrollPosition) < 100);
+
+                // 查找未完成的文章,将未完成的文章放在最前面，通过filter来排序
+                const unfinishedArticles = sortedArticles.filter((article) => this.calculateProgress(article.scrollPosition, article.maxScrollPosition) < 100
+                );
+                console.log('打印了', unfinishedArticles);
 
                 if (unfinishedArticles.length > 0) {
+                    console.log('222');
                     // 有未完成的文章，设置 lastViewedArticle 为最近浏览的未完成文章
                     this.lastViewedArticle = unfinishedArticles[0]; // 由于已经按时间排序，直接取第一个
+                    console.log('111111', this.lastViewedArticle);
+
                     this.noArticlesMessage = false;
                 } else {
+
+
                     // 所有文章都完成了，设置 lastViewedArticle 为最后一篇文章
                     this.lastViewedArticle = sortedArticles[0]; // 由于已经按时间排序，直接取第一个
                     this.noArticlesMessage = false;
                 }
+                // 使用 calculateProgress 更新 JingDuTiao 的值
+                if (this.lastViewedArticle) {
+                    this.JingDuTiao = this.calculateProgress(
+                        this.lastViewedArticle.scrollPosition,
+                        this.lastViewedArticle.maxScrollPosition
+                    );
+                } else {
+                    this.JingDuTiao = 0;
+                }
+
+
             } catch (error) {
-                console.error('Error fetching viewed articles:', error);
+                console.error("Error fetching viewed articles:", error);
+                console.log("出错了，要改变状态了");
+
                 this.noArticlesMessage = true; // 发生错误时显示消息
             }
         },
 
-
-
-
-
         calculateProgress(scrollPosition, maxScrollPosition) {
+
             if (maxScrollPosition === 0) return 0; // 防止除以0的情况
             // 计算进度条的宽度百分比
             const percentage = (scrollPosition / maxScrollPosition) * 100;
+
+
             return Math.min(percentage, 100); // 防止超过100%
         },
 
-
         //处理超时token
         isTokenExpired(token) {
-            console.log("");
+
             if (!token) return true;
 
             try {
@@ -486,35 +319,118 @@ export default {
                 // 检查当前时间是否超过 token 的过期时间
                 return decodedToken.exp < currentTime;
             } catch (error) {
-                console.error('Token decoding failed:', error);
+                console.error("Token decoding failed:", error);
                 return true; // 如果解码失败，视为 token 已过期
             }
         },
         //从本地获取token，然后传给isTokenExpired处理,isTokenExpiredr如果返回true，就调用退出登录方法
         checkTokenAndRedirect() {
-
-            const token = localStorage.getItem('token')
+            const token = localStorage.getItem("token");
 
             if (this.isTokenExpired(token)) {
                 Notification.error({
-                    title: '登录信息已失效',
-                    message: '请从新登录',
+                    title: "登录信息已失效",
+                    message: "请从新登录",
                     duration: 3000,
-                })
+                });
                 this.logout(); // 如果 token 已过期，执行退出登录操作
             }
         },
+        setActive(section) {
+            // if (!this.hasToken && this.activeSection === 'categories') {
+            //     return; // 如果没有 token 并且 activeSection 是 'categories'，则返回
+            // }
+            this.activeSection = section; // 设置当前激活的菜单项
+        },
+        LoginActiveCLick(button) {//登陆是否显示
+            this.LoginActive = button;
+        },
+        getPath(key) {
+            const paths = {
+                0: '/Index/Home',         // Home 路由
+                1: '/Index/Categories',    // Categories 路由 
+                2: '/Index/Content',    // Content 路由
+                3: '/Index/Settings',     // Settings 路由
+            };
+            return paths[key] || '/Index/Home'; // 默认路径
+        },
+        setActiveSection() {//页面刷新就启动，路由跳转也算，作用是在页面刷新后根据当前按钮来跳转路由，如果本来就是在home也就不执行，
+            if (this.$route.path === '/Index/Home') {
+                return
+            }
+
+            const section = this.activeSection
+            let path = '';
+            switch (section) {
+                case 'home':
+                    path = '/Index/Home';
+                    break;
+                case 'categories':
+                    path = '/Index/Categories';
+                    break;
+                case 'content':
+                    path = '/Index/Content';
+                    break;
+                case 'settings':
+                    path = '/Index/Settings';
+                    break;
+                default:
+                    path = '/Index/Home'; // 默认路由
+            }
+
+            // 通过 Vue Router 的 push 方法进行导航
+            this.$router.push(path);
+        },
+        toggleTheme() {
+
+            console.log(this.currentTheme);
+
+            // 切换主题状态
+            this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+            console.log(this.currentTheme);
+
+            // 更新页面的 CSS 变量或样式
+            this.updateTheme(this.currentTheme);
+            // 将当前主题保存到 localStorage
+            localStorage.setItem('theme', this.currentTheme);
+        },
+        updateTheme(themeName) {
+            console.log(themeName);
+
+            // document.body.classList.toggle('dark-theme', themeName === 'dark');
+            this.currentTheme = themeName;//这里的currentTheme是data里的，用来在html里显示当前主题，并不是子组件的
+            // 根据传入的主题名称更新全局 CSS 变量
+            const theme = this.themes[themeName];
+            for (const key in theme) {
+                document.documentElement.style.setProperty(key, theme[key]);
+            }
+            // 保存到 localStorage 以保持刷新后的主题
+            localStorage.setItem('theme', themeName);
+        }
 
     },
+
     mounted() {
-        // 在组件挂载后执行
-        this.fetchViewedArticles()
-        this.checkTokenAndRedirect(); // 组件挂载时检查 token
-    },
+        this.isDisabled = localStorage.getItem('token') ? false : true
+        // 初始化时从 localStorage 获取用户上次选择的主题
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        this.updateTheme(savedTheme);
+        // 初始化时获取本地存储的主题状态
 
-}
+
+        this.fetchArticles(); // 获取文章
+        this.setActiveSection()
+        // 在组件挂载后执行获取浏览记录
+        this.fetchViewedArticles();
+        this.checkTokenAndRedirect(); // 组件挂载时检查 token过期没有
+
+    },
+};
 </script>
 <style scoped>
+/* 子路由的动画。 */
+
+
 body,
 html {
     height: 100%;
@@ -524,12 +440,47 @@ html {
     /* 1rem = 16px */
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 30px;
-    border-bottom: 1px solid #ccc;
+/* 全局定义两套主题的 CSS 变量 */
+
+dl,
+ol,
+ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+h1,
+h2,
+p,
+
+button {
+
+    transition: color 0.5s ease, background-color 0.5s ease;
+    /* 为其他元素添加过渡 */
+}
+
+/* 深色主题 */
+/* .dark-theme {
+    --background-color: #171717;
+    --active-background-color: linear-gradient(to right, #dfe9f3 0%, white 100%);
+    --text-color: #ffffff;
+    --article-card-background-color: #212121;
+
+} */
+
+/* 浅色主题
+.light-theme {
+    --background-color: #ffffff;
+    --active-background-color: #e6efff;
+    --text-color: #000000;
+
+    --article-card-background-color: #f5f5f5;
+} */
+
+/* 应用全局字体颜色 */
+body {
+    /* color: var(--font-color) !important; */
+    /* 使用定义的字体颜色 */
 }
 
 /* 整体滚动条 */
@@ -555,226 +506,6 @@ header {
     background-color: #555;
 }
 
-.Input-but {
-    width: 80%;
-}
-
-.search-bar {
-    width: 60%;
-    padding: 18px;
-    border-radius: 20px 0 0 20px;
-    border-top: 1px solid #ccc;
-    border-left: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-}
-
-.search-bar:focus {
-    border-color: #000000;
-    outline: none;
-    /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
-    border-right-color: transparent;
-    /* 设置左边框颜色为透明 */
-}
-
-.search-button {
-    padding: 18px;
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    border-radius: 0px 20px 20px 0px;
-}
-
-.search-button.highlight {
-    border-color: #000000;
-    /* 点击时的边框颜色 */
-    /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
-    /* 添加阴影效果 */
-    border-left-color: transparent;
-}
-
-.search-button>img {
-    width: 23px;
-}
-
-.icons img {
-    width: 30px;
-    margin-left: 30px;
-    cursor: pointer;
-}
-
-.article-of-the-day {
-    margin-top: 20px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.view-more {
-    /* border: none; */
-    background-color: transparent;
-    color: #333;
-    cursor: pointer;
-    border: 1px solid;
-    padding: 10px 20px;
-    border-radius: 30px;
-}
-
-.main-article {
-    margin-top: 40px;
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 10px 30px;
-    cursor: pointer;
-    transition: all 0.5s;
-}
-
-.main-article:hover {
-    transform: scale(1.021);
-}
-
-.main-article:active {
-    transform: scale(0.95) rotateZ(1.1deg);
-}
-
-.article-cover {
-    min-width: 500px;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 2 / 1;
-    /* 大盒子的宽高比为2:1 */
-}
-
-.article-cover>div:nth-child(1) {
-    flex: 1;
-    background-image: url(../../public/JinRiWengZhang.png);
-    background-size: cover;
-    /* 使背景图片完全覆盖容器 */
-    background-position: center;
-    /* 背景图片居中对齐 */
-    background-repeat: no-repeat;
-    /* 防止背景图片重复 */
-    aspect-ratio: 1 / 1;
-    /* 小盒子的宽高比为1:1 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    box-sizing: border-box;
-}
-
-a {
-    text-decoration: none;
-    /* 移除所有链接的下划线 */
-}
-
-.article-cover h2 {
-    width: 85%;
-    text-decoration: none;
-}
-
-.article-cover>div:nth-child(2) {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 1 / 1;
-    /* 小盒子的宽高比为1:1 */
-
-}
-
-.article-cover>div:nth-child(2)>img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* 让图片完整覆盖容器，保持比例 */
-}
-
-.article-button {
-    background-color: #ffffff;
-
-    color: #000000;
-    padding: 10px 30px;
-    border-radius: 30px;
-}
-
-/* From Uiverse.io by cssbuttons-io */
-.article-button {
-    position: relative;
-    font-size: 17px;
-    text-transform: uppercase;
-    text-decoration: none;
-    padding: 1em 2.5em;
-    display: inline-block;
-    border-radius: 6em;
-    transition: all .2s;
-    border: none;
-    font-family: inherit;
-    font-weight: 500;
-    color: black;
-    background-color: white;
-}
-
-.article-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.article-button:active {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-.article-button::after {
-    content: "";
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    border-radius: 100px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    transition: all .4s;
-}
-
-.article-button::after {
-    background-color: #fff;
-}
-
-.article-button:hover::after {
-    transform: scaleX(1.4) scaleY(1.6);
-    opacity: 0;
-}
-
-.article-title {
-    font-size: 2vw;
-    overflow-wrap: break-word;
-    color: #ffffff;
-
-}
-
-.article-info {
-
-    max-width: 100%;
-}
-
-.article-info h3 {
-    margin: 20px 0;
-    color: #000;
-    font-size: 24px;
-}
-
-.article-info p {
-    color: #666;
-}
-
 .read-now {
     margin-top: 10px;
     padding: 10px 20px;
@@ -785,230 +516,450 @@ a {
     cursor: pointer;
 }
 
-.topic-match {
-    margin-top: 40px;
-}
-
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.tag {
-    padding: 10px 20px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-.tag.active {
-    background-color: #000;
-    color: #fff;
-
-}
-
-.articles {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-
-.article-link {
-    width: 48%;
-    height: 100%;
-}
-
-.article {
-    width: 100%;
-    background-color: #fff;
-    /* border-radius: 10px; */
-    overflow: hidden;
-    margin-bottom: 20px;
-    margin-right: 4%;
-    border-radius: 10px;
-}
-
-.article:nth-child(2n) {
-    margin-right: 0;
-}
-
-.article img {
-    width: 100%;
-    height: 100%;
-    height: auto;
-    overflow: hidden;
-    transition: all 0.5s;
-}
-
-.article-img {
-    border-radius: 10px 10px 10px 10px;
-
-    overflow: hidden;
-}
-
-.article img:hover {
-    transform: scale(1.021);
-}
-
-.article img:active {
-    transform: scale(0.95) rotateZ(1.1deg);
-}
-
-.article h3 {
-    margin: 0;
-    color: #000;
-    padding: 15px 0px;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 30px;
-}
-
-.article p {
-    padding: 0 0px;
-    color: #666;
-}
-
-.author-info {
-    padding: 10px 20px;
-    color: #999;
-}
-
 .container {
     display: flex;
     height: 100%;
     width: 100%;
     padding: 0;
-    background-color: #ffffff;
+
+    flex-direction: column;
 }
 
 .sidebar {
-    /* margin-right: 20px; */
-    width: 122px;
-    background-color: #ffffff;
+    flex: 1;
+    width: 70%;
+    background-color: var(--background-color);
+    transition: background-color 0.5s ease, color 0.5s ease;
     min-width: 120px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    border-right: 1px solid #e2e1e1;
     justify-content: space-between;
     height: 100vh;
+    margin: auto;
 }
 
-.sidebar .logo {
-    margin-bottom: 30px;
+.sidebar>div>.logo {
+    display: flex;
+    align-items: center;
 }
 
 .sidebar>div>.logo>img {
-    width: 100%;
-    height: 100%;
+    width: 55px;
+    height: 55px;
+}
+
+.sidebar>div>.logo>span {
+    font-size: 20px;
+    margin: 0 10px 0 0;
+    font-weight: 600;
+    color: var(--text-color);
 }
 
 .sidebar .menu {
+    text-align: center;
     list-style: none;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     width: 60%;
     height: 100%;
-    position: relative;
+    color: #000;
+    font-weight: 600;
 }
 
-.menu li.active {
-    background-image: url(../../public/AnNiu.png);
+.menu li.active>a>span {
+
     /* background-color: black; */
     /* 这里设置你希望的激活状态下的背景颜色 */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); */
+    /* background: var(--active-background-color); */
+    /* background-image: linear-gradient(to right, #dfe9f3 0%, white 100%); */
+    transition: background-color 0.5s ease, color 0.5s ease;
+    color: var(--active-background-color) !important;
 
-    background-size: cover;
-    /* 图片覆盖整个盒子 */
-    background-position: center;
-    /* 图片居中显示 */
-    background-repeat: no-repeat;
-    /* 防止图片重复 */
 }
 
-.menu li:nth-last-child(1) {
-    position: absolute !important;
-    /* 让最后1个元素固定在底部 */
-    bottom: 20px;
+.menu>li>a>span {
+    color: var(--text-color);
 }
 
-.menu li:nth-last-child(2) {
-    position: absolute !important;
-    /* 让最后2个元素固定在底部 */
-    bottom: 100px;
+.button-in-li {
+    width: 100%;
+    /* 让按钮填满 li */
+    text-align: center;
+    /* 按钮内容左对齐 */
+    z-index: 10;
+    background-color: var(--background-color);
+    border: none;
 }
+
+.button-in-li:hover {
+    background-color: transparent !important;
+    /* 取消 hover 背景色 */
+    color: inherit;
+    /* 继承父元素颜色 */
+    border-color: none !important;
+    /* 取消 hover 边框颜色 */
+}
+
+
 
 .sidebar .menu li {
-    margin: 30px 0 0 0;
+    margin: 0 25px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    padding: 10px 0 10px 0;
-    height: 55px;
+
+    /* padding: 10px 0 10px 0; */
+    /* height: 55px; */
     border-radius: 10px;
+    display: block;
+
+}
+
+
+.SomeSvg {
+    width: 24px !important;
+    height: 24px !important;
 }
 
 .sidebar .menu img {
-    width: 40%;
-    height: 80%;
+    width: 30%;
+    /* height: 80%; */
 }
 
 .LogoAndMenu {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    height: 100%;
-}
-
-.active {
-    background-color: black;
-    /* color: white; */
-    /* 如果需要，设置文本颜色为白色 */
-}
-
-.article-preview {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-direction: column;
-}
-
-
-
-.article-image img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-right: 20px;
-}
-
-.article-info {
-    flex-grow: 1;
-}
-
-
-
-.progress-container {
-    background: #e0e0e0;
-    border-radius: 5px;
-    height: 7px;
+    /* height: 100%; */
     width: 100%;
-    /* Adjust based on your layout */
-    position: relative;
+    flex: 1;
 }
 
-.progress {
-    background: #000000;
-    height: 100%;
-    border-radius: 5px;
-    transition: width 0.3s ease;
+.Index-Login {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
 }
+
+
+/* Base Styles */
+.switch {
+    display: inline-block;
+    width: 6em;
+    height: 3em;
+    position: relative;
+    font-size: 18px;
+    user-select: none;
+    margin: 20px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+/* Slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, #87ceeb, #e0f6ff);
+    border-radius: 50px;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.1),
+        inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Inner slider for additional styling */
+.slider-inner {
+    position: absolute;
+    top: 0.3em;
+    left: 0.3em;
+    height: 2.4em;
+    width: 2.4em;
+    border-radius: 50%;
+    background-color: #ffd700;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Checked state */
+.switch input:checked+.slider {
+    background: linear-gradient(to right, #1a237e, #3949ab);
+}
+
+.switch input:checked+.slider .slider-inner {
+    transform: translateX(3em);
+    background-color: #ffffff;
+}
+
+/* Focus state */
+.switch input:focus+.slider {
+    outline: none;
+    box-shadow: 0 0 0.4em rgba(25, 118, 210, 0.5);
+}
+
+/* Hover and active states */
+.switch:hover .slider {
+    background: linear-gradient(to right, #64b5f6, #e3f2fd);
+}
+
+.switch input:checked:hover+.slider {
+    background: linear-gradient(to right, #283593, #5c6bc0);
+}
+
+/* Animation for slider inner */
+@keyframes sunPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(255, 215, 0, 0.7),
+            0 0 0 0 rgba(255, 215, 0, 0.4);
+    }
+
+    50% {
+        box-shadow:
+            0 0 20px 10px rgba(255, 215, 0, 0.7),
+            0 0 40px 20px rgba(255, 215, 0, 0.4);
+    }
+}
+
+@keyframes moonPhase {
+
+    0%,
+    100% {
+        box-shadow:
+            inset -10px -5px 0 0 #ddd,
+            0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    50% {
+        box-shadow:
+            inset 0 0 0 0 #ddd,
+            0 0 20px rgba(255, 255, 255, 0.5);
+    }
+}
+
+.switch input:not(:checked)+.slider .slider-inner {
+    animation: sunPulse 3s infinite;
+}
+
+.switch input:checked+.slider .slider-inner {
+    animation: moonPhase 5s infinite;
+}
+
+/* Stars effect */
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.slider::before,
+.slider::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: all 0.6s ease;
+    opacity: 0;
+}
+
+.slider::before {
+    top: 20%;
+    left: 30%;
+}
+
+.slider::after {
+    bottom: 25%;
+    right: 25%;
+}
+
+.switch input:checked+.slider::before,
+.switch input:checked+.slider::after {
+    opacity: 1;
+    animation: twinkle 2s infinite;
+}
+
+.switch input:checked+.slider::before {
+    animation-delay: 0.5s;
+}
+
+/* 3D effect */
+.slider {
+    transform-style: preserve-3d;
+    perspective: 500px;
+}
+
+.slider-inner {
+    transform: translateZ(5px);
+}
+
+.switch input:checked+.slider .slider-inner {
+    transform: translateX(3em) translateZ(5px) rotateY(180deg);
+}
+
+/* Cloud effect for day mode */
+.slider-inner::before,
+.slider-inner::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    transition: all 0.6s ease;
+}
+
+.slider-inner::before {
+    width: 1em;
+    height: 1em;
+    top: -0.5em;
+    left: -0.2em;
+}
+
+.slider-inner::after {
+    width: 1.2em;
+    height: 1.2em;
+    bottom: -0.6em;
+    right: -0.3em;
+}
+
+.switch input:checked+.slider .slider-inner::before,
+.switch input:checked+.slider .slider-inner::after {
+    opacity: 0;
+}
+
+/* Crater effect for night mode */
+.switch input:checked+.slider .slider-inner::before {
+    width: 0.6em;
+    height: 0.6em;
+    background-color: rgba(0, 0, 0, 0.2);
+    top: 0.3em;
+    left: 0.3em;
+    opacity: 1;
+}
+
+.switch input:checked+.slider .slider-inner::after {
+    width: 0.4em;
+    height: 0.4em;
+    background-color: rgba(0, 0, 0, 0.15);
+    bottom: 0.5em;
+    right: 0.5em;
+    opacity: 1;
+}
+
+/* Accessibility improvements */
+.switch input:focus+.slider {
+    outline: 2px solid #4a90e2;
+    outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .switch {
+        width: 5em;
+        height: 2.5em;
+    }
+
+    .slider-inner {
+        height: 2em;
+        width: 2em;
+    }
+
+    .switch input:checked+.slider .slider-inner {
+        transform: translateX(2.5em) translateZ(5px) rotateY(180deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .switch {
+        width: 4em;
+        height: 2em;
+    }
+
+    .slider-inner {
+        height: 1.6em;
+        width: 1.6em;
+    }
+
+    .switch input:checked+.slider .slider-inner {
+        transform: translateX(2em) translateZ(5px) rotateY(180deg);
+    }
+}
+
+/* High contrast mode */
+@media (forced-colors: active) {
+    .slider {
+        background: Canvas;
+        border: 2px solid ButtonText;
+    }
+
+    .switch input:checked+.slider {
+        background: Highlight;
+    }
+
+    .slider-inner {
+        background-color: ButtonFace;
+    }
+
+    .switch::before,
+    .switch::after {
+        color: ButtonText;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    .switch,
+    .slider,
+    .slider-inner {
+        transition: none;
+    }
+
+    .switch input:checked+.slider .slider-inner,
+    .switch input:not(:checked)+.slider .slider-inner,
+    .switch input:checked+.slider::before,
+    .switch input:checked+.slider::after {
+        animation: none;
+    }
+}
+
+
+
+.register {
+    margin-left: 10px;
+}
+
+.Index-content {
+    display: flex;
+    width: 70%;
+    margin: auto;
+    height: calc(100vh - 100px)
+}
+
 
 .content-wrapper {
     flex: 3;
@@ -1031,15 +982,33 @@ a {
     padding: 40px 80px;
 }
 
+.content-section-Foather {
+    flex: 9;
+    /* height: 100vh; */
+    /* min-width: 490px; */
+    overflow-y: auto;
+    background-color: var(--background-color);
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.content-section-Foather[data-v-a83bd3b0]::-webkit-scrollbar {
+    display: none;
+    /* 隐藏滚动条 */
+}
+
 .user-info-wrapper {
-    min-width: 250px;
-    flex: 1;
-    background-color: #ffffff;
+
+    flex: 4;
+    background-color: var(--background-color);
+    transition: background-color 0.5s ease, color 0.5s ease;
     overflow-y: auto;
     /* 启用垂直滚动条 */
-    padding: 20px;
-    height: 100vh;
-    border-left: 1px solid #e2e1e1;
+
+}
+
+.user-info-wrapper[data-v-a83bd3b0]::-webkit-scrollbar {
+    display: none;
+    /* 隐藏滚动条 */
 }
 
 .userlogo {
@@ -1049,7 +1018,7 @@ a {
     align-items: center;
 }
 
-.LogoImg {
+/* .LogoImg {
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -1060,26 +1029,14 @@ a {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
+} */
 
 .userlogo>span {
     flex: 1;
     padding: 20px;
 }
 
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
 
-.tags span {
-    background-color: #f0f0f0;
-    padding: 5px 10px;
-    border-radius: 15px;
-    cursor: pointer;
-}
 
 .articles {
     display: flex;
@@ -1088,7 +1045,6 @@ a {
 
 .user-card,
 .premium-promo,
-
 .more-topics {
     padding: 15px;
     border-radius: 5px;
@@ -1096,7 +1052,6 @@ a {
 }
 
 .premium-promo {
-
     width: 100%;
     /* 或者你希望的固定宽度，比如 500px */
     aspect-ratio: 2 / 1.3;
@@ -1111,9 +1066,7 @@ a {
     border-radius: 5px;
 }
 
-.continue-reading {
-    border-bottom: 1px solid #ccc;
-}
+
 
 .premium-promo>p {
     color: #ffffff;
@@ -1140,13 +1093,7 @@ a {
     padding: 20px 0;
 }
 
-.continue-reading img {
-    width: 100%;
-    height: auto;
 
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
 
 .more-topics .tags {
     display: flex;
@@ -1161,39 +1108,26 @@ a {
     cursor: pointer;
 }
 
-@media (min-width: 1904px) {
-    .container {
-        max-width: 1920px;
+/* 超小屏幕（手机竖屏） */
+@media (max-width: 576px) {
+    .user-info-wrapper {
+        display: none;
+    }
+
+    .icons {
+        display: none !important;
     }
 }
 
-/* 小于是max，大于是min */
-@media (max-width: 1200px) {
-    .container {
-        max-width: 1920px;
-    }
+/* 小屏幕（手机横屏） */
+@media (min-width: 577px) and (max-width: 768px) {}
 
-    .article-link {
-        width: 100%;
-        height: 100%;
-    }
-}
+/* 中等屏幕（平板） */
+@media (min-width: 769px) and (max-width: 992px) {}
 
-@media (max-width: 992px) {
-    .container {
-        max-width: 1920px;
-    }
-}
+/* 大屏幕（小笔记本） */
+@media (min-width: 993px) and (max-width: 1200px) {}
 
-@media (min-width: 768px) {
-    .container {
-        max-width: 1920px;
-    }
-}
-
-@media (min-width: 576px) {
-    .container {
-        max-width: 1920px;
-    }
-}
+/* 超大屏幕（台式机） */
+@media (min-width: 1201px) {}
 </style>

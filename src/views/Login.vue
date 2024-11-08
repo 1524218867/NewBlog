@@ -1,6 +1,9 @@
 <template>
     <div class="login-container" @mousedown="handleMouseDown" @mousemove="handleMouseMove" @mouseup="handleMouseUp">
-        <div class="carousel-container">
+        <!-- <transition name="fade">
+            <Loader v-if="isLoading" :visible="isLoading" />
+        </transition> -->
+        <div v-if="!isLoading" class="carousel-container">
             <Carousel :carousel-items="carouselItems" />
         </div>
         <div class="card-container">
@@ -31,12 +34,13 @@ import Carousel from '../components/Carousel.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import { Notification } from 'element-ui';
-
+// import Loader from "@/components/Loader.vue";
 export default {
     components: {
         Carousel,
         LoginForm,
-        RegisterForm
+        RegisterForm,
+        // Loader
     },
     data() {
         return {
@@ -59,6 +63,7 @@ export default {
             mouseDownX: 0,
             mouseUpX: 0,
             isMouseDown: false,
+            // isLoading: true, // 是否显示加载器
         };
     },
     methods: {
@@ -84,6 +89,7 @@ export default {
             window.history.back();
         },
         showWelcomeNotification() {
+
             this.$nextTick(() => {
                 setTimeout(() => {
                     Notification({
@@ -101,6 +107,7 @@ export default {
         handleTouchEnd() { /* Implement touch end logic */ }
     },
     mounted() {
+        // this.isLoading = false;// 关闭加载器
         this.showWelcomeNotification();
         window.addEventListener('touchstart', this.handleTouchStart);
         window.addEventListener('touchmove', this.handleTouchMove);

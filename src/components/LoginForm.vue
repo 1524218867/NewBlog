@@ -20,11 +20,11 @@
                 没有账户? <a href="#" @click.prevent="toggleForm">Create account</a>
             </small>
         </div>
-        <div class="social-buttons">
+        <!-- <div class="social-buttons">
             <el-button class="FengXiangBtn" type="default" block>Continue with Google</el-button>
             <el-button class="FengXiangBtn" type="default" block>Continue with Apple</el-button>
             <el-button class="FengXiangBtn" type="default" block>Continue with Twitter</el-button>
-        </div>
+        </div> -->
     </div>
 </template>
 

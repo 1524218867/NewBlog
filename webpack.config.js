@@ -14,6 +14,10 @@ module.exports = {
         filename: '[name].bundle.js', // 输出文件名
         path: path.resolve(__dirname, 'dist'), // 输出目录
     },
+    resolve: {
+        extensions: ['.js', '.vue', '.json', '.ts'],
+    },
+
     module: {
         rules: [
             {
@@ -24,6 +28,13 @@ module.exports = {
                     options: {
                         presets: ['@babel/preset-env'], // 使用预设
                     },
+                },
+            },
+            {
+                test: /\.ts$/,
+                loader: 'ts-loader',
+                options: {
+                    appendTsSuffixTo: [/\.vue$/], // 处理 Vue 文件中的 TypeScript
                 },
             },
             {

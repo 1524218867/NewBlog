@@ -79,6 +79,7 @@
 <script>
 // Article.vue
 import axios from 'axios';
+import colors from 'vuetify/lib/util/colors';
 
 export default {
     data() {
@@ -89,6 +90,8 @@ export default {
             replyingTo: null, // 当前正在回复的评论 ID
             replyContent: '', // 回复的内容
             progressBarWidth: 0, // 进度条的宽度
+            scrollPosition: 0,  // 用于存储实时滚动位置
+            articleBoxHeight: 0, // 文章容器的高度
             acid: "",
             images: [
                 { src: require("../assets/1.jpg") },
@@ -105,6 +108,10 @@ export default {
     },
 
     mounted() {
+        this.$nextTick(() => {
+            this.handleScroll(); // 初始化获取一次滚动值和高度
+            window.addEventListener("scroll", this.handleScroll);
+        });
 
 
         // 从服务器获取上次的浏览记录
@@ -136,13 +143,31 @@ export default {
 
         // 保存当前滚动位置到服务器
         this.saveScrollPosition();
+        console.log('退出成功');
 
         // 移除窗口大小变化监听
         window.removeEventListener('resize', this.handleResize);
     },
 
     methods: {
+
+        handleScroll() {
+            const articleBox = this.$refs.articleBox;
+            if (articleBox) {
+                this.scrollPosition = window.scrollY;
+                this.articleBoxHeight = articleBox.clientHeight;
+                console.log("文章的高:", this.articleBoxHeight);
+                console.log("实时滚动位置:", this.scrollPosition);
+            }
+        },
         async getLastViewedArticle() {
+            if (!localStorage.getItem('token')) {
+                return null
+            } else {
+                console.log("token存在");
+            }
+            console.log(localStorage.getItem('token'));
+
             try {
                 // 向服务器发送请求，获取用户上次浏览的文章信息
                 const response = await axios.get(`http://localhost:5000/api/user/last-viewed/${this.acid}`, {
@@ -158,31 +183,27 @@ export default {
         },
 
 
-        async saveScrollPosition() {
-            // 获取文章框
-            const articleBox = this.$refs.articleBox;
+        async saveScrollPosition() {//退出时启动的函数，上传数据
+            if (!localStorage.getItem('token')) {
+                return
+            }//没有token不获取滚动并且退出
+            const maxScrollPosition = this.articleBoxHeight - window.innerHeight;//获取到最大滚动值
+            // console.log('最大宽度', maxScrollPosition);
 
-            if (articleBox) {
-                // 获取滚动位置
-                const scrollPosition = window.scrollY;
-                // 获取整个页面的最大滚动高度
-                const maxScrollPosition = document.documentElement.scrollHeight - window.innerHeight;
-                console.log(maxScrollPosition);
-                // console.log(scrollPosition);
-                try {
-                    // 向服务器发送请求，保存文章滚动位置
-                    await axios.post('http://localhost:5000/api/user/save-progress', {
-                        articleId: this.acid,
-                        scrollPosition: scrollPosition,
-                        maxScrollPosition: maxScrollPosition // 添加这个值
-                    }, {
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                    });
-                    console.log("发送成功了:", scrollPosition);
-                } catch (error) {
-                    console.error('Error saving scroll position:', error);
-                }
+            try {
+                // 向服务器发送请求，保存文章滚动位置
+                await axios.post('http://localhost:5000/api/user/save-progress', {
+                    articleId: this.acid,
+                    scrollPosition: this.scrollPosition,
+                    maxScrollPosition: maxScrollPosition // 添加这个值
+                }, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                // console.log("发送成功了:", scrollPosition);
+            } catch (error) {
+                console.error('Error saving scroll position:', error);
             }
+
         },
 
         handleResize() {
@@ -203,12 +224,8 @@ export default {
         async fetchArticleData() {
             try {
                 const articleId = this.$route.params.id;
-                const token = localStorage.getItem('token'); // 从 localStorage 获取 Token
-                const response = await axios.get(`http://localhost:5000/api/articles/${articleId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                // const token = localStorage.getItem('token'); // 从 localStorage 获取 Token
+                const response = await axios.get(`http://localhost:5000/api/articles/${articleId}`);
 
                 this.article = response.data;
 
@@ -226,7 +243,7 @@ export default {
             this.replyingTo = null;
             this.replyContent = '';
         },
-
+        //发布评论
         async submitComment() {
             if (!this.newComment.trim()) {
                 alert('评论内容不能为空');
@@ -248,7 +265,7 @@ export default {
                 console.error('Error submitting comment:', error);
             }
         },
-
+        //发布回复
         async submitReply(parentCommentId) {
             if (!this.replyContent.trim()) {
                 alert('回复内容不能为空');
@@ -273,12 +290,23 @@ export default {
         },
 
         async fetchComments(articleId) {
+            // 异步获取文章评论
             try {
+                // 发送GET请求，获取文章评论
+                console.log(articleId);
+
                 const response = await axios.get(`http://localhost:5000/api/articles/${articleId}/comments`, {
+
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+
                 });
+
+                console.log("报错后");
+
+                // 将获取到的评论赋值给this.comments
                 this.comments = response.data.comments;
             } catch (error) {
+                // 如果发生错误，打印错误信息
                 console.error('Error fetching comments:', error);
             }
         },

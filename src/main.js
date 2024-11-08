@@ -26,7 +26,8 @@ import Vue from 'vue';
 
 // 引入路由
 import router from './router/index.js';
-
+import VueCal from 'vue-cal'//引入日历组件
+import 'vue-cal/dist/vuecal.css'
 // 引入 Vuetify 2
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
@@ -81,11 +82,9 @@ import './styles/light-box.css';
 // import './styles/owl-carousel.css';
 import './styles/index.css';
 
-// 创建 Vuetify 实例
 
 
 
-// 创建 Vue 应用
 const app = new Vue({
 
   router, // 使用路由
@@ -96,7 +95,7 @@ const app = new Vue({
   },
   render: (h) => h(App), // 渲染 App.vue
 });
-
+Vue.component('VueCal', VueCal);
 // 关闭生产提示
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
