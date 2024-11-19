@@ -14,6 +14,7 @@ import Content from '../components/IndexContent.vue'
 import Settings from '../components/IndexSettings.vue'
 import VueRouter from 'vue-router'
 import Article from '../views/Article.vue'
+import AppUser from '../components/AppUser.vue';
 
 
 // 引入ElementUI
@@ -63,7 +64,11 @@ const routes = [
                     }
                 }
             },
-
+            {
+                path: 'appuser', // 子路由路径，不带斜杠
+                component: AppUser,
+                name: 'AppUser',
+            },
             {
                 path: 'settings',
                 component: Settings,

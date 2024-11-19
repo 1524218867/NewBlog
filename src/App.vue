@@ -43,8 +43,9 @@ export default {
 #app {
   background-color: var(--background-color);
   transition: background-color 0.5s ease, color 0.5s ease;
-  overflow: hidden;
+  /* overflow: hidden; */
   height: 100vh;
+  min-width: 320px;
 }
 
 .fade-enter,

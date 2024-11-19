@@ -21,28 +21,37 @@
         </div>
 
         <div class="all-articles-container">
-            <h2>All Articles</h2>
+            <!-- <h2>所有文章</h2> -->
             <div class="article-card" v-for="(article, index) in paginatedArticles" :key="index">
-                <img :src="HomegetImageUrl(article.coverImage)" alt="Article cover" class="article-cover" />
+                <div class="article-cover">
+                    <img :src="HomegetImageUrl(article.coverImage)" alt="Article cover"  />
+
+                </div>
+               
                 <div class="article-details">
                     <router-link :to="{
                         name: 'Article',
                         params: { id: article._id || '' },
                     }">
+                     <h3 class="article-title">{{ article.title }}</h3>
+                     <p class="article-description">{{ article.description }}</p>
                         <p class="article-author">
                             <img :src="authorAvatars[article.user]" alt="Author avatar" class="author-avatar" />
                             <span>{{ article.author }}</span>
                         </p>
-                        <h3 class="article-title">{{ article.title }}</h3>
-                        <p class="article-description">{{ article.description }}</p>
+                       
+                        
                         <p class="article-date">{{ new Date(article.lastViewedAt).toLocaleDateString() }}</p>
                     </router-link>
                 </div>
-                <span v-if="userInformation" class="favorite-button" @click="toggleFavorite(article._id)">
+                <div >
+                    <span v-if="userInformation" class="favorite-button" @click="toggleFavorite(article._id)">
                     <img :src="require(`@/assets/ShouCang-Huang.png`)" v-if="article.isFavorite" />
                     <img :src="require(`@/assets/ShouCang-Bai.png`)" v-else />
                 </span>
                 <span v-else></span>
+                </div>
+               
             </div>
 
             <!-- Element UI Pagination -->
@@ -248,14 +257,14 @@ export default {
     display: flex;
     justify-content: space-between;
     object-fit: cover;
-    /* 保持图标比例并裁剪 */
+    height: 400px;
 }
 
 .category-card {
     border-radius: 15px;
     overflow: hidden;
     width: 100%;
-    height: 500px;
+
     position: relative;
 
 }
@@ -285,9 +294,9 @@ export default {
     padding: 10px;
     color: white;
 
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.5);
     /* 半透明的白色背景 */
-    backdrop-filter: blur(10px);
+    /* backdrop-filter: blur(3px); */
     /* 模糊程度，越大越模糊 */
     /* border-radius: 10px; */
     /* 可选，增加圆角让效果更柔和 */
@@ -328,6 +337,7 @@ export default {
     margin: 0;
     font-size: 14px;
     align-items: center;
+    line-height: 16px;
 }
 
 .article-author img {
@@ -344,28 +354,27 @@ export default {
 
 .article-card {
 
-
+    /* height: 200px; */
     margin-bottom: 20px;
     margin-top: 55px;
-    height: 225px;
-    padding: 25px;
-    /* box-sizing: border-box; */
+  
+    padding: 2vw;
+
     background-color: var(--ActiveBgc);
 
-    /* border: 1px solid white; */
-    /* box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22); */
     backdrop-filter: blur(6px);
     border-radius: 17px;
     text-align: center;
     cursor: pointer;
     transition: all 0.5s;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     user-select: none;
     font-weight: bolder;
     color: var(--text-color);
     overflow: hidden;
+    /* height: auto;  */
 }
 
 .article-card:hover {
@@ -379,18 +388,24 @@ export default {
 
 .article-cover {
     border-radius: 10px;
-    width: 170px;
-    height: 100%;
-    /* Adjust height as needed */
-    object-fit: cover;
+    width: 100%;          /* 设置宽度为父容器的100% */
+  aspect-ratio: 1 / 1;  /* 宽高比为1:1，保持正方形 */
     margin-right: 20px;
+    flex: 1;
 }
-
+.article-cover >img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
 .article-details {
 
-    padding: 10px;
-    height: 100%;
-    flex-grow: 1;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    /* height: 100% !important; */
+ 
+    flex: 2;
 }
 
 .article-details>a {
@@ -401,12 +416,14 @@ export default {
     align-items: flex-start;
     text-decoration: none;
     color: var(--font-color);
+  
 }
 
 .article-title {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
+    text-align: left;
 }
 
 .article-description {
@@ -420,13 +437,14 @@ export default {
 }
 
 .favorite-button {
-    width: 100px;
+    /* width: 100px;
     height: 100%;
     cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    flex: 1; */
 }
 
 .favorite-button img {
@@ -438,4 +456,46 @@ export default {
 .el-pagination {
     text-align: center;
 }
+@media (max-width: 576px) {
+    .article-title {
+
+    font-size: 10px;
+ 
+}
+.article-author{
+    font-size: .5rem;
+}
+
+}
+
+/* 小屏幕（手机横屏） */
+@media (min-width: 577px) and (max-width: 768px) {
+    .article-title {
+
+font-size: 13px;
+
+}
+}
+
+/* 中等屏幕（平板） */
+@media (min-width: 769px) and (max-width: 992px) {
+    .article-title {
+
+font-size: 13px;
+
+}
+.article-author{
+    font-size: .625rem;
+}
+}
+
+/* 大屏幕（小笔记本） */
+@media (min-width: 993px) and (max-width: 1200px) {
+    .article-author{
+    font-size: .625rem;
+}
+}
+
+/* 超大屏幕（台式机） */
+@media (min-width: 1201px) {}
 </style>

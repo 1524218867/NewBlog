@@ -2,9 +2,22 @@
 <template>
     <div class='LU-left-user'>
         <div class="LU-User" v-if="isLoggedIn">
-            <div class="LU-image-container">
-                <img class="LU-UserImg" :src="getUser.avatar" />
+
+            <div class="LU-User-card">
+                <div class="LU-User-card-inner">
+                    <div class="LU-User-card-front">
+                        <img class="LU-UserImg" :src="getUser.avatar" />
+                    </div>
+                    <div class="LU-User-card-back" @click="LU_logout">
+                        <p>退出</p>
+                    </div>
+                </div>
             </div>
+
+            <!-- <div class="LU-image-container">
+
+                <img class="LU-UserImg" :src="getUser.avatar" />
+            </div> -->
             <div class="LU-UserAvatar">
                 <p>{{ getUser.username }}</p>
                 <p>{{ getUser.email }}</p>
@@ -25,14 +38,14 @@
             </vue-cal>
         </div>
 
-        <div class="LU-BrowsingHistory">
+        <div class="LU-BrowsingHistory" v-if="DisplayContinueReadingZi">
 
             <div class="LU-card">
-                <div class="LU-image" v-if="DisplayContinueReadingZi">
+                <!-- <div class="LU-image" v-if="DisplayContinueReadingZi">
 
                     <img :src="getImageUrl(lastViewedArticleZi.coverImage)" alt="Article Cover" />
-                </div>
-                <div class="LU-content" v-if="DisplayContinueReadingZi">
+                </div> -->
+                <div class="LU-content">
 
                     <a href="#">
                         <span class="LU-title">
@@ -56,12 +69,12 @@
 
                     </router-link>
                 </div>
-                <div v-else class="LU-LeftUser-card" style="height: 107px;">
+                <!-- <div v-else class="LU-LeftUser-card" style="height: 107px;">
                     <div class="LU-LeftUser-card_load"></div>
                     <div class="LU-LeftUser-card_load_extreme_title"></div>
                     <div class="LU-LeftUser-card_load_extreme_descripion"></div>
 
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -112,7 +125,9 @@ export default {
         goToLogin() {
             this.$router.push("/Login");
         },
-
+        LU_logout(){
+            this.$emit('call-parent')
+        }
     },
     //生命周期 - 创建完成（可以访问当前this实例）
     created() {
@@ -121,6 +136,7 @@ export default {
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
         console.log("userleft" + this.noArticlesMessageZi);
+        console.log('进度是', this.JingDuTiaoZi);
 
     },
     beforeCreate() { }, //生命周期 - 创建之前
@@ -135,6 +151,62 @@ export default {
 
 
 <style scoped>
+
+.LU-User-card {
+  width: 300px;
+  /* height: 200px; */
+  perspective: 1000px;
+}
+
+.LU-User-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.999s;
+}
+
+.LU-User-card:hover .LU-User-card-inner {
+  transform: rotateY(180deg);
+}
+
+.LU-User-card-front,
+.LU-User-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.LU-User-card-front {
+  /* background-color: #6A2C70; */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  /* border: 10px solid #6A2C70; */
+  border-radius: 10px;
+  justify-content: center;
+  font-size: 24px;
+  transform: rotateY(0deg);
+}
+
+.LU-User-card-back {
+ background-color: var(--active-background-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+text-align: center;
+line-height: 10px;
+
+  border-radius: 50%;
+  justify-content: center;
+  font-size: 10px;
+  transform: rotateY(180deg);
+}
+.LU-User-card-back>p{
+    margin-bottom: 0 !important;
+    color: #ffffff;
+}
 /* From Uiverse.io by mrhyddenn */
 .LU-LeftUser-card {
     width: 290px;
@@ -218,6 +290,7 @@ export default {
 }
 
 .LU-User {
+    min-width: 175px;
     display: flex;
     width: 80%;
     padding: 17px 17px 17px 17px;
@@ -235,12 +308,8 @@ export default {
 
 }
 
-.LU-image-container {
-    position: relative;
-    display: inline-block;
-}
 
-.LU-image-container::before {
+.LU-User-card-front::before {
     content: '';
     position: absolute;
     bottom: 0px;
@@ -274,6 +343,7 @@ export default {
 .LU-VueCal {
     margin-top: 40px;
     width: 80%;
+    min-width: 175px;
 }
 
 /* From Uiverse.io by Javierrocadev */
@@ -297,6 +367,7 @@ export default {
 }
 
 .LU-BrowsingHistory {
+    min-width: 175px;
     margin-top: 40px;
     width: 80%;
     height: auto;
@@ -368,7 +439,7 @@ export default {
     align-items: center;
     gap: 0.25rem;
     background-color: var(--active-background-color);
-    padding: 4px 8px;
+    padding: 14px 8px;
     border-radius: 4px;
 }
 
@@ -379,6 +450,20 @@ export default {
 .LU-action:hover span {
     transform: translateX(4px);
 }
+
+@media (max-width: 576px) {}
+
+/* 小屏幕（手机横屏） */
+@media (min-width: 577px) and (max-width: 768px) {}
+
+/* 中等屏幕（平板） */
+@media (min-width: 769px) and (max-width: 992px) {}
+
+/* 大屏幕（小笔记本） */
+@media (min-width: 993px) and (max-width: 1200px) {}
+
+/* 超大屏幕（台式机） */
+@media (min-width: 1201px) {}
 </style>
 <style>
 .vuecal--date-picker:not(.vuecal--day-view) .vuecal__cell--selected .vuecal__cell-content {

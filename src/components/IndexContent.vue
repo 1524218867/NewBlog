@@ -222,6 +222,21 @@
     transform: translateY(0px);
   }
 }
+@media (max-width: 576px) {
+   
+  }
+  
+  /* 小屏幕（手机横屏） */
+  @media (min-width: 577px) and (max-width: 768px) {}
+  
+  /* 中等屏幕（平板） */
+  @media (min-width: 769px) and (max-width: 992px) {}
+  
+  /* 大屏幕（小笔记本） */
+  @media (min-width: 993px) and (max-width: 1200px) {}
+  
+  /* 超大屏幕（台式机） */
+  @media (min-width: 1201px) {}
 </style>
 <style>
 .ql-container {

@@ -131,7 +131,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     padding: 2rem;
-    background: #fff;
+    background: var(--background-color);
 
 }
 
@@ -141,6 +141,7 @@ export default {
     font-size: 2.5rem;
     font-weight: 600;
     user-select: none;
+    color: var(--text-color);
     /* 禁止文本选择 */
 }
 
@@ -161,8 +162,8 @@ export default {
 
 .BtnAft {
     width: 60%;
-    background-color: black;
-    color: white;
+    background-color: var(--text-color);
+    color: var(--background-color);
     border-radius: 8px;
     padding: 16px;
     z-index: 1;
@@ -219,7 +220,7 @@ export default {
 
 .text {
     margin: 0 10px;
-    color: #000000;
+    color: var(--text-color);
     font-weight: bold;
 }
 
@@ -229,6 +230,7 @@ export default {
     margin: 0 auto 20px;
     user-select: none;
     /* 禁止文本选择 */
+    color: var(--text-color);
 }
 
 .signin-link>small>a {

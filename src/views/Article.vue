@@ -187,8 +187,11 @@ export default {
             if (!localStorage.getItem('token')) {
                 return
             }//没有token不获取滚动并且退出
+            console.log(this.articleBoxHeight);
+            console.log(window.innerHeight);
+            
             const maxScrollPosition = this.articleBoxHeight - window.innerHeight;//获取到最大滚动值
-            // console.log('最大宽度', maxScrollPosition);
+            console.log('最大宽度', maxScrollPosition);
 
             try {
                 // 向服务器发送请求，保存文章滚动位置
@@ -320,7 +323,7 @@ export default {
 .articleBox {
     /* overflow: auto;
     height: 100vh; */
-    height: 100% !important;
+    /* height: 100% !important; */
     display: flex;
     flex-direction: column;
     align-items: center;

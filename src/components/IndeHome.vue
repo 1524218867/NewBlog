@@ -160,6 +160,8 @@ export default {
             if (selectedCategory.name === "全部") {
                 this.HomefilteredArticles = this.Homearticles; // 显示所有文章
             } else {
+            console.log('获取到文章分类：',selectedCategory.HomefilteredArticles);
+            
                 this.HomefilteredArticles = this.Homearticles.filter((article) =>
                     article.categories.some(
                         (category) => category._id === selectedCategory._id
@@ -658,16 +660,14 @@ header {
     margin-top: 40px;
     margin-bottom: 80px;
     color: var(--text-color);
-    height: 290px;
-
 
 }
 
 
 .article-cover {
-    min-width: 500px;
+
     display: flex;
-    height: 100%;
+
     width: 100%;
     justify-content: space-between;
     aspect-ratio: 2 / 1;
@@ -698,11 +698,12 @@ header {
 }
 
 .article-cover>div:nth-child(2) {
-    height: 290px;
-    width: 384px;
+    /* height:;
+    width: ; */
     overflow: hidden;
     border-radius: 30px 30px 50px 50px;
-
+    /* min-width: 184px;
+    min-height:  90px; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -721,6 +722,7 @@ article-cover>div:nth-child(2):active {
     width: 100%;
     height: 100%;
     object-fit: cover;
+
     /* 让图片完整覆盖容器，保持比例 */
 }
 
@@ -739,7 +741,7 @@ article-cover>div:nth-child(2):active {
     font-size: 17px;
     text-transform: uppercase;
     text-decoration: none;
-    padding: 1em 2.5em;
+    padding: 1.5em;
     display: inline-block;
     border-radius: 6em;
     transition: all 0.2s;
@@ -784,7 +786,7 @@ article-cover>div:nth-child(2):active {
 
 .article-title {
     color: var(--font-color);
-    font-size: 3.5vw;
+    font-size: 1.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -849,12 +851,14 @@ article-cover>div:nth-child(2):active {
     display: flex;
     flex-wrap: wrap;
     margin-top: 20px;
-    justify-content: flex-start;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .article-link {
-    margin: 0 20px 0 20px;
-    height: 100%;
+    /* margin: 0 20px 0 20px; */
+    width : 48%;
+    display: block;
 }
 
 .article {
@@ -885,8 +889,8 @@ article-cover>div:nth-child(2):active {
 }
 
 .article-img {
-    height: 269px;
-    width: 269px;
+    /* height: 269px; */
+    
     border-radius: 30px;
     overflow: hidden;
 
@@ -925,10 +929,45 @@ article-cover>div:nth-child(2):active {
 .IH-articlesImgAndName p {
     padding: 0 0px;
     margin: 0;
+    display: block;
+    width: 100%;
+    line-height: 10px;
+    font-size: .625rem ;
 }
 
 .author-info {
     padding: 10px 20px;
 
 }
+
+@media (max-width: 577px) {
+    .article-cover {
+
+        flex-direction: column-reverse;
+    }
+    .article-cover>div[data-v-1c819015]:nth-child(1) {
+        width: 100%;
+    }
+    .article-cover h2{
+        width: 100%;
+    }
+}
+
+/* 小屏幕（手机横屏） */
+@media (min-width: 577px) and (max-width: 768px) {
+    .article-cover {
+
+        flex-direction: column-reverse;
+    }
+
+}
+
+/* 中等屏幕（平板） */
+@media (min-width: 769px) and (max-width: 992px) {}
+
+/* 大屏幕（小笔记本） */
+@media (min-width: 993px) and (max-width: 1200px) {}
+
+/* 超大屏幕（台式机） */
+@media (min-width: 1201px) {}
 </style>

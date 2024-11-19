@@ -32,22 +32,129 @@
                             <span v-else>发布</span>
                         </li>
                     </ul>
+
+                    <label class="popup">
+                        <input type="checkbox" />
+                        <div tabindex="0" class="burger">
+                            <svg t="1731742925320" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="4265" width="20" height="200">
+                                <path
+                                    d="M61.44 238.933333h901.12c27.306667 0 47.786667-20.48 47.786667-47.786666 0-27.306667-20.48-47.786667-47.786667-47.786667H61.44C34.133333 143.36 13.653333 163.84 13.653333 191.146667 13.653333 218.453333 34.133333 238.933333 61.44 238.933333z m901.12 225.28H61.44C34.133333 464.213333 13.653333 484.693333 13.653333 512s20.48 47.786667 47.786667 47.786667h901.12c27.306667 0 47.786667-20.48 47.786667-47.786667s-23.893333-47.786667-47.786667-47.786667z m0 320.853334H61.44c-27.306667 0-47.786667 20.48-47.786667 47.786666 0 27.306667 20.48 47.786667 47.786667 47.786667h901.12c27.306667 0 47.786667-20.48 47.786667-47.786667 0-27.306667-23.893333-47.786667-47.786667-47.786666z"
+                                    p-id="4266" fill="#ffffff"></path>
+                            </svg>
+                        </div>
+                        <nav class="popup-window">
+
+                            <ul>
+                                <li>
+                                    <router-link :to="getPath(0)" @click.native="setActive('home')">
+                                        <button>
+                                            <svg t="1731745400798" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg" p-id="7089" width="12" height="12">
+                                                <path
+                                                    d="M854 512.9c-20.9 0-37.7 16.9-37.7 37.7v240.6c0 85.6-69.6 155.2-155.2 155.2H362.9c-85.6 0-155.2-69.6-155.2-155.2V550.6c0-20.9-16.9-37.7-37.7-37.7s-37.7 16.9-37.7 37.7v240.6c0 127.2 103.5 230.7 230.7 230.7h298.1c127.2 0 230.7-103.5 230.7-230.7V550.6c0-20.8-16.9-37.7-37.8-37.7zM1012.2 430L596.7 35.9c-47.5-45.1-121.9-45.1-169.5 0L11.8 430c-15.1 14.3-15.8 38.2-1.4 53.4 14.4 15.1 38.2 15.8 53.4 1.4L479.2 90.6c18.4-17.4 47.2-17.4 65.5 0l415.5 394.1c7.3 6.9 16.6 10.4 26 10.4 10 0 20-4 27.4-11.8 14.4-15.1 13.8-39-1.4-53.3z"
+                                                    p-id="7090"></path>
+                                            </svg>
+
+
+                                            <span>首页</span>
+
+                                        </button>
+                                    </router-link>
+                                </li>
+                                <li>
+                                    <router-link :to="getPath(1)" @click.native="setActive('content')">
+                                        <button>
+                                            <svg t="1731747976102" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg" p-id="9138" width="14" height="14">
+                                                <path
+                                                    d="M597.7 566.2m-352.5 0a352.5 352.5 0 1 0 705 0 352.5 352.5 0 1 0-705 0Z"
+                                                    p-id="9139">
+                                                </path>
+                                                <path
+                                                    d="M242.7 782.1c5.4 5.4 10.9 10.5 16.5 15.5 19.8-3.6 42.9-10.9 68.7-22.1-82.9-58.4-137.2-154.8-137.2-263.6 0-177.7 144.5-322.2 322.2-322.2 108.2 0 204 53.6 262.5 135.6 11-25.9 18-49.6 21-69.7-4.3-4.7-8.7-9.4-13.2-13.9-35.1-35.1-76-62.6-121.5-81.9-47.1-19.9-97.2-30-148.8-30-51.6 0-101.6 10.1-148.8 30-45.5 19.3-86.4 46.8-121.5 81.9-35.1 35.1-62.6 76-81.9 121.5-19.9 47.1-30 97.2-30 148.8 0 51.6 10.1 101.6 30 148.8 19.4 45.3 47 86.2 82 121.3zM867.5 405.5c-9.8 21.2-21.5 43-34.9 65.2 1.7 13.5 2.6 27.2 2.6 41.1C835.2 689.5 690.7 834 513 834c-13.6 0-26.9-0.9-40.1-2.5-23.2 14.1-46 26.4-68.1 36.7-4.6 2.1-9.1 4.1-13.6 6 39.1 13.1 80 19.8 121.8 19.8 51.6 0 101.6-10.1 148.8-30 45.5-19.3 86.4-46.8 121.5-81.9 35.1-35.1 62.6-76 81.9-121.5 19.9-47.1 30-97.2 30-148.8 0-42.3-6.8-83.7-20.3-123.2-2.3 5.6-4.8 11.2-7.4 16.9z"
+                                                    p-id="9140"></path>
+                                                <path
+                                                    d="M849.3 174.2c-15.2-15.2-43.8-32.6-93.5-29.2-24.7 1.7-52.4 8.3-82.5 19.7 25 11.5 48.5 25.7 70.3 42.2 9.1-1.6 17.5-2.4 25-2.4 17.3 0 30.3 4.1 38.3 12 20.6 20.6 14.4 74.8-16.4 141.4-36.4 78.7-101.7 167.3-183.9 249.5C460.1 754.1 323.2 819.8 254 819.8c-17.3 0-30.3-4.1-38.3-12-11.9-11.9-15.1-35.3-8.9-67.1-16.3-21.8-30.2-45.2-41.6-70.1-12.2 31.5-19.2 60.4-21 86.1-3.5 49.7 13.9 78.3 29.2 93.5 13.9 13.9 38.9 29.6 81 29.6 4 0 8.2-0.1 12.5-0.4 33.5-2.3 72.3-13.6 115.4-33.5C467.3 806.6 562 737 649.1 650S805.7 468.2 845 383.2c19.9-43.1 31.2-81.9 33.5-115.4 3.5-49.8-13.9-78.4-29.2-93.6z"
+                                                    fill="#000002" p-id="9141"></path>
+                                                <path
+                                                    d="M491.022975 310.036021a30 30 0 1 0 42.425667-42.427147 30 30 0 1 0-42.425667 42.427147Z"
+                                                    fill="#000002" p-id="9142"></path>
+                                                <path
+                                                    d="M267.537509 533.397692a30 30 0 1 0 42.425666-42.427148 30 30 0 1 0-42.425666 42.427148Z"
+                                                    fill="#000002" p-id="9143"></path>
+                                                <path
+                                                    d="M477.9 477.3c-7.6 7.6-16.4 13.4-26.2 17.4-9.5 3.9-19.5 5.8-29.8 5.8s-20.3-2-29.8-5.8c-7.7-3.1-11.4-11.9-8.3-19.5 3.1-7.7 11.9-11.4 19.5-8.3 5.9 2.4 12.1 3.6 18.5 3.6s12.6-1.2 18.5-3.6c6.1-2.5 11.6-6.1 16.3-10.8 4.7-4.7 8.3-10.2 10.8-16.3 2.4-5.9 3.6-12.1 3.6-18.5s-1.2-12.6-3.6-18.5c-3.1-7.7 0.6-16.4 8.3-19.5 7.7-3.1 16.4 0.6 19.5 8.3 3.9 9.5 5.8 19.5 5.8 29.8s-2 20.3-5.8 29.8c-3.9 9.7-9.7 18.5-17.3 26.1z"
+                                                    fill="#000002" p-id="9144"></path>
+                                            </svg>
+
+                                            <span>社区</span>
+
+                                        </button>
+                                    </router-link>
+                                </li>
+                                <li> 
+                                    <router-link v-if="!isDisabled" :to="getPath(2)"
+                                        @click.native="setActive('categories')">
+                                        <button>
+
+                                            <svg t="1731748751506" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg" p-id="10213" width="14" height="14">
+                                                <path
+                                                    d="M434.631111 903.395556c-18.887111 0-34.133333-15.246222-34.133333-34.133334V672.768c0-7.850667 2.730667-15.587556 7.736889-21.617778l410.510222-500.280889c9.671111-11.832889 26.055111-15.701333 40.049778-9.557333s22.186667 20.821333 20.138666 35.953778l-93.411555 664.917333c-1.479111 10.922667-8.305778 20.48-17.976889 25.486222-9.784889 5.12-21.390222 5.12-31.288889 0.113778l-213.105778-108.430222c-16.839111-8.533333-23.438222-29.127111-14.904889-45.852445 8.533333-16.839111 29.127111-23.438222 45.852445-14.904888l170.552889 86.812444 69.859555-497.208889L468.764444 685.056V869.262222c0 18.887111-15.36 34.133333-34.133333 34.133334z"
+                                                    p-id="10214"></path>
+                                                <path
+                                                    d="M331.776 659.911111c-5.233778 0-10.581333-1.251556-15.587556-3.754667l-174.08-89.884444c-11.264-5.802667-18.432-17.408-18.432-30.151111-0.113778-12.743111 6.940444-24.348444 18.204445-30.378667l687.331555-363.406222c16.611556-8.760889 37.319111-2.389333 46.08 14.222222 8.760889 16.611556 2.389333 37.319111-14.222222 46.08L231.424 535.552l116.053333 59.960889c16.725333 8.647111 23.324444 29.240889 14.677334 45.966222-6.030222 11.719111-17.976889 18.432-30.378667 18.432z"
+                                                    p-id="10215"></path>
+                                            </svg>
+                                            <template>
+
+                                                <span>发布</span>
+
+                                            </template>
+
+                                        </button>
+                                    </router-link>
+                                    <div v-else @click="Indexpublish()">
+                                        <svg t="1731748751506" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                            xmlns="http://www.w3.org/2000/svg" p-id="10213" width="14" height="14">
+                                            <path
+                                                d="M434.631111 903.395556c-18.887111 0-34.133333-15.246222-34.133333-34.133334V672.768c0-7.850667 2.730667-15.587556 7.736889-21.617778l410.510222-500.280889c9.671111-11.832889 26.055111-15.701333 40.049778-9.557333s22.186667 20.821333 20.138666 35.953778l-93.411555 664.917333c-1.479111 10.922667-8.305778 20.48-17.976889 25.486222-9.784889 5.12-21.390222 5.12-31.288889 0.113778l-213.105778-108.430222c-16.839111-8.533333-23.438222-29.127111-14.904889-45.852445 8.533333-16.839111 29.127111-23.438222 45.852445-14.904888l170.552889 86.812444 69.859555-497.208889L468.764444 685.056V869.262222c0 18.887111-15.36 34.133333-34.133333 34.133334z"
+                                                p-id="10214"></path>
+                                            <path
+                                                d="M331.776 659.911111c-5.233778 0-10.581333-1.251556-15.587556-3.754667l-174.08-89.884444c-11.264-5.802667-18.432-17.408-18.432-30.151111-0.113778-12.743111 6.940444-24.348444 18.204445-30.378667l687.331555-363.406222c16.611556-8.760889 37.319111-2.389333 46.08 14.222222 8.760889 16.611556 2.389333 37.319111-14.222222 46.08L231.424 535.552l116.053333 59.960889c16.725333 8.647111 23.324444 29.240889 14.677334 45.966222-6.030222 11.719111-17.976889 18.432-30.378667 18.432z"
+                                                p-id="10215"></path>
+                                        </svg>
+                                        <span>发布</span>
+                                    </div>
+
+                                </li>
+                                <li v-if="!isDisabled">
+                                    <router-link :to="getPath(3)" @click.native="setActive('AppUser')">
+                                    <button>
+                                        
+                                        <svg t="1731814009258" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2391" width="14" height="14"><path d="M512.451579 545.507144c-148.479097 0-269.140942-120.842477-269.140942-269.140942S363.972482 7.22526 512.451579 7.22526s269.140942 120.842477 269.140942 269.140942-120.661845 269.140942-269.140942 269.140942z m0-477.589698c-114.881637 0-208.448756 93.567119-208.448757 208.448756s93.567119 208.448756 208.448757 208.448757S720.900335 391.247839 720.900335 276.366202 627.333216 67.917446 512.451579 67.917446zM896.654789 1016.232845H128.248368c-47.506086 0-85.980596-38.655142-85.980596-85.980596v-58.163344l1.806315-5.057683c57.802081-160.220145 250.355265-272.211678 468.377492-272.211677S923.026989 706.811078 980.82907 867.031222l1.806315 5.057683V930.252249c0 47.506086-38.655142 85.980596-85.980596 85.980596zM103.140589 882.926795V930.252249c0 13.908626 11.379785 25.288411 25.288411 25.288411h768.225789c13.908626 0 25.288411-11.379785 25.288411-25.288411v-47.506086C870.463221 748.717587 703.017816 655.692362 512.451579 655.692362S154.439936 748.717587 103.140589 882.926795z"  p-id="2392"></path></svg>
+                                            <span>个人</span>
+                                       
+                                    </button>
+                                </router-link>
+                                </li>
+                            </ul>
+                        </nav>
+                    </label>
+
                 </div>
                 <div class="Index-Login">
                     <div class="wrapper">
                         <!-- <input type="checkbox" name="checkbox" class="switch" @click="toggleTheme"
                             :checked="currentTheme === 'dark'"> -->
-
                         <label aria-checked="false" role="switch" class="switch">
                             <input type="checkbox" @click="toggleTheme" :checked="currentTheme === 'dark'" />
                             <span class="slider">
                                 <span class="slider-inner"></span>
                             </span>
                         </label>
-
-
                     </div>
-
                 </div>
                 <!-- 轮播图 -->
             </div>
@@ -63,7 +170,7 @@
             <!-- 右侧页 -->
             <div class="user-info-wrapper">
                 <LeftUser :DisplayContinueReadingZi="DisplayContinueReading" :noArticlesMessageZi="noArticlesMessage"
-                    :lastViewedArticleZi="lastViewedArticle" :JingDuTiaoZi="JingDuTiao">
+                    :lastViewedArticleZi="lastViewedArticle" :JingDuTiaoZi="JingDuTiao" @call-parent="logout">
                 </LeftUser>
             </div>
 
@@ -279,12 +386,18 @@ export default {
                     this.noArticlesMessage = false;
                 }
                 // 使用 calculateProgress 更新 JingDuTiao 的值
+                console.log('333', this.lastViewedArticle);
+
                 if (this.lastViewedArticle) {
                     this.JingDuTiao = this.calculateProgress(
                         this.lastViewedArticle.scrollPosition,
                         this.lastViewedArticle.maxScrollPosition
                     );
+                    console.log('进度条', this.JingDuTiao);
+
                 } else {
+                    console.log('出错了，要改变状态了');
+
                     this.JingDuTiao = 0;
                 }
 
@@ -350,7 +463,7 @@ export default {
                 0: '/Index/Home',         // Home 路由
                 1: '/Index/Categories',    // Categories 路由 
                 2: '/Index/Content',    // Content 路由
-                3: '/Index/Settings',     // Settings 路由
+                3: '/Index/AppUser',     // AppUser 路由
             };
             return paths[key] || '/Index/Home'; // 默认路径
         },
@@ -371,8 +484,8 @@ export default {
                 case 'content':
                     path = '/Index/Content';
                     break;
-                case 'settings':
-                    path = '/Index/Settings';
+                case 'AppUser':
+                    path = '/Index/AppUser';
                     break;
                 default:
                     path = '/Index/Home'; // 默认路由
@@ -406,6 +519,13 @@ export default {
             }
             // 保存到 localStorage 以保持刷新后的主题
             localStorage.setItem('theme', themeName);
+        },
+        Indexpublish() {
+            this.$notify({
+                title: '警告',
+                message: '请先登录',
+                type: 'warning'
+            });
         }
 
     },
@@ -519,7 +639,7 @@ body {
 .container {
     display: flex;
     height: 100%;
-    width: 100%;
+    width: 70%;
     padding: 0;
 
     flex-direction: column;
@@ -527,7 +647,7 @@ body {
 
 .sidebar {
     flex: 1;
-    width: 70%;
+    width: 100%;
     background-color: var(--background-color);
     transition: background-color 0.5s ease, color 0.5s ease;
     min-width: 120px;
@@ -550,6 +670,7 @@ body {
 }
 
 .sidebar>div>.logo>span {
+    width: 83px;
     font-size: 20px;
     margin: 0 10px 0 0;
     font-weight: 600;
@@ -570,14 +691,14 @@ body {
 
 .menu li.active>a>span {
 
-    /* background-color: black; */
-    /* 这里设置你希望的激活状态下的背景颜色 */
-    /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); */
-    /* background: var(--active-background-color); */
-    /* background-image: linear-gradient(to right, #dfe9f3 0%, white 100%); */
+
     transition: background-color 0.5s ease, color 0.5s ease;
     color: var(--active-background-color) !important;
 
+}
+
+.menu>li:nth-child(3) {
+    color: var(--text-color);
 }
 
 .menu>li>a>span {
@@ -606,7 +727,8 @@ body {
 
 
 .sidebar .menu li {
-    margin: 0 25px;
+
+    width: 80px;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -628,6 +750,226 @@ body {
 .sidebar .menu img {
     width: 30%;
     /* height: 80%; */
+}
+
+/* From Uiverse.io by devkatyall */
+/* The design is inspired from Galahhad*/
+
+.popup {
+    --burger-line-width: 1.125em;
+    --burger-line-height: 0.125em;
+    --burger-offset: 0.625em;
+    --burger-bg: #00bf63;
+    --burger-color: #333;
+    --burger-line-border-radius: 0.1875em;
+    --burger-diameter: 2.5em;
+    --burger-btn-border-radius: 15px;
+    --burger-line-transition: 0.3s;
+    --burger-transition: all 0.1s ease-in-out;
+    --burger-hover-scale: 1.1;
+    --burger-active-scale: 0.95;
+    --burger-enable-outline-color: var(--burger-bg);
+    --burger-enable-outline-width: 0.125em;
+    --burger-enable-outline-offset: var(--burger-enable-outline-width);
+    /* nav */
+    --nav-padding-x: 0.25em;
+    --nav-padding-y: 0.625em;
+    --nav-border-radius: 0.375em;
+    --nav-border-color: #ccc;
+    --nav-border-width: 0.0625em;
+    --nav-shadow-color: rgba(0, 0, 0, 0.2);
+    --nav-shadow-width: 0 1px 5px;
+    --nav-bg: #eee;
+    --nav-font-family: "Poppins", sans-serif;
+    --nav-default-scale: 0.8;
+    --nav-active-scale: 1;
+    --nav-position-left: 0;
+    --nav-position-right: unset;
+    /* if you want to change sides just switch one property */
+    /* from properties to "unset" and the other to 0 */
+    /* title */
+    --nav-title-size: 0.625em;
+    --nav-title-color: #777;
+    --nav-title-padding-x: 1rem;
+    --nav-title-padding-y: 0.25em;
+    /* nav button */
+    --nav-button-padding-x: 1rem;
+    --nav-button-padding-y: 0.375em;
+    --nav-button-border-radius: 0.375em;
+    --nav-button-font-size: 17px;
+    --nav-button-hover-bg: var(--active-background-color);
+    --nav-button-hover-text-color: #fff;
+    --nav-button-distance: 0.875em;
+    /* underline */
+    --underline-border-width: 0.0625em;
+    --underline-border-color: #ccc;
+    --underline-margin-y: 0.3125em;
+}
+
+/* popup settings 👆 */
+
+.popup {
+    display: inline-block;
+    text-rendering: optimizeLegibility;
+    position: relative;
+}
+
+.popup input {
+    display: none;
+}
+
+.burger {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    background: var(--active-background-color);
+    width: var(--burger-diameter);
+    height: var(--burger-diameter);
+    border-radius: var(--burger-btn-border-radius);
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--burger-transition);
+    outline: var(--burger-enable-outline-width) solid transparent;
+    outline-offset: 0;
+}
+
+.popup-window {
+    transform: scale(var(--nav-default-scale));
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    padding: var(--nav-padding-y) var(--nav-padding-x);
+    background: var(--nav-bg);
+    font-family: var(--nav-font-family);
+    color: var(--nav-text-color);
+    border-radius: var(--nav-border-radius);
+    box-shadow: var(--nav-shadow-width) var(--nav-shadow-color);
+    border: var(--nav-border-width) solid var(--nav-border-color);
+    top: calc(var(--burger-diameter) + var(--burger-enable-outline-width) + var(--burger-enable-outline-offset));
+    left: -70px;
+    right: 0;
+    transition: var(--burger-transition);
+    margin-top: 10px;
+    z-index: 10;
+}
+
+.popup-window legend {
+    padding: var(--nav-title-padding-y) var(--nav-title-padding-x);
+    margin: 0;
+    color: var(--nav-title-color);
+    font-size: var(--nav-title-size);
+    text-transform: uppercase;
+}
+
+.popup-window span {
+    color: var(--active-background-color);
+}
+
+.popup-window ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.popup-window ul li div {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6.3px 16px;
+}
+
+.popup-window ul button {
+    outline: none;
+    width: 100%;
+    height: 35px;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    color: var(--burger-color);
+    font-size: var(--nav-button-font-size);
+    padding: var(--nav-button-padding-y) var(--nav-button-padding-x);
+    white-space: nowrap;
+    border-radius: var(--nav-button-border-radius);
+    cursor: pointer;
+    column-gap: var(--nav-button-distance);
+    justify-content: space-between;
+}
+
+.popup-window svg {
+    color: #000;
+    fill: var(--active-background-color);
+}
+
+.popup-window ul li:nth-child(4) svg,
+.popup-window ul li:nth-child(5) svg {
+    color: rgb(153, 153, 153);
+}
+
+.popup-window ul li:nth-child(7) svg {
+    color: red;
+}
+
+.popup-window hr {
+    margin: var(--underline-margin-y) 0;
+    border: none;
+    border-bottom: var(--underline-border-width) solid var(--underline-border-color);
+}
+
+/* actions */
+
+.popup-window ul button:hover,
+.popup-window ul button:focus-visible,
+
+
+.popup-window ul button:focus-visible svg {
+
+    color: var(--nav-button-hover-text-color);
+    background: var(--nav-button-hover-bg);
+}
+
+.popup-window ul button:hover svg {
+    fill: #ffffff;
+}
+
+.popup-window ul button:hover span {
+    color: var(--nav-button-hover-text-color);
+}
+
+.burger:hover {
+    transform: scale(var(--burger-hover-scale));
+}
+
+.burger:active {
+    transform: scale(var(--burger-active-scale));
+}
+
+.burger:focus:not(:hover) {
+    outline-color: var(--burger-enable-outline-color);
+    outline-offset: var(--burger-enable-outline-offset);
+}
+
+.popup input:checked+.burger span:nth-child(1) {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.popup input:checked+.burger span:nth-child(2) {
+    bottom: 50%;
+    transform: translateY(50%) rotate(-45deg);
+}
+
+.popup input:checked+.burger span:nth-child(3) {
+    transform: translateX(calc(var(--burger-diameter) * -1 - var(--burger-line-width)));
+}
+
+.popup input:checked~nav {
+    transform: scale(var(--nav-active-scale));
+    visibility: visible;
+    opacity: 1;
 }
 
 .LogoAndMenu {
@@ -997,7 +1339,7 @@ body {
 }
 
 .user-info-wrapper {
-
+    /* min-width: 12.5rem; */
     flex: 4;
     background-color: var(--background-color);
     transition: background-color 0.5s ease, color 0.5s ease;
@@ -1117,17 +1459,58 @@ body {
     .icons {
         display: none !important;
     }
+
+    .menu {
+        display: none !important;
+    }
+
+    .Index-content {
+        width: 100%;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .Index-Login {
+        display: none;
+    }
+
+    .LogoAndMenu {
+        justify-content: space-between;
+        padding: 10px;
+    }
 }
 
 /* 小屏幕（手机横屏） */
-@media (min-width: 577px) and (max-width: 768px) {}
+@media (min-width: 577px) and (max-width: 768px) {
+    .user-info-wrapper {
+        display: none;
+    }
+
+    .popup {
+        display: none;
+    }
+}
 
 /* 中等屏幕（平板） */
-@media (min-width: 769px) and (max-width: 992px) {}
+@media (min-width: 769px) and (max-width: 992px) {
+    .popup {
+        display: none;
+    }
+}
 
 /* 大屏幕（小笔记本） */
-@media (min-width: 993px) and (max-width: 1200px) {}
+@media (min-width: 993px) and (max-width: 1200px) {
+    .popup {
+        display: none;
+    }
+}
 
 /* 超大屏幕（台式机） */
-@media (min-width: 1201px) {}
+@media (min-width: 1201px) {
+    .popup {
+        display: none;
+    }
+}
 </style>
