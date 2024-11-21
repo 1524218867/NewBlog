@@ -61,7 +61,7 @@ if (token) {
   store.dispatch('updateUser', { token, details: {} });
 
   // 可以添加请求用户详细信息的逻辑
-  axios.get('http://localhost:5000/api/user', {
+  axios.get('/api/user', {
     headers: { Authorization: `Bearer ${token}` }
   })
     .then(response => {

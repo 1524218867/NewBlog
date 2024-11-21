@@ -91,7 +91,7 @@ export default {
         async categoriesfetchArticles() {
             try {
                 // 发送GET请求，获取文章列表
-                const response = await axios.get('http://localhost:5000/api/articles')
+                const response = await axios.get('/api/articles')
                 this.categoriesarticles = response.data // 存储文章列表
                 // console.log('获取到了所有文章', response.data)
 
@@ -110,7 +110,7 @@ export default {
         // 获取用户头像
         async fetchAuthorAvatar(userId) {
             try {
-                const userResponse = await axios.get(`http://localhost:5000/api/public-user-info/${userId}`)
+                const userResponse = await axios.get(`/api/public-user-info/${userId}`)
                 this.$set(this.authorAvatars, userId, userResponse.data.avatar) // 存储用户的头像信息
 
                 // console.log('打印了authorAvatars', this.authorAvatars)
@@ -130,7 +130,7 @@ export default {
             if (!localStorage.getItem('token')) {//如果用户没有登陆就不显示收藏按钮
                 return;
             }
-            const response = await axios.get('http://localhost:5000/api/user', {
+            const response = await axios.get('/api/user', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
@@ -148,7 +148,7 @@ export default {
 
             try {
                 // 发送请求检查当前用户是否收藏了该文章
-                const response = await axios.get(`http://localhost:5000/api/favorites/${userId}/${articleId}`)
+                const response = await axios.get(`/api/favorites/${userId}/${articleId}`)
 
                 console.log('打印从后台获取回来的状态', response);
 
@@ -157,7 +157,7 @@ export default {
 
                 if (isFavorite) {
                     // 文章已被收藏，执行取消收藏逻辑
-                    await axios.delete(`http://localhost:5000/api/favorites`, {
+                    await axios.delete(`/api/favorites`, {
                         data: { userId, articleId },
                     })
                     this.$notify({
@@ -171,7 +171,7 @@ export default {
                     }
                 } else {
                     // 文章未被收藏，执行添加收藏逻辑
-                    await axios.post(`http://localhost:5000/api/favorites`, {
+                    await axios.post(`/api/favorites`, {
                         userId,
                         articleId,
                     })
@@ -198,7 +198,7 @@ export default {
             if (!localStorage.getItem('token')) {
                 return;
             }
-            const response = await axios.get('http://localhost:5000/api/user', {
+            const response = await axios.get('/api/user', {
                 //获取用户信息。
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -208,7 +208,7 @@ export default {
             const LoaduserId = response.data._id // 获取当前用户的 ID
 
             try {
-                const response = await axios.get(`http://localhost:5000/api/favorites/${LoaduserId}`)
+                const response = await axios.get(`/api/favorites/${LoaduserId}`)
 
                 this.favorites = response.data; // 确保这是一个数组
                 console.log('在持久化中获取到用户的收藏记录', this.favorites);

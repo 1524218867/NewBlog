@@ -59,7 +59,7 @@ export default {
                 };
                 // console.log(requestData);
                 // 发送登录请求到后端
-                const response = await axios.post('http://localhost:5000/api/auth/login', requestData, {
+                const response = await axios.post('/api/auth/login', requestData, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -83,7 +83,7 @@ export default {
                 this.$store.dispatch('updateUser', { token, details: userDetails });
 
                 // 登录成功后获取用户详细信息
-                axios.get('http://localhost:5000/api/user', {
+                axios.get('/api/user', {
                     headers: { Authorization: `Bearer ${token}` }
                 }).then(userResponse => {
                     // 处理用户详细信息
@@ -220,7 +220,7 @@ export default {
 
 .text {
     margin: 0 10px;
-    color: var(--text-color);
+    color: var(--text-color );
     font-weight: bold;
 }
 

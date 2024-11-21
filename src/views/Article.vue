@@ -170,7 +170,7 @@ export default {
 
             try {
                 // 向服务器发送请求，获取用户上次浏览的文章信息
-                const response = await axios.get(`http://localhost:5000/api/user/last-viewed/${this.acid}`, {
+                const response = await axios.get(`/api/user/last-viewed/${this.acid}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 // console.log("获取到了", response.data);
@@ -195,7 +195,7 @@ export default {
 
             try {
                 // 向服务器发送请求，保存文章滚动位置
-                await axios.post('http://localhost:5000/api/user/save-progress', {
+                await axios.post('/api/user/save-progress', {
                     articleId: this.acid,
                     scrollPosition: this.scrollPosition,
                     maxScrollPosition: maxScrollPosition // 添加这个值
@@ -228,7 +228,7 @@ export default {
             try {
                 const articleId = this.$route.params.id;
                 // const token = localStorage.getItem('token'); // 从 localStorage 获取 Token
-                const response = await axios.get(`http://localhost:5000/api/articles/${articleId}`);
+                const response = await axios.get(`/api/articles/${articleId}`);
 
                 this.article = response.data;
 
@@ -254,7 +254,7 @@ export default {
             }
 
             try {
-                const response = await axios.post('http://localhost:5000/api/comments', {
+                const response = await axios.post('/api/comments', {
                     content: this.newComment,
                     articleId: this.acid,
                     author: this.user
@@ -276,7 +276,7 @@ export default {
             }
 
             try {
-                await axios.post('http://localhost:5000/api/comments/reply', {
+                await axios.post('/api/comments/reply', {
                     content: this.replyContent,
                     articleId: this.article._id,
                     parentCommentId: parentCommentId
@@ -298,7 +298,7 @@ export default {
                 // 发送GET请求，获取文章评论
                 console.log(articleId);
 
-                const response = await axios.get(`http://localhost:5000/api/articles/${articleId}/comments`, {
+                const response = await axios.get(`/api/articles/${articleId}/comments`, {
 
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
 

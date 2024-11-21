@@ -142,7 +142,7 @@ export default {
         async fetchCategories() {
             try {
                 // 发送GET请求获取文章分类
-                const response = await axios.get("http://localhost:5000/api/categories");
+                const response = await axios.get("/api/categories");
                 this.articleCategories = response.data; // 存储文章分类
 
                 // 默认选择第一个分类作为“全部”分类
@@ -185,7 +185,7 @@ export default {
 
             try {
                 // 发送GET请求，获取文章列表
-                const response = await axios.get("http://localhost:5000/api/articles");
+                const response = await axios.get("/api/articles");
                 this.Homearticles = response.data; // 存储文章列表
                 console.log(response.data);
                 this.HomefilteredArticles = this.Homearticles; // 默认显示所有文章

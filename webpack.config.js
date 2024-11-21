@@ -91,7 +91,11 @@ module.exports = {
         timings: true,
     }, devServer: {
         proxy: {
-            ws: false
-        }
+            '/api': {
+                target: 'http://localhost:5000',
+                changeOrigin: true,
+                pathRewrite: { '^/api': '' }, // 可选：如果后端没有 `/api` 前缀
+            },
+        },
     }
 };

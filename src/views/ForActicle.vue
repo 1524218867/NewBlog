@@ -26,7 +26,7 @@ export default {
     methods: {
         async fetchArticles() {
             try {
-                const response = await axios.get('http://localhost:5000/api/articles');
+                const response = await axios.get('/api/articles');
                 this.articles = response.data;
                 console.log(this.articles);
             } catch (error) {

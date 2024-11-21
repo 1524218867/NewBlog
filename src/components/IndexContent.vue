@@ -284,7 +284,7 @@ export default {
     async fetchCategories() {
       try {
         // 发送get请求获取分类数据
-        const response = await axios.get('http://localhost:5000/api/categories');
+        const response = await axios.get('/api/categories');
         console.log(response);
         // 将获取到的数据赋值给categories
         this.categories = response.data;
@@ -320,7 +320,7 @@ export default {
             message: '选择分类无效'
           });
         }
-        const response = await axios.post('http://localhost:5000/api/articles', formData, {
+        const response = await axios.post('/api/articles', formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'

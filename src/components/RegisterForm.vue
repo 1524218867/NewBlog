@@ -74,7 +74,7 @@ export default {
                 }
 
                 // 发送注册请求到后端
-                const response = await axios.post('http://localhost:5000/api/auth/register', requestData, {
+                const response = await axios.post('/api/auth/register', requestData, {
                     headers: {
                         'Content-Type': 'application/json' // 设置请求头
                     }

@@ -309,7 +309,7 @@ export default {
         //获取文章
         async fetchArticles() {
             try {
-                const response = await axios.get("http://localhost:5000/api/articles");
+                const response = await axios.get("/api/articles");
                 setTimeout(() => {
                     this.isLoading = false;
                 }, 2000);
@@ -338,7 +338,7 @@ export default {
             this.DisplayContinueReading = true;//有token时显示继续阅读，无时显示请登录
             try {
                 const response = await axios.get(
-                    "http://localhost:5000/api/user/viewed-articles",
+                    "/api/user/viewed-articles",
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("token")}`,

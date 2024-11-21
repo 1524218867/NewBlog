@@ -32,7 +32,7 @@ export default {
             try {
                 // 发送 POST 请求以更新用户头像
                 const response = await axios.post(
-                    "http://localhost:5000/api/user/update-avatar", // 目标 API 地址
+                    "/api/user/update-avatar", // 目标 API 地址
                     formData, // 发送的 FormData 对象
                     {
                         headers: {
