@@ -1,0 +1,43 @@
+name: Deploy Vue 2 Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 检出代码
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # 2. 设置 Node.js 环境
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # 或者你项目使用的其他版本的 Node.js
+
+    # 3. 安装依赖
+    - name: Install Dependencies
+      run: |
+        npm install
+
+    # 4. 打包项目
+    - name: Build Project
+      run: |
+        npm run build  # 这会根据你的 package.json 文件中的配置执行打包命令
+
+    # 5. 部署到服务器
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          rm -rf /var/www/html/*
+          cp -r dist/* /var/www/html/
