@@ -39,5 +39,5 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
-          rm -rf /var/www/html/*
-          cp -r dist/* /var/www/html/
+          rm -rf C:/nginx-1.26.2/html/*         
+          cp -r dist/* C:/nginx-1.26.2/html/      
