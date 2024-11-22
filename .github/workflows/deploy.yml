@@ -39,5 +39,5 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
-          rm -rf C:/nginx-1.26.2/html/*         
-          cp -r dist/* C:/nginx-1.26.2/html/      
+          powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*"
+          powershell -Command "Copy-Item -Recurse C:\path\to\dist\* C:\nginx-1.26.2\html\"
