@@ -39,8 +39,4 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
-          # 清空目标目录
-          powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*"
-          
-          # 确保 dist 路径正确，替换为工作区路径
-          powershell -Command "Copy-Item -Recurse 'C:\github\workspace\dist\*' 'C:\nginx-1.26.2\html\'"
+          powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*; Copy-Item -Recurse 'C:\github\workspace\dist\*' 'C:\nginx-1.26.2\html\'"
