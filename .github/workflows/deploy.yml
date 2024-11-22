@@ -42,7 +42,5 @@ jobs:
           # 清空目标目录
           powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*"
           
-          # 使用 GitHub 工作区中的相对路径
-          # 由于在 GitHub Actions 中，dist 文件夹会自动生成到工作目录下
-          # 下面的命令会将 dist 文件夹中的内容复制到 Windows 服务器的目标文件夹
-          powershell -Command "Copy-Item -Recurse C:\github\workspace\dist\* C:\nginx-1.26.2\html\"
+          # 确保 dist 路径正确，替换为工作区路径
+          powershell -Command "Copy-Item -Recurse 'C:\github\workspace\dist\*' 'C:\nginx-1.26.2\html\'"
