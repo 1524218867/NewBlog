@@ -18,7 +18,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20'  # 或者你项目使用的其他版本的 Node.js
+        node-version: '20'
 
     # 3. 安装依赖
     - name: Install Dependencies
@@ -28,7 +28,7 @@ jobs:
     # 4. 打包项目
     - name: Build Project
       run: |
-        npm run build  # 这会根据你的 package.json 文件中的配置执行打包命令
+        npm run build  # 打包 Vue 项目
 
     # 5. 部署到服务器
     - name: Deploy to Server
@@ -39,5 +39,10 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
+          # 清空目标目录
           powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*"
-          powershell -Command "Copy-Item -Recurse C:\path\to\dist\* C:\nginx-1.26.2\html\"
+          
+          # 使用 GitHub 工作区中的相对路径
+          # 由于在 GitHub Actions 中，dist 文件夹会自动生成到工作目录下
+          # 下面的命令会将 dist 文件夹中的内容复制到 Windows 服务器的目标文件夹
+          powershell -Command "Copy-Item -Recurse C:\github\workspace\dist\* C:\nginx-1.26.2\html\"
