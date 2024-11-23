@@ -26,5 +26,5 @@ jobs:
     # 3. 执行部署命令
     - name: Deploy with scp (Test SSH)
       run: |
-        scp -r ./dist/ Administrator@116.205.118.87:/C:/nginx-1.26.2/html
+        scp -r ./dist/ Administrator@116.205.118.87:/C:/nginx-1.26.2/html1
   
