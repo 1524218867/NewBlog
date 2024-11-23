@@ -25,6 +25,5 @@ jobs:
         script: |
      
           powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*"
+          powershell -Command "Copy-Item -Recurse '${{ github.workspace }}/dist/*' 'C:/nginx-1.26.2/html/'"
 
-        
-          powershell -Command "Copy-Item -Recurse '${{ github.workspace }}\dist\*' 'C:\nginx-1.26.2\html\'"
