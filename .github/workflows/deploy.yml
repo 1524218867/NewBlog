@@ -24,9 +24,17 @@ jobs:
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          # 使用 printf 来避免换行符问题
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+          # 添加目标服务器的公钥到 known_hosts
           ssh-keyscan -p 22 116.205.118.87 >> ~/.ssh/known_hosts
+
+          # 调试输出密钥和 known_hosts 是否配置正确
+          ls -al ~/.ssh
+          cat ~/.ssh/id_rsa
+          cat ~/.ssh/known_hosts
 
       # 4. 上传文件到服务器
       - name: Upload files to server
