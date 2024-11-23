@@ -3,24 +3,27 @@ name: Deploy Vue 2 Frontend
 on:
   push:
     branches:
-      - master  # 监控 master 分支的提交
+      - master  # 监听 master 分支的推送
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # 使用 GitHub Actions 提供的 Ubuntu 环境
 
     steps:
     # 1. 检出代码
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. 打包并部署到服务器
-    - name: Debug and Deploy to Server
-      uses: appleboy/ssh-action@v0.1.5
+    # 2. 设置 SSH 密钥和配置 SSH 连接
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
       with:
-        host: ${{ secrets.SERVER_HOST }}               # 服务器 IP
-        username: ${{ secrets.SERVER_USER }}           # SSH 用户名
-        key: ${{ secrets.SERVER_SSH_KEY }}             # 私钥（存储在 GitHub Secrets）
-        port: ${{ secrets.SERVER_PORT }}               # SSH 端口
-        script: |
-         scp -v -r dist/ Administrator@116.205.118.87:/C/nginx-1.26.2/html/
+        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}  # 从 GitHub Secrets 获取私钥
+
+    # 3. 执行部署命令
+    - name: Deploy with rsync
+      run: |
+        rsync -avz --delete ./dist/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/cygdrive/c/nginx-1.26.2/html
+      env:
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
