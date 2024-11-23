@@ -14,7 +14,7 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. 打包并部署到服务器
+    # 2. 部署打包后的文件到服务器
     - name: Debug and Deploy to Server
       uses: appleboy/ssh-action@v0.1.5
       with:
@@ -23,10 +23,10 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}             # 私钥（存储在 GitHub Secrets）
         port: ${{ secrets.SERVER_PORT }}               # SSH 端口
         script: |
-        
+          # 调试输出路径信息
           powershell -Command "
             Write-Host 'GitHub Workspace Path: ' $env:GITHUB_WORKSPACE;
             Write-Host 'Dist Folder: ' '${{ github.workspace }}\\dist';
-            Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*;
+            Remove-Item -Recurse -Force 'C:\\nginx-1.26.2\\html\\*';
             Copy-Item -Recurse '${{ github.workspace }}\\dist\\*' 'C:\\nginx-1.26.2\\html\\'
           "
