@@ -20,6 +20,7 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}  # 从 GitHub Secrets 获取私钥
 
+        
     # 3. 执行部署命令
     - name: Deploy with rsync
       run: |
