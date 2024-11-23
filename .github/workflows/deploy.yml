@@ -23,10 +23,13 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}             # 私钥（存储在 GitHub Secrets）
         port: ${{ secrets.SERVER_PORT }}               # SSH 端口
         script: |
+          # 转换 Linux 路径为 Windows 风格路径
+          $workspace = '${{ github.workspace }}'
+          $windowsDistPath = $workspace.Replace("/", "\") + '\dist\*'
+
           # 调试输出路径信息
           powershell -Command "
-            Write-Host 'GitHub Workspace Path: ' $env:GITHUB_WORKSPACE;
-            Write-Host 'Dist Folder: ' '${{ github.workspace }}\\dist';
+            Write-Host 'GitHub Workspace Path (Windows Style): ' '$windowsDistPath';
             Remove-Item -Recurse -Force 'C:\\nginx-1.26.2\\html\\*';
-            Copy-Item -Recurse '${{ github.workspace }}\\dist\\*' 'C:\\nginx-1.26.2\\html\\'
+            Copy-Item -Recurse '$windowsDistPath' 'C:\\nginx-1.26.2\\html\\'
           "
