@@ -3,10 +3,10 @@ name: Deploy Vue 2 Frontend
 on:
   push:
     branches:
-      - master
+      - master  # 监控 master 分支的提交
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,29 +14,17 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. 设置 Node.js 环境
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    # 3. 安装依赖
-    - name: Install Dependencies
-      run: |
-        npm install
-
-    # 4. 打包项目
-    - name: Build Project
-      run: |
-        npm run build  # 打包 Vue 项目
-
-    # 5. 部署到服务器
+    # 2. 部署打包后的文件到服务器
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.5
       with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        port: ${{ secrets.SERVER_PORT }}
+        host: ${{ secrets.SERVER_HOST }}               # 服务器 IP
+        username: ${{ secrets.SERVER_USER }}           # SSH 用户名
+        key: ${{ secrets.SERVER_SSH_KEY }}             # 私钥（存储在 GitHub Secrets）
+        port: ${{ secrets.SERVER_PORT }}               # SSH 端口
         script: |
-          powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*; Copy-Item -Recurse '${{ github.workspace }}\dist\*' 'C:\nginx-1.26.2\html\'"
+     
+          powershell -Command "Remove-Item -Recurse -Force C:\nginx-1.26.2\html\*"
+
+        
+          powershell -Command "Copy-Item -Recurse '${{ github.workspace }}\dist\*' 'C:\nginx-1.26.2\html\'"
