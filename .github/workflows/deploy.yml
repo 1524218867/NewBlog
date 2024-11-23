@@ -19,7 +19,10 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}  # 从 GitHub Secrets 获取私钥
-
+    - name: Add server to known_hosts
+      run: |
+        ssh-keyscan -H 116.205.118.87 >> ~/.ssh/known_hosts
+      
     # 3. 执行部署命令
     - name: Deploy with rsync
       run: |
