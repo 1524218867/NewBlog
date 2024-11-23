@@ -23,8 +23,4 @@ jobs:
     # 3. 执行部署命令
     - name: Deploy with rsync
       run: |
-        echo "Deploying to ${{ secrets.SERVER_USER }}@$${{ secrets.SERVER_HOST }}"
-        rsync -avz --delete ./dist/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/cygdrive/c/nginx-1.26.2/html
-      env:
-        SERVER_USER: ${{ secrets.SERVER_USER }}
-        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        rsync -avz --delete ./dist/ Administrator@116.205.118.87:/cygdrive/c/nginx-1.26.2/html
