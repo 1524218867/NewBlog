@@ -13,7 +13,13 @@ jobs:
     # 1. 检出代码
     - name: Checkout Code
       uses: actions/checkout@v3
-
+    - name: List files in dist directory
+      run: |
+        if (Test-Path -Path "${{ github.workspace }}/dist") {
+          Get-ChildItem -Path "${{ github.workspace }}/dist"
+        } else {
+          Write-Host "The 'dist' directory does not exist."
+        }
     # 2. 部署打包后的文件到服务器
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.5
