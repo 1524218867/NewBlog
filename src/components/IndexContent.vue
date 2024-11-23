@@ -19,8 +19,7 @@
         {{ category.name }}
       </option>
     </select>
-
-
+    
     
     <!-- 上传封面图片 -->
     <h4>上传封面图片：</h4>
