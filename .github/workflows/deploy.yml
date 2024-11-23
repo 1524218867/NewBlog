@@ -24,6 +24,7 @@ jobs:
         ssh-keyscan -H 116.205.118.87 >> ~/.ssh/known_hosts
       
     # 3. 执行部署命令
-    - name: Deploy with rsync
+    - name: Deploy with scp (Test SSH)
       run: |
-        rsync -avz --delete ./dist/ Administrator@116.205.118.87:/cygdrive/c/nginx-1.26.2/html
+        scp -r ./dist/ Administrator@116.205.118.87:/cygdrive/c/nginx-1.26.2/html
+  
