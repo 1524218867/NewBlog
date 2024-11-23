@@ -23,4 +23,4 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}             # 私钥（存储在 GitHub Secrets）
         port: ${{ secrets.SERVER_PORT }}               # SSH 端口
         script: |
-         scp -r dist/ Administrator@116.205.118.87:/C/nginx-1.26.2/html/
+         scp -v -r dist/ Administrator@116.205.118.87:/C/nginx-1.26.2/html/
