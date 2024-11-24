@@ -18,7 +18,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '14'  # 选择与项目匹配的 Node.js 版本
+        node-version: '20'  # 选择与项目匹配的 Node.js 版本
 
     # 3. 安装依赖并打包项目
     - name: Install Dependencies and Build
