@@ -95,7 +95,7 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-                pathRewrite: { '^/api': '' }, // 可选：如果后端没有 `/api` 前缀
+                // pathRewrite: { '^/api': '' }, // 可选：如果后端没有 `/api` 前缀
             },
         },
     }
