@@ -14,18 +14,30 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. 设置 SSH 密钥和配置 SSH 连接
+    # 2. 设置 Node.js 环境
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'  # 选择与项目匹配的 Node.js 版本
+
+    # 3. 安装依赖并打包项目
+    - name: Install Dependencies and Build
+      run: |
+        npm install  # 安装依赖
+        npm run build  # 打包项目
+
+    # 4. 设置 SSH 密钥和配置 SSH 连接
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}  # 从 GitHub Secrets 获取私钥
+
     - name: Add server to known_hosts
       run: |
         set -x
         ssh-keyscan -H 116.205.118.87 >> ~/.ssh/known_hosts
         
-    # 3. 执行部署命令
-    - name: Deploy with scp (Test SSH)
+    # 5. 执行部署命令
+    - name: Deploy with scp
       run: |
         scp -r ./dist/ Administrator@116.205.118.87:/C:/nginx-1.26.2/html1
-  
