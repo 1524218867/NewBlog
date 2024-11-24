@@ -92,7 +92,7 @@ module.exports = {
     }, devServer: {
         proxy: {
             '/api': {
-                target: 'http://localhost:5000',
+                target: 'http://localhost:3000',
                 changeOrigin: true,
                 pathRewrite: { '^/api': '' }, // 可选：如果后端没有 `/api` 前缀
             },

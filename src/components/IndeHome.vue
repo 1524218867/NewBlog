@@ -177,7 +177,7 @@ export default {
         },
         // 拼接图片 URL
         HomegetImageUrl(imageName) {
-            return `http://localhost:5000/uploads/${imageName}`;
+            return `http://localhost:3000/uploads/${imageName}`;
         },
         //获取文章
         // 异步获取文章列表

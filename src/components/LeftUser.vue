@@ -120,7 +120,7 @@ export default {
     //方法集合
     methods: {
         getImageUrl(imageName) {
-            return `http://localhost:5000/uploads/${imageName}`;
+            return `http://localhost:3000/uploads/${imageName}`;
         },
         goToLogin() {
             this.$router.push("/Login");

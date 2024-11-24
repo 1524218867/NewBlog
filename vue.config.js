@@ -17,8 +17,13 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/uploads': {
-        target: 'http://localhost:5000',//处理前端8080后端5000跨域问题
+        target: 'http://localhost:3000',//处理前端8080后端5000跨域问题
         changeOrigin: true,
+      },
+      '/api': {
+        target: 'http://localhost:3000', // 代理 /api 请求到后端
+        changeOrigin: true,
+        // pathRewrite: { '^/api': '' }, // 如果后端没有 `/api` 前缀，可以进行路径重写
       },
     },
   },

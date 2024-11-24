@@ -304,7 +304,7 @@ export default {
         },
         // 拼接图片 URL
         getImageUrl(imageName) {
-            return `http://localhost:5000/uploads/${imageName}`;
+            return `http://localhost:3000/uploads/${imageName}`;
         },
         //获取文章
         async fetchArticles() {
