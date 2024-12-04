@@ -1460,9 +1460,7 @@ button {
         display: none;
     }
 
-    .icons {
-        display: none !important;
-    }
+  
 
     .menu {
         display: none !important;

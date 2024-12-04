@@ -126,7 +126,7 @@ export default {
             HomefilteredArticles: [], // 根据分类筛选后的文章
             HomelatestArticle: {}, // 最新文章，初始化为空对象
             isButtonHighlighted: false, // 按钮高亮状态
-            SpecifyUserInformation:'',
+            SpecifyUserInformation: '',
             articleCategories: [], // 存储文章分类
 
             selectedCategory: { _id: "all", name: "全部" }, // 默认选中“全部”分类
@@ -193,8 +193,13 @@ export default {
         },
         // 拼接图片 URL
         HomegetImageUrl(imageName) {
+            if (!imageName) {
+                // 如果 imageName 为空，返回 null 或空字符串
+                return null;  // 或者 return ''; 视情况而定
+            }
             return `http://localhost:3000/uploads/${imageName}`;
         },
+
         //获取文章
         // 异步获取文章列表
         async HomefetchArticles() {
@@ -210,6 +215,9 @@ export default {
                         ? this.Homearticles[this.Homearticles.length - 1]
                         : {}; // 设置最新文章
                 console.log('文章的所有属性', this.HomelatestArticle);
+                if (this.HomelatestArticle.user == undefined) {
+                    return
+                }
                 this.getUserImgOrObject(this.HomelatestArticle.user);
             } catch (error) {
                 console.error("Error fetching articles:", error);
@@ -218,7 +226,7 @@ export default {
         async getUserImgOrObject(userId) {//获取指定用户的信息
             try {
                 const response = await axios.get(`/api/public-user-info/${userId}`);
-                this.SpecifyUserInformation= response.data;
+                this.SpecifyUserInformation = response.data;
                 console.log('获取特定用户信息成功:', response.data);
 
                 return response.data;
@@ -326,18 +334,21 @@ header {
 
     cursor: pointer;
 }
-.IN-icons{
+
+.IN-icons {
     position: relative;
     /* height: 30px; */
     width: 20%;
     display: flex;
     justify-content: space-evenly;
 }
-.IN-XiaoXiBtn{
+
+.IN-XiaoXiBtn {
     position: relative;
     padding: 20px 0 20px 0;
 }
-.IN-Xiao{
+
+.IN-Xiao {
     position: absolute;
     display: none;
     /* opacity: 0; */
@@ -346,9 +357,10 @@ header {
     background-color: #fff;
     right: 0%;
     top: 69px;
-    
+
 }
-.IN-Xiao::after{
+
+.IN-Xiao::after {
     content: "";
     width: 13px;
     height: 13px;
@@ -358,21 +370,23 @@ header {
     top: -6px;
     right: 10px;
 }
-.IN-XiaoXiBtn:hover .IN-Xiao{
+
+.IN-XiaoXiBtn:hover .IN-Xiao {
     display: block;
     /* opacity: 1; */
     width: 100px;
     /* height: 100px; */
     background-color: #fff;
-    
+
 }
 
 
-.IN-Shoubtn{
+.IN-Shoubtn {
     position: relative;
     padding: 20px 0 20px 0;
 }
-.IN-Shou{
+
+.IN-Shou {
     position: absolute;
     display: none;
     /* opacity: 0; */
@@ -380,10 +394,11 @@ header {
     height: 100px;
     background-color: #fff;
     right: 20%;
-    
+
     top: 69px;
 }
-.IN-Shou::after{
+
+.IN-Shou::after {
     content: "";
     width: 13px;
     height: 13px;
@@ -393,7 +408,8 @@ header {
     top: -6px;
     right: 10px;
 }
-.IN-Shoubtn:hover .IN-Shou{
+
+.IN-Shoubtn:hover .IN-Shou {
     display: block;
     /* opacity: 1; */
     width: 100px;
@@ -580,19 +596,21 @@ article-cover>div:nth-child(2):active {
     /* 单行文本 */
     /* 如果需要，可以让超出部分显示省略号 */
 }
-.article-info {
-    
-}
-.article-info >img{
+
+.article-info {}
+
+.article-info>img {
     width: 20px;
     height: 20px;
     border-radius: 50%;
     margin-right: 10px;
 }
-.article-info>span{
-   
+
+.article-info>span {
+
     font-size: .8125rem;
 }
+
 .article-info {
     max-width: 100%;
 }
