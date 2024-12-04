@@ -95,10 +95,14 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-               
+
             },
             '/uploads': {
                 target: 'http://localhost:3000',//处理前端8080后端5000跨域问题
+                changeOrigin: true,
+            },
+            '/UserImg': {
+                target: 'http://localhost:3000', // 后端服务地址
                 changeOrigin: true,
             },
         },

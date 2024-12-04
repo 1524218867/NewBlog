@@ -780,7 +780,7 @@ article-cover>div:nth-child(2):active {
         width: 100%;
     }
 
-    .icons {
+    .IN-icons {
         display: none !important;
     }
 
@@ -800,7 +800,7 @@ article-cover>div:nth-child(2):active {
         flex-direction: column-reverse;
     }
 
-    .icons {
+    .IN-icons {
         display: none !important;
     }
 
