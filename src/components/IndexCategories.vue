@@ -24,7 +24,7 @@
             <!-- <h2>所有文章</h2> -->
             <div class="article-card" v-for="(article, index) in paginatedArticles" :key="index">
                 <div class="article-cover">
-                    <img :src="HomegetImageUrl(article.coverImage)" alt="Article cover"  />
+                    <img :src="`/UserImg/${imageName}`" alt="Article cover"  />
 
                 </div>
                

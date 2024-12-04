@@ -82,7 +82,7 @@
                         <div class="article">
 
                             <div class="article-img">
-                                <img :src="HomegetImageUrl(article.coverImage)" alt="Article Image" />
+                                <img :src="`/UserImg/${imageName}`" alt="Article Image" />
                             </div>
 
                             <h3>{{ article.title }}</h3>
