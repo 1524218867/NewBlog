@@ -39,6 +39,7 @@
                 <h3>最新评论</h3>
                 <div v-for="comment in comments" :key="comment._id" class="comment">
                     <p>{{ comment.content }}</p>
+
                     <small v-if="comment.author && comment.createdAt">
                         by {{ comment.author.username }} · {{ new Date(comment.createdAt).toLocaleString() }}
                     </small>
@@ -97,6 +98,30 @@ export default {
                 { src: require("../assets/1.jpg") },
                 { src: require("../assets/2.jpg") },
             ],
+            themes: {
+                light: {
+                    '--primary-color': '#3498db',
+                    '--ZiBaiBgc': "#f8f9ff",
+                    '--ActiveBgc': '#f7f7f8',
+                    '--background-color': '#ffffff',
+                    '--Border': ' #f0f1fb',
+                    '--text-color': '#000000',//文本颜色
+                    '--active-background-color': '#1988fa',//按钮颜色
+                    '--article-card-background-color': ' #f5f5f5',//边框颜色
+                    '--Business-card-gradient': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'
+                },
+                dark: {
+                    '--primary-color': '#e74c3c',
+                    '--ActiveBgc': '#1a1a1a',
+                    '--ZiBaiBgc': "#1f1f1f",
+                    '--background-color': '#000000',
+                    '--Border': ' #2c2c2c',
+                    '--text-color': '#ecf0f1',//文本颜色
+                    '--active-background-color': '#015aea',//按钮颜色
+                    '--article-card-background-color': ' #212121',//边框颜色
+                    '--Business-card-gradient': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
+                }
+            },
         };
     },
 
@@ -108,6 +133,15 @@ export default {
     },
 
     mounted() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+
+
+        this.updateTheme(savedTheme);
+
+        console.log('本地储存状态', savedTheme);  // 打印存储的主题
+
+
+
         this.$nextTick(() => {
             this.handleScroll(); // 初始化获取一次滚动值和高度
             window.addEventListener("scroll", this.handleScroll);
@@ -132,7 +166,9 @@ export default {
         window.addEventListener('scroll', this.handleScroll);
     },
 
+    computed: {
 
+    },
     beforeDestroy() {
         const articleBox = this.$refs.articleBox;
 
@@ -150,14 +186,26 @@ export default {
     },
 
     methods: {
+        updateTheme(themeName) {
+            console.log(themeName);
 
+            // document.body.classList.toggle('dark-theme', themeName === 'dark');
+            this.currentTheme = themeName;//这里的currentTheme是data里的，用来在html里显示当前主题，并不是子组件的
+            // 根据传入的主题名称更新全局 CSS 变量  
+            const theme = this.themes[themeName];
+            for (const key in theme) {
+                document.documentElement.style.setProperty(key, theme[key]);
+            }
+            // 保存到 localStorage 以保持刷新后的主题
+            localStorage.setItem('theme', themeName);
+        },
         handleScroll() {
             const articleBox = this.$refs.articleBox;
             if (articleBox) {
                 this.scrollPosition = window.scrollY;
                 this.articleBoxHeight = articleBox.clientHeight;
-                console.log("文章的高:", this.articleBoxHeight);
-                console.log("实时滚动位置:", this.scrollPosition);
+                // console.log("文章的高:", this.articleBoxHeight);
+                // console.log("实时滚动位置:", this.scrollPosition);
             }
         },
         async getLastViewedArticle() {
@@ -189,7 +237,7 @@ export default {
             }//没有token不获取滚动并且退出
             console.log(this.articleBoxHeight);
             console.log(window.innerHeight);
-            
+
             const maxScrollPosition = this.articleBoxHeight - window.innerHeight;//获取到最大滚动值
             console.log('最大宽度', maxScrollPosition);
 
@@ -298,7 +346,7 @@ export default {
                 // 发送GET请求，获取文章评论
                 console.log(articleId);
 
-                const response = await axios.get(`/api/articles/${articleId}/comments`, {
+                const response = await axios.get(`/api/comments/${articleId}/comments`, {
 
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
 
@@ -329,7 +377,7 @@ export default {
     align-items: center;
     padding: 40px;
     margin: auto;
-    background-color: #f5f5f57d;
+    background-color: var(--background-color);
 }
 
 /* 整体滚动条 */
@@ -360,12 +408,13 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
+    color: var(--text-color);
 }
 
 .back-button {
     border: none;
-    background-color: #000000;
-    color: white;
+    background-color: var(--text-color);
+    color: var(--background-color);
     padding: 10px 30px;
     /* 增加按钮的长度 */
     border-radius: 25px;
@@ -441,14 +490,14 @@ export default {
     width: 100%;
 
     margin: 30px auto 0;
-
-    background-color: #fff;
+    color: var(--text-color);
+    background-color: var(--background-color);
     border-radius: 10px;
 
 }
 
 .articleContent>>>p {
-    color: #333333;
+    /* color: #333333; */
     /* 文本颜色 */
     font-family: 'Arial', sans-serif;
     /* 字体 */
@@ -477,7 +526,9 @@ export default {
 /*评论 */
 .comment-section {
     padding: 20px;
-    border-top: 1px solid #ddd;
+    width: 100%;
+    border-top: 1px solid var(--article-card-background-color);
+    color: var(--text-color);
 }
 
 .comment-input {
@@ -488,7 +539,7 @@ export default {
     width: 100%;
     height: 100px;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--article-card-background-color);
     border-radius: 4px;
 }
 
@@ -511,8 +562,8 @@ export default {
 }
 
 .comment {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    padding: 17px;
+    border-bottom: 1px solid var(--article-card-background-color);
 }
 
 .comment p {
@@ -523,6 +574,10 @@ export default {
     color: #888;
 }
 
+.replies {
+    margin-left: 30px;
+    margin-top: 10px;
+}
 
 
 @media (min-width: 1200px) {

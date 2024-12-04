@@ -2,32 +2,32 @@
   <div class="upload-article-container">
     <!-- 输入其他信息 -->
 
-    <h4>标题名称:</h4>
+    <h6>标题名称:</h6>
     <input v-model="title" placeholder="标题" class="input-field" />
-    <h4>作者名称:</h4>
+    <h6>作者名称:</h6>
     <input v-model="author" placeholder="作者" class="input-field" />
-    <h4>文章内容:</h4>
+    <h6>文章内容:</h6>
     <!-- Quill 编辑器用于输入文章内容 -->
     <quill-editor v-model="content" :options="editorOptions" class="quill-editor"></quill-editor>
 
 
     <!-- 选择分类 -->
     <!-- <label for="categories" class="label">选择分类：</label> -->
-    <h4>选择分类：</h4>
+    <h6>选择分类：</h6>
     <select id="categories" v-model="selectedCategories" multiple class="select-field">
       <option v-for="category in categories" :key="category._id" :value="category._id">
         {{ category.name }}
       </option>
     </select>
     <!-- 上传封面图片 -->
-    <h4>上传封面图片：</h4>
+    <h6>上传封面图片：</h6>
     <div class="container">
       <div class="folder">
         <div class="top"></div>
         <div class="bottom"></div>
       </div>
       <label class="custom-file-upload">
-        <input @change="handleFileUpload" class=" title" type="file" />
+        <input @change="handleFileUpload" class="title" type="file" />
         上传封面
       </label>
     </div>
@@ -53,7 +53,7 @@
   /* 添加阴影 */
 }
 
-.upload-article-container h4 {
+.upload-article-container h6 {
   margin: 10px 0 20px 0;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-weight: 600;
@@ -98,7 +98,7 @@
 .save-button {
   display: block;
   margin: 20px auto;
-
+  width: 100%;
   background-color: #007bff;
   /* 按钮背景色 */
   color: #ffffff;
@@ -221,21 +221,20 @@
     transform: translateY(0px);
   }
 }
-@media (max-width: 576px) {
-   
-  }
-  
-  /* 小屏幕（手机横屏） */
-  @media (min-width: 577px) and (max-width: 768px) {}
-  
-  /* 中等屏幕（平板） */
-  @media (min-width: 769px) and (max-width: 992px) {}
-  
-  /* 大屏幕（小笔记本） */
-  @media (min-width: 993px) and (max-width: 1200px) {}
-  
-  /* 超大屏幕（台式机） */
-  @media (min-width: 1201px) {}
+
+@media (max-width: 576px) {}
+
+/* 小屏幕（手机横屏） */
+@media (min-width: 577px) and (max-width: 768px) {}
+
+/* 中等屏幕（平板） */
+@media (min-width: 769px) and (max-width: 992px) {}
+
+/* 大屏幕（小笔记本） */
+@media (min-width: 993px) and (max-width: 1200px) {}
+
+/* 超大屏幕（台式机） */
+@media (min-width: 1201px) {}
 </style>
 <style>
 .ql-container {
@@ -295,6 +294,16 @@ export default {
     handleFileUpload(event) {
       this.coverImage = event.target.files[0];
     },
+    async getUserImgOrObject(userId) {
+      try {
+        const response = await axios.get(`/api/public-user-info/${userId}`);
+        console.log('获取特定用户信息成功:', response.data);
+        
+        return response.data;
+      }catch (error) {
+        console.error('获取特定用户信息失败:', error);
+      }
+    },
     // 异步保存内容
     async saveContent() {
       try {
@@ -307,18 +316,24 @@ export default {
         formData.append('title', this.title);
         formData.append('content', this.content);
         formData.append('author', this.author);
-        console.log(this.selectedCategories[0]);
+        console.log('第一个分类',this.selectedCategories[0]);
         formData.append('categories', JSON.stringify(this.selectedCategories));
         if (this.coverImage) {
           formData.append('coverImage', this.coverImage);
         }
         // 如果选择的分类无效，则提示错误信息
-        if (this.selectedCategories[0] == "66ff97821dedb796709b6532") {
+        if (this.selectedCategories[0] == "6735ae36ea4dab72f613edef") {
           this.$notify.error({
             title: '错误',
             message: '选择分类无效'
           });
+          return;
         }
+        // 打印内容
+        for (let [key, value] of formData.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+
         const response = await axios.post('/api/articles', formData, {
           headers: {
             'Authorization': `Bearer ${token}`,

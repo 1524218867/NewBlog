@@ -45,7 +45,7 @@
 
                     <img :src="getImageUrl(lastViewedArticleZi.coverImage)" alt="Article Cover" />
                 </div> -->
-                <div class="LU-content">
+                <div class="LU-content" v-if="lastViewedArticleZi">
 
                     <a href="#">
                         <span class="LU-title">
@@ -69,6 +69,7 @@
 
                     </router-link>
                 </div>
+                <div v-else></div>
                 <!-- <div v-else class="LU-LeftUser-card" style="height: 107px;">
                     <div class="LU-LeftUser-card_load"></div>
                     <div class="LU-LeftUser-card_load_extreme_title"></div>
@@ -119,9 +120,9 @@ export default {
     watch: {},
     //方法集合
     methods: {
-        getImageUrl(imageName) {
-            return `http://localhost:3000/uploads/${imageName}`;
-        },
+        // getImageUrl(imageName) {
+        //     return `http://localhost:3000/UserImg/${imageName}`;
+        // },
         goToLogin() {
             this.$router.push("/Login");
         },
@@ -137,7 +138,9 @@ export default {
     mounted() {
         console.log("userleft" + this.noArticlesMessageZi);
         console.log('进度是', this.JingDuTiaoZi);
-
+        console.log('文章属性是',this.lastViewedArticleZi); 
+        
+        
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前
@@ -153,7 +156,7 @@ export default {
 <style scoped>
 
 .LU-User-card {
-  width: 300px;
+  width: 50px;
   /* height: 200px; */
   perspective: 1000px;
 }

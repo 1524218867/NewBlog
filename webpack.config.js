@@ -89,14 +89,18 @@ module.exports = {
         errors: true,
         warnings: true,
         timings: true,
-    }, 
-    devServer: {
+    },
+    devServer: {//此处的代理是配置服务器后生效的代理
         proxy: {
             '/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-                // pathRewrite: { '^/api': '' }, // 可选：如果后端没有 `/api` 前缀
+               
+            },
+            '/uploads': {
+                target: 'http://localhost:3000',//处理前端8080后端5000跨域问题
+                changeOrigin: true,
             },
         },
-    }
+    },
 };

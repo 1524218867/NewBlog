@@ -11,40 +11,29 @@
                     </button>
                 </div>
 
-                <div class="icons">
+                <div class="IN-icons">
 
-                    <div class="wrapper">
-                        <input type="checkbox" />
-
-                        <div class="btn">
+                    <div class="IN-XiaoXiBtn">
+                        <div class="">
                             <img src="../../public/Xiaoxi.png" alt="消息" />
-
                         </div>
-                        <div class="tooltip">
+                        <div class="IN-Xiao">1
                             <svg></svg>
                             <svg></svg>
                             <svg></svg>
                         </div>
-                        <svg></svg>
                     </div>
 
-                    <div class="wrapper">
-                        <input type="checkbox" />
-
-                        <div class="btn">
+                    <div class="IN-Shoubtn">
+                        <div class="">
                             <img src="../../public/ShouCang.png" alt="收藏" />
-
                         </div>
-                        <div class="tooltip">
+                        <div class="IN-Shou">2
                             <svg></svg>
                             <svg></svg>
                             <svg></svg>
                         </div>
-                        <svg></svg>
                     </div>
-
-
-
                 </div>
             </header>
 
@@ -61,6 +50,10 @@
                             }">
                                 <h2 class="article-title">{{ HomelatestArticle.title || 'No title available'
                                     }}</h2>
+                                <div class="article-info">
+                                    <img :src="SpecifyUserInformation.avatar">
+                                    <span>{{ SpecifyUserInformation.username }}</span>
+                                </div>
                                 <button class="article-button">现在阅读</button>
                             </router-link>
                         </div>
@@ -103,7 +96,11 @@
 
                         </div>
                     </router-link>
+                    <div v-if="IsDisplay">
+                        <h3>暂无相关文章</h3>
+                    </div>
                 </div>
+
             </section>
         </div>
     </div>
@@ -124,11 +121,12 @@ export default {
     },
     data() {
         return {
+            IsDisplay: null,
             Homearticles: [], // 用于存储文章列表
             HomefilteredArticles: [], // 根据分类筛选后的文章
             HomelatestArticle: {}, // 最新文章，初始化为空对象
             isButtonHighlighted: false, // 按钮高亮状态
-
+            SpecifyUserInformation:'',
             articleCategories: [], // 存储文章分类
 
             selectedCategory: { _id: "all", name: "全部" }, // 默认选中“全部”分类
@@ -144,6 +142,7 @@ export default {
                 // 发送GET请求获取文章分类
                 const response = await axios.get("/api/categories");
                 this.articleCategories = response.data; // 存储文章分类
+                console.log('获取到文章分类：', this.articleCategories);
 
                 // 默认选择第一个分类作为“全部”分类
                 if (this.articleCategories.length > 0) {
@@ -155,18 +154,35 @@ export default {
             }
         },
         filterArticlesByCategory(selectedCategory) {
+
             this.selectedCategory = selectedCategory; // 更新当前选择的分类
+            console.log('当前选择的分类', this.selectedCategory);
 
             if (selectedCategory.name === "全部") {
+                console.log('进入到了全部分类里面');
+
                 this.HomefilteredArticles = this.Homearticles; // 显示所有文章
+                console.log('获取到全部分类的文章', this.HomefilteredArticles);
+
             } else {
-            console.log('获取到文章分类：',selectedCategory.HomefilteredArticles);
-            
+                console.log('获取到当前分类', this.selectedCategory);
+
                 this.HomefilteredArticles = this.Homearticles.filter((article) =>
                     article.categories.some(
                         (category) => category._id === selectedCategory._id
                     )
+
                 );
+                if (this.HomefilteredArticles.length === 0) {//如果当前分类没有文章，则显示
+                    this.IsDisplay = true;
+
+
+                } else {
+                    this.IsDisplay = false;
+
+                }
+                console.log('获取到当前分类的文章', this.HomefilteredArticles);
+
             }
         },
         highlightButton() {
@@ -193,10 +209,21 @@ export default {
                     this.Homearticles.length > 0
                         ? this.Homearticles[this.Homearticles.length - 1]
                         : {}; // 设置最新文章
-                console.log(this.HomelatestArticle.title);
-
+                console.log('文章的所有属性', this.HomelatestArticle);
+                this.getUserImgOrObject(this.HomelatestArticle.user);
             } catch (error) {
                 console.error("Error fetching articles:", error);
+            }
+        },
+        async getUserImgOrObject(userId) {//获取指定用户的信息
+            try {
+                const response = await axios.get(`/api/public-user-info/${userId}`);
+                this.SpecifyUserInformation= response.data;
+                console.log('获取特定用户信息成功:', response.data);
+
+                return response.data;
+            } catch (error) {
+                console.error('获取特定用户信息失败:', error);
             }
         },
     },
@@ -256,10 +283,11 @@ header {
     border-left: 1px solid var(--Border);
     border-bottom: 1px solid var(--Border);
     background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .search-bar:focus {
-    border-color: #000000;
+    border-color: var(--Border);
     outline: none;
     /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
     border-right-color: transparent;
@@ -278,7 +306,7 @@ header {
 }
 
 .search-button.highlight {
-    border-color: #000000;
+    border-color: var(--Border);
     /* 点击时的边框颜色 */
     /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
     /* 添加阴影效果 */
@@ -289,329 +317,88 @@ header {
     width: 23px;
 }
 
-.icons {
+.IN-icons {
     display: flex;
 }
 
-.icons img {
+.IN-icons img {
     width: 30px;
 
     cursor: pointer;
 }
-
-/* From Uiverse.io by neerajbaniwal */
-.wrapper {
-    --background: #62abff;
-    --icon-color: #414856;
-    --shape-color-01: #b8cbee;
-    --shape-color-02: #7691e8;
-    --shape-color-03: #fdd053;
-    --width: 90px;
-    --height: 90px;
-    --border-radius: var(--height);
-    width: var(--width);
-    height: var(--height);
+.IN-icons{
     position: relative;
-    border-radius: var(--border-radius);
+    /* height: 30px; */
+    width: 20%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-evenly;
 }
-
-.wrapper .btn {
-
-    width: 30px;
-    height: 30px;
+.IN-XiaoXiBtn{
     position: relative;
-    z-index: 3;
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 30px rgba(65, 72, 86, 0.05);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    -webkit-animation: plus-animation-reverse 0.5s ease-out forwards;
-    animation: plus-animation-reverse 0.5s ease-out forwards;
+    padding: 20px 0 20px 0;
 }
-
-
-.wrapper .tooltip {
-    width: 90px;
-    height: 75px;
-    border-radius: 70px;
+.IN-Xiao{
     position: absolute;
-    background: #fff;
-    z-index: 2;
-    padding: 0 15px;
-    box-shadow: 0 10px 30px rgba(65, 72, 86, 0.05);
-    opacity: 0;
-    top: 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    transition: opacity 0.15s ease-in, top 0.15s ease-in, width 0.15s ease-in;
+    display: none;
+    /* opacity: 0; */
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    right: 0%;
+    top: 69px;
+    
 }
-
-
-.wrapper .tooltip::after {
+.IN-Xiao::after{
     content: "";
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    border-radius: 3px;
+    width: 13px;
+    height: 13px;
+    background-color: #fff;
+    transform: rotate(45deg);
     position: absolute;
-    left: 45%;
-    margin-top: -70px;
-    /* bottom: -8px; */
-    transform: rotate(131deg);
-    z-index: 0;
+    top: -6px;
+    right: 10px;
+}
+.IN-XiaoXiBtn:hover .IN-Xiao{
+    display: block;
+    /* opacity: 1; */
+    width: 100px;
+    /* height: 100px; */
+    background-color: #fff;
+    
 }
 
-.wrapper>svg {
-    width: 300px;
-    height: 300px;
+
+.IN-Shoubtn{
+    position: relative;
+    padding: 20px 0 20px 0;
+}
+.IN-Shou{
     position: absolute;
-    z-index: 1;
-    transform: scale(0);
+    display: none;
+    /* opacity: 0; */
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    right: 20%;
+    
+    top: 69px;
 }
-
-.wrapper>svg .shape {
-    fill: none;
-    stroke: none;
-    stroke-width: 3px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transform-origin: 50% 20%;
-}
-
-.wrapper input {
-    height: 20px;
-    width: 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
+.IN-Shou::after{
+    content: "";
+    width: 13px;
+    height: 13px;
+    background-color: #fff;
+    transform: rotate(45deg);
     position: absolute;
-    z-index: 5;
-    opacity: 0;
+    top: -6px;
+    right: 10px;
 }
-
-.wrapper input:checked~svg {
-    -webkit-animation: pang-animation 1.2s ease-out forwards;
-    animation: pang-animation 1.2s ease-out forwards;
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(1) {
-    transform: translate(25px, 30%) rotate(40deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(2) {
-    transform: translate(-4px, 30%) rotate(80deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(3) {
-    transform: translate(12px, 30%) rotate(120deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(4) {
-    transform: translate(8px, 30%) rotate(160deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(5) {
-    transform: translate(21px, 30%) rotate(200deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(6) {
-    transform: translate(0px, 30%) rotate(240deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(7) {
-    transform: translate(17px, 30%) rotate(280deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(8) {
-    transform: translate(-3px, 30%) rotate(320deg);
-}
-
-.wrapper input:checked~svg .shape:nth-of-type(9) {
-    transform: translate(25px, 30%) rotate(360deg);
-}
-
-.wrapper input:checked~.btn {
-    -webkit-animation: plus-animation 0.5s ease-out forwards;
-    animation: plus-animation 0.5s ease-out forwards;
-}
-
-.wrapper input:checked~.tooltip {
-    width: 190px;
-    height: 70px;
-    -webkit-animation: stretch-animation 1s ease-out forwards 0.15s;
-    animation: stretch-animation 1s ease-out forwards 0.15s;
-    top: 90px;
-    opacity: 1;
-}
-
-@-webkit-keyframes pang-animation {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1.1);
-        opacity: 0;
-    }
-}
-
-@keyframes pang-animation {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1.1);
-        opacity: 0;
-    }
-}
-
-@-webkit-keyframes plus-animation {
-    0% {
-        transform: rotate(0) scale(1);
-    }
-
-    20% {
-        transform: rotate(60deg) scale(0.93);
-    }
-
-    55% {
-        transform: rotate(35deg) scale(0.97);
-    }
-
-    80% {
-        transform: rotate(48deg) scale(0.94);
-    }
-
-    100% {
-        transform: rotate(45deg) scale(0.95);
-    }
-}
-
-@keyframes plus-animation {
-    0% {
-        transform: rotate(0) scale(1);
-    }
-
-    20% {
-        transform: rotate(60deg) scale(0.93);
-    }
-
-    55% {
-        transform: rotate(35deg) scale(0.97);
-    }
-
-    80% {
-        transform: rotate(48deg) scale(0.94);
-    }
-
-    100% {
-        transform: rotate(45deg) scale(0.95);
-    }
-}
-
-@-webkit-keyframes plus-animation-reverse {
-    0% {
-        transform: rotate(45deg) scale(0.95);
-    }
-
-    20% {
-        transform: rotate(-15deg);
-    }
-
-    55% {
-        transform: rotate(10deg);
-    }
-
-    80% {
-        transform: rotate(-3deg);
-    }
-
-    100% {
-        transform: rotate(0) scale(1);
-    }
-}
-
-@keyframes plus-animation-reverse {
-    0% {
-        transform: rotate(45deg) scale(0.95);
-    }
-
-    20% {
-        transform: rotate(-15deg);
-    }
-
-    55% {
-        transform: rotate(10deg);
-    }
-
-    80% {
-        transform: rotate(-3deg);
-    }
-
-    100% {
-        transform: rotate(0) scale(1);
-    }
-}
-
-@-webkit-keyframes stretch-animation {
-    0% {
-        transform: scale(1, 1);
-    }
-
-    10% {
-        transform: scale(1.1, 0.9);
-    }
-
-    30% {
-        transform: scale(0.9, 1.1);
-    }
-
-    50% {
-        transform: scale(1.05, 0.95);
-    }
-
-    100% {
-        transform: scale(1, 1);
-    }
-}
-
-@keyframes stretch-animation {
-    0% {
-        transform: scale(1, 1);
-    }
-
-    10% {
-        transform: scale(1.1, 0.9);
-    }
-
-    30% {
-        transform: scale(0.9, 1.1);
-    }
-
-    50% {
-        transform: scale(1.05, 0.95);
-    }
-
-    100% {
-        transform: scale(1, 1);
-    }
+.IN-Shoubtn:hover .IN-Shou{
+    display: block;
+    /* opacity: 1; */
+    width: 100px;
+    /* height: 100px; */
+    background-color: #fff;
 }
 
 .socials {
@@ -793,7 +580,19 @@ article-cover>div:nth-child(2):active {
     /* 单行文本 */
     /* 如果需要，可以让超出部分显示省略号 */
 }
-
+.article-info {
+    
+}
+.article-info >img{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.article-info>span{
+   
+    font-size: .8125rem;
+}
 .article-info {
     max-width: 100%;
 }
@@ -855,9 +654,18 @@ article-cover>div:nth-child(2):active {
     width: 100%;
 }
 
+.articles>div {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .article-link {
     /* margin: 0 20px 0 20px; */
-    width : 48%;
+    width: 48%;
     display: block;
 }
 
@@ -890,7 +698,7 @@ article-cover>div:nth-child(2):active {
 
 .article-img {
     /* height: 269px; */
-    
+
     border-radius: 30px;
     overflow: hidden;
 
@@ -932,7 +740,7 @@ article-cover>div:nth-child(2):active {
     display: block;
     width: 100%;
     line-height: 10px;
-    font-size: .625rem ;
+    font-size: .625rem;
 }
 
 .author-info {
@@ -945,10 +753,24 @@ article-cover>div:nth-child(2):active {
 
         flex-direction: column-reverse;
     }
+
     .article-cover>div[data-v-1c819015]:nth-child(1) {
         width: 100%;
     }
-    .article-cover h2{
+
+    .article-cover h2 {
+        width: 100%;
+    }
+
+    .icons {
+        display: none !important;
+    }
+
+    .Input-but {
+        width: 100%;
+    }
+
+    .search-bar {
         width: 100%;
     }
 }
@@ -960,6 +782,17 @@ article-cover>div:nth-child(2):active {
         flex-direction: column-reverse;
     }
 
+    .icons {
+        display: none !important;
+    }
+
+    .Input-but {
+        width: 100%;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
 }
 
 /* 中等屏幕（平板） */

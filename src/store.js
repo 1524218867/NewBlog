@@ -10,7 +10,7 @@ const store = new Vuex.Store({
             token: null, // 用于存储 JWT token
             details: {} // 用于存储用户详细信息
         },
-
+        
     },
     mutations: {
         setSharedData(state, data) {
@@ -25,19 +25,21 @@ const store = new Vuex.Store({
                 token: null,
                 details: {}
             }; // 清空用户信息
-        }
+        },
+       
     },
     actions: {
         updateSharedData({ commit }, data) {
             commit('setSharedData', data);
         },
         updateUser({ commit }, { token, details }) {
-            // console.log('Updating user with:', { token, details }); //会先打印此处的数据，然后打印登录的数据
+            console.log('Updating user with:', { token, details }); //会先打印此处的数据，然后打印登录的数据
             commit('setUser', { token, details });
         },
         logout({ commit }) {
             commit('deleteUser');
-        }
+        },
+      
     },
     getters: {
         isLoggedIn(state) {

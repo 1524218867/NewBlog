@@ -74,11 +74,12 @@ export default {
 
                 // 处理成功登录后的操作，如保存 token 和跳转页面
                 const token = response.data.token;
-                console.log(response.data);
-                const userDetails = response.data.user; // 假设响应中包含用户详细信息
+                console.log('登陆后返回用户信息', response.data);
+                const userDetails = response.data.user; // 响应中包含用户详细信息
 
                 localStorage.setItem('token', token);
-
+                console.log("登录处获得了信息", userDetails);
+                
                 // 更新 Vuex 状态
                 this.$store.dispatch('updateUser', { token, details: userDetails });
 

@@ -35,7 +35,7 @@
 
                     <label class="popup">
                         <input type="checkbox" />
-                        <div tabindex="0" class="burger">
+                        <div tabindex="0" class="burger" @click.stop="openPopup">
                             <svg t="1731742925320" class="icon" viewBox="0 0 1024 1024" version="1.1"
                                 xmlns="http://www.w3.org/2000/svg" p-id="4265" width="20" height="200">
                                 <path
@@ -43,7 +43,7 @@
                                     p-id="4266" fill="#ffffff"></path>
                             </svg>
                         </div>
-                        <nav class="popup-window">
+                        <nav class="popup-window" v-show="isPopupVisible" >
 
                             <ul>
                                 <li>
@@ -93,7 +93,7 @@
                                         </button>
                                     </router-link>
                                 </li>
-                                <li> 
+                                <li>
                                     <router-link v-if="!isDisabled" :to="getPath(2)"
                                         @click.native="setActive('categories')">
                                         <button>
@@ -131,13 +131,18 @@
                                 </li>
                                 <li v-if="!isDisabled">
                                     <router-link :to="getPath(3)" @click.native="setActive('AppUser')">
-                                    <button>
-                                        
-                                        <svg t="1731814009258" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2391" width="14" height="14"><path d="M512.451579 545.507144c-148.479097 0-269.140942-120.842477-269.140942-269.140942S363.972482 7.22526 512.451579 7.22526s269.140942 120.842477 269.140942 269.140942-120.661845 269.140942-269.140942 269.140942z m0-477.589698c-114.881637 0-208.448756 93.567119-208.448757 208.448756s93.567119 208.448756 208.448757 208.448757S720.900335 391.247839 720.900335 276.366202 627.333216 67.917446 512.451579 67.917446zM896.654789 1016.232845H128.248368c-47.506086 0-85.980596-38.655142-85.980596-85.980596v-58.163344l1.806315-5.057683c57.802081-160.220145 250.355265-272.211678 468.377492-272.211677S923.026989 706.811078 980.82907 867.031222l1.806315 5.057683V930.252249c0 47.506086-38.655142 85.980596-85.980596 85.980596zM103.140589 882.926795V930.252249c0 13.908626 11.379785 25.288411 25.288411 25.288411h768.225789c13.908626 0 25.288411-11.379785 25.288411-25.288411v-47.506086C870.463221 748.717587 703.017816 655.692362 512.451579 655.692362S154.439936 748.717587 103.140589 882.926795z"  p-id="2392"></path></svg>
+                                        <button>
+
+                                            <svg t="1731814009258" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg" p-id="2391" width="14" height="14">
+                                                <path
+                                                    d="M512.451579 545.507144c-148.479097 0-269.140942-120.842477-269.140942-269.140942S363.972482 7.22526 512.451579 7.22526s269.140942 120.842477 269.140942 269.140942-120.661845 269.140942-269.140942 269.140942z m0-477.589698c-114.881637 0-208.448756 93.567119-208.448757 208.448756s93.567119 208.448756 208.448757 208.448757S720.900335 391.247839 720.900335 276.366202 627.333216 67.917446 512.451579 67.917446zM896.654789 1016.232845H128.248368c-47.506086 0-85.980596-38.655142-85.980596-85.980596v-58.163344l1.806315-5.057683c57.802081-160.220145 250.355265-272.211678 468.377492-272.211677S923.026989 706.811078 980.82907 867.031222l1.806315 5.057683V930.252249c0 47.506086-38.655142 85.980596-85.980596 85.980596zM103.140589 882.926795V930.252249c0 13.908626 11.379785 25.288411 25.288411 25.288411h768.225789c13.908626 0 25.288411-11.379785 25.288411-25.288411v-47.506086C870.463221 748.717587 703.017816 655.692362 512.451579 655.692362S154.439936 748.717587 103.140589 882.926795z"
+                                                    p-id="2392"></path>
+                                            </svg>
                                             <span>个人</span>
-                                       
-                                    </button>
-                                </router-link>
+
+                                        </button>
+                                    </router-link>
                                 </li>
                             </ul>
                         </nav>
@@ -160,7 +165,7 @@
             </div>
         </div>
         <!-- 中页 -->
-        <div class="Index-content">
+        <div class="Index-content" ref="indexContent" @click="handleClickIndexContent">
             <div class="content-section-Foather">
                 <transition name="fade">
                     <router-view :getImageUrl="getImageUrl" :key="$route.fullPath"
@@ -185,7 +190,7 @@ import "slick-carousel";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // import '../utils/index'
-import { mapGetters, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import ForActicle from "./ForActicle.vue";
 import { Notification } from "element-ui"; // 确保你已经引入了 Notification
 import axios from "axios";
@@ -214,6 +219,7 @@ export default {
             maxScrollPosition: 0, // 当前文章的最大滚动高度
             isLoading: true, // 是否显示加载器
             JingDuTiao: 0, // 进度条
+            isPopupVisible: false, // 控制弹窗的显示与隐藏
 
             themes: {
                 light: {
@@ -272,8 +278,23 @@ export default {
         goToRegister() {
             this.$router.push("/Login");
         },
+        openPopup() {
+            if (this.isPopupVisible) {
+                this.isPopupVisible = false;
+            }else {
+                this.isPopupVisible = true;
+            }
 
 
+        },
+        // 点击空白区域关闭弹窗
+        handleClickIndexContent(event) {
+            // 点击 Index-content 区域时关闭弹窗
+            if (this.isPopupVisible) {
+                this.isPopupVisible = false;
+                // console.log('点击了 Index-content，关闭弹窗:', this.isPopupVisible);
+            }
+        },
         async logout() {
             try {
 
@@ -350,14 +371,14 @@ export default {
                 this.viewedArticles = response.data; // 假设 API 返回的数据是一个数组
 
 
-                console.log('222', this.viewedArticles.length);
+
                 // 更新 noArticlesMessage 的状态
                 if (this.viewedArticles.length === 0) {
                     this.noArticlesMessage = true; // 没有文章时显示消息
                     this.lastViewedArticle = null; // 没有文章时清空 lastViewedArticle
                     return;
                 }
-                console.log('222');
+
 
                 // 根据 lastViewedAt 时间排序
                 const sortedArticles = [...this.viewedArticles].sort(
@@ -372,10 +393,10 @@ export default {
                 console.log('打印了', unfinishedArticles);
 
                 if (unfinishedArticles.length > 0) {
-                    console.log('222');
+
                     // 有未完成的文章，设置 lastViewedArticle 为最近浏览的未完成文章
                     this.lastViewedArticle = unfinishedArticles[0]; // 由于已经按时间排序，直接取第一个
-                    console.log('111111', this.lastViewedArticle);
+
 
                     this.noArticlesMessage = false;
                 } else {
@@ -386,7 +407,7 @@ export default {
                     this.noArticlesMessage = false;
                 }
                 // 使用 calculateProgress 更新 JingDuTiao 的值
-                console.log('333', this.lastViewedArticle);
+
 
                 if (this.lastViewedArticle) {
                     this.JingDuTiao = this.calculateProgress(
@@ -394,6 +415,7 @@ export default {
                         this.lastViewedArticle.maxScrollPosition
                     );
                     console.log('进度条', this.JingDuTiao);
+                    console.log('浏览的最后的文章', this.lastViewedArticle);
 
                 } else {
                     console.log('出错了，要改变状态了');
@@ -512,7 +534,7 @@ export default {
 
             // document.body.classList.toggle('dark-theme', themeName === 'dark');
             this.currentTheme = themeName;//这里的currentTheme是data里的，用来在html里显示当前主题，并不是子组件的
-            // 根据传入的主题名称更新全局 CSS 变量
+            // 根据传入的主题名称更新全局 CSS 变量  
             const theme = this.themes[themeName];
             for (const key in theme) {
                 document.documentElement.style.setProperty(key, theme[key]);
@@ -531,9 +553,12 @@ export default {
     },
 
     mounted() {
+
         this.isDisabled = localStorage.getItem('token') ? false : true
         // 初始化时从 localStorage 获取用户上次选择的主题
         const savedTheme = localStorage.getItem('theme') || 'light';
+
+
         this.updateTheme(savedTheme);
         // 初始化时获取本地存储的主题状态
 
@@ -579,29 +604,7 @@ button {
     /* 为其他元素添加过渡 */
 }
 
-/* 深色主题 */
-/* .dark-theme {
-    --background-color: #171717;
-    --active-background-color: linear-gradient(to right, #dfe9f3 0%, white 100%);
-    --text-color: #ffffff;
-    --article-card-background-color: #212121;
 
-} */
-
-/* 浅色主题
-.light-theme {
-    --background-color: #ffffff;
-    --active-background-color: #e6efff;
-    --text-color: #000000;
-
-    --article-card-background-color: #f5f5f5;
-} */
-
-/* 应用全局字体颜色 */
-body {
-    /* color: var(--font-color) !important; */
-    /* 使用定义的字体颜色 */
-}
 
 /* 整体滚动条 */
 ::-webkit-scrollbar {
@@ -837,11 +840,11 @@ body {
 
 .popup-window {
     transform: scale(var(--nav-default-scale));
-    visibility: hidden;
-    opacity: 0;
+    /* visibility: hidden;
+    opacity: 0; */
     position: absolute;
     padding: var(--nav-padding-y) var(--nav-padding-x);
-    background: var(--nav-bg);
+    background: var(--background-color);
     font-family: var(--nav-font-family);
     color: var(--nav-text-color);
     border-radius: var(--nav-border-radius);
@@ -952,6 +955,7 @@ body {
     outline-offset: var(--burger-enable-outline-offset);
 }
 
+/* 
 .popup input:checked+.burger span:nth-child(1) {
     top: 50%;
     transform: translateY(-50%) rotate(45deg);
@@ -970,7 +974,7 @@ body {
     transform: scale(var(--nav-active-scale));
     visibility: visible;
     opacity: 1;
-}
+} */
 
 .LogoAndMenu {
     display: flex;
@@ -1339,7 +1343,7 @@ body {
 }
 
 .user-info-wrapper {
-    /* min-width: 12.5rem; */
+    /* min-width: 175px; */
     flex: 4;
     background-color: var(--background-color);
     transition: background-color 0.5s ease, color 0.5s ease;
@@ -1488,9 +1492,22 @@ body {
         display: none;
     }
 
-    .popup {
+    .LogoAndMenu {
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .Index-Login {
         display: none;
     }
+
+    .menu {
+        display: none !important;
+    }
+
+    /* .popup {
+        display: none;
+    } */
 }
 
 /* 中等屏幕（平板） */

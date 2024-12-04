@@ -13,17 +13,21 @@ module.exports = defineConfig({
   },
 
   lintOnSave: false, // 关闭 ESLint
-
+  // 开发服务器配置不影响生产模式代理
   devServer: {
     proxy: {
+      '/api': {
+        target: 'http://localhost:3000', // 后端服务地址
+        changeOrigin: true,             // 如果是跨域请求，需要设置为 true
+       
+      },
       '/uploads': {
-        target: 'http://localhost:3000',//处理前端8080后端5000跨域问题
+        target: 'http://localhost:3000', // 后端服务地址
         changeOrigin: true,
       },
-      '/api': {
-        target: 'http://localhost:3000', // 代理 /api 请求到后端
+      '/UserImg': {
+        target: 'http://localhost:3000', // 后端服务地址
         changeOrigin: true,
-        // pathRewrite: { '^/api': '' }, // 如果后端没有 `/api` 前缀，可以进行路径重写
       },
     },
   },
