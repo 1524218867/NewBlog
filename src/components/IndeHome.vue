@@ -202,7 +202,7 @@ export default {
 
             // 根据环境拼接 URL
             const avatarUrl = isDevelopment
-                ? `http://localhost:3000${imageName}`  // 开发环境拼接 localhost:3000
+                ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
                 : `${window.location.origin}${imageName}`;  // 生产环境使用当前域名
 
             console.log('拼接后的请求路径', avatarUrl);

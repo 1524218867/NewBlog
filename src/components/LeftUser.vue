@@ -124,29 +124,30 @@ export default {
         //     return `http://localhost:3000/UserImg/${imageName}`;
         // },
         HomegetImageUrl(imageName) {
-    if (!imageName) {
-        // 如果 imageName 为空，返回 null 或空字符串
-        return null;
-    }
+            if (!imageName) {
+                // 如果 imageName 为空，返回 null 或空字符串
+                return null;
+            }
 
-    // 获取当前环境
-    const isDevelopment = process.env.NODE_ENV === 'development';
+            // 获取当前环境
+            const isDevelopment = process.env.NODE_ENV === 'development';
 
-    // 根据环境拼接 URL
-    const avatarUrl = isDevelopment
-        ? `http://localhost:3000${imageName}`  // 开发环境拼接 localhost:3000
-        : `${window.location.origin}${imageName}`;  // 生产环境使用当前域名
+            // 根据环境拼接 URL
+            const avatarUrl = isDevelopment
+    ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
+    : `${window.location.origin}/UserImg${imageName}`;  // 生产环境需要加上 /UserImg
 
-    console.log('拼接后的请求路径', avatarUrl);
 
-    return avatarUrl;
-},
+            console.log('拼接后的请求路径', avatarUrl);
+
+            return avatarUrl;
+        },
 
 
         goToLogin() {
             this.$router.push("/Login");
         },
-        LU_logout(){
+        LU_logout() {
             this.$emit('call-parent')
         }
     },
@@ -158,9 +159,9 @@ export default {
     mounted() {
         console.log("userleft" + this.noArticlesMessageZi);
         console.log('进度是', this.JingDuTiaoZi);
-        console.log('文章属性是',this.lastViewedArticleZi); 
-        
-        
+        console.log('文章属性是', this.lastViewedArticleZi);
+
+
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前
@@ -174,62 +175,63 @@ export default {
 
 
 <style scoped>
-
 .LU-User-card {
-  width: 50px;
-  /* height: 200px; */
-  perspective: 1000px;
+    width: 50px;
+    /* height: 200px; */
+    perspective: 1000px;
 }
 
 .LU-User-card-inner {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.999s;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.999s;
 }
 
 .LU-User-card:hover .LU-User-card-inner {
-  transform: rotateY(180deg);
+    transform: rotateY(180deg);
 }
 
 .LU-User-card-front,
 .LU-User-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
 }
 
 .LU-User-card-front {
-  /* background-color: #6A2C70; */
-  color: #fff;
-  display: flex;
-  align-items: center;
-  /* border: 10px solid #6A2C70; */
-  border-radius: 10px;
-  justify-content: center;
-  font-size: 24px;
-  transform: rotateY(0deg);
+    /* background-color: #6A2C70; */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    /* border: 10px solid #6A2C70; */
+    border-radius: 10px;
+    justify-content: center;
+    font-size: 24px;
+    transform: rotateY(0deg);
 }
 
 .LU-User-card-back {
- background-color: var(--active-background-color);
-  color: #fff;
-  display: flex;
-  align-items: center;
-text-align: center;
-line-height: 10px;
+    background-color: var(--active-background-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    line-height: 10px;
 
-  border-radius: 50%;
-  justify-content: center;
-  font-size: 10px;
-  transform: rotateY(180deg);
+    border-radius: 50%;
+    justify-content: center;
+    font-size: 10px;
+    transform: rotateY(180deg);
 }
-.LU-User-card-back>p{
+
+.LU-User-card-back>p {
     margin-bottom: 0 !important;
     color: #ffffff;
 }
+
 /* From Uiverse.io by mrhyddenn */
 .LU-LeftUser-card {
     width: 290px;
