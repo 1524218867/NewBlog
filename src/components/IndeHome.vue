@@ -58,7 +58,7 @@
                             </router-link>
                         </div>
                         <div>
-                            <img :src="HomelatestArticle.coverImage" alt="Article Cover"
+                            <img :src="HomegetImageUrl(HomelatestArticle.coverImage)" alt="Article Cover"
                                 class="cover-image" />
                         </div>
                     </div>
@@ -192,13 +192,13 @@ export default {
             this.isButtonHighlighted = false; // 取消按钮高亮状态
         },
         // 拼接图片 URL
-        // HomegetImageUrl(imageName) {
-        //     if (!imageName) {
-        //         // 如果 imageName 为空，返回 null 或空字符串
-        //         return null;  // 或者 return ''; 视情况而定
-        //     }
-        //     return `http://localhost:3000/uploads/${imageName}`;
-        // },
+        HomegetImageUrl(imageName) {
+            if (!imageName) {
+                // 如果 imageName 为空，返回 null 或空字符串
+                return null;  // 或者 return ''; 视情况而定
+            }
+            return `http://localhost:3000/uploads/${imageName}`;
+        },
 
         //获取文章
         // 异步获取文章列表
