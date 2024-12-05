@@ -6,7 +6,7 @@
             <div class="LU-User-card">
                 <div class="LU-User-card-inner">
                     <div class="LU-User-card-front">
-                        <img class="LU-UserImg" :src="getUser.avatar" />
+                        <img class="LU-UserImg" :src="HomegetImageUrl(getUser.avatar)" />
                     </div>
                     <div class="LU-User-card-back" @click="LU_logout">
                         <p>退出</p>
@@ -123,6 +123,26 @@ export default {
         // getImageUrl(imageName) {
         //     return `http://localhost:3000/UserImg/${imageName}`;
         // },
+        HomegetImageUrl(imageName) {
+    if (!imageName) {
+        // 如果 imageName 为空，返回 null 或空字符串
+        return null;
+    }
+
+    // 获取当前环境
+    const isDevelopment = process.env.NODE_ENV === 'development';
+
+    // 根据环境拼接 URL
+    const avatarUrl = isDevelopment
+        ? `http://localhost:3000${imageName}`  // 开发环境拼接 localhost:3000
+        : `${window.location.origin}${imageName}`;  // 生产环境使用当前域名
+
+    console.log('拼接后的请求路径', avatarUrl);
+
+    return avatarUrl;
+},
+
+
         goToLogin() {
             this.$router.push("/Login");
         },

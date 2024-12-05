@@ -82,7 +82,7 @@
                         <div class="article">
 
                             <div class="article-img">
-                                <img :src="`/UserImg/${imageName}`" alt="Article Image" />
+                                <img :src="HomegetImageUrl(article.coverImage)" alt="Article Image" />
                             </div>
 
                             <h3>{{ article.title }}</h3>
@@ -191,16 +191,22 @@ export default {
         resetButton() {
             this.isButtonHighlighted = false; // 取消按钮高亮状态
         },
-        // 拼接图片 URL
         HomegetImageUrl(imageName) {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
-                return null;  // 或者 return ''; 视情况而定
+                return null;
             }
-            
-            const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `${window.location.origin}${imageName}`;
-            console.log(avatarUrl);
-            
+
+            // 获取当前环境
+            const isDevelopment = process.env.NODE_ENV === 'development';
+
+            // 根据环境拼接 URL
+            const avatarUrl = isDevelopment
+                ? `http://localhost:3000${imageName}`  // 开发环境拼接 localhost:3000
+                : `${window.location.origin}${imageName}`;  // 生产环境使用当前域名
+
+            console.log('拼接后的请求路径', avatarUrl);
+
             return avatarUrl;
         },
 
