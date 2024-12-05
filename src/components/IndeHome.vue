@@ -197,6 +197,7 @@ export default {
                 // 如果 imageName 为空，返回 null 或空字符串
                 return null;  // 或者 return ''; 视情况而定
             }
+            
             const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `${window.location.origin}${imageName}`;
             console.log(avatarUrl);
             
