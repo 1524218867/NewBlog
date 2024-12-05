@@ -90,21 +90,21 @@ module.exports = {
         warnings: true,
         timings: true,
     },
-    devServer: {//此处的代理是配置服务器后生效的代理
-        proxy: {
-            '/api': {
-                target: 'http://localhost:3000',
-                changeOrigin: true,
+    // devServer: {//此处的代理是配置服务器后生效的代理
+    //     proxy: {
+    //         '/api': {
+    //             target: 'http://localhost:3000',
+    //             changeOrigin: true,
 
-            },
-            '/uploads': {
-                target: 'http://localhost:3000',//处理前端8080后端5000跨域问题
-                changeOrigin: true,
-            },
-            '/UserImg': {
-                target: 'http://localhost:3000', // 后端服务地址
-                changeOrigin: true,
-            },
-        },
-    },
+    //         },
+    //         '/uploads': {
+    //             target: 'http://localhost:3000',//处理前端8080后端5000跨域问题
+    //             changeOrigin: true,
+    //         },
+    //         '/UserImg': {
+    //             target: 'http://localhost:3000', // 后端服务地址
+    //             changeOrigin: true,
+    //         },
+    //     },
+    // },
 };
