@@ -212,7 +212,7 @@ export default {
             return imageUrl;
         },
 
-        getImageUrl(imageName) {
+        HomegetImageUrl(imageName) {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
                 return null;
