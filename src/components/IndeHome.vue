@@ -58,7 +58,7 @@
                             </router-link>
                         </div>
                         <div>
-                            <img :src="HomegetImageUrl(HomelatestArticle.coverImage)" alt="Article Cover"
+                            <img :src="getImageUrl(HomelatestArticle.coverImage)" alt="Article Cover"
                                 class="cover-image" />
                         </div>
                     </div>
@@ -190,6 +190,10 @@ export default {
         },
         resetButton() {
             this.isButtonHighlighted = false; // 取消按钮高亮状态
+        },
+         getImageUrl(imageName) {
+            
+            return `http://localhost:3000/uploads/${imageName}`;
         },
         HomegetImageUrl(imageName) {
             if (!imageName) {
