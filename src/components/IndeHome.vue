@@ -51,14 +51,14 @@
                                 <h2 class="article-title">{{ HomelatestArticle.title || 'No title available'
                                     }}</h2>
                                 <div class="article-info">
-                                    <img :src="SpecifyUserInformation.avatar">
+                                    <img :src="getImageUrl(SpecifyUserInformation.avatar,'UserImg')">
                                     <span>{{ SpecifyUserInformation.username }}</span>
                                 </div>
                                 <button class="article-button">现在阅读</button>
                             </router-link>
                         </div>
                         <div>
-                            <img :src="getImageUrl(HomelatestArticle.coverImage)" alt="Article Cover"
+                            <img :src="getImageUrl(HomelatestArticle.coverImage,'uploads')" alt="Article Cover"
                                 class="cover-image" />
                         </div>
                     </div>
@@ -82,12 +82,12 @@
                         <div class="article">
 
                             <div class="article-img">
-                                <img :src="getImageUrl(article.coverImage)" alt="Article Image" />
+                                <img :src="getImageUrl(article.coverImage,'uploads')" alt="Article Image" />
                             </div>
 
                             <h3>{{ article.title }}</h3>
                             <div class="IH-articlesImgAndName">
-                                <img :src="HomegetImageUrl(getUser.avatar)" />
+                                <img :src="getImageUrl(getUser.avatar,'UserImg')" />
                                 <p>{{ article.author }}</p>
 
 
@@ -191,28 +191,7 @@ export default {
         resetButton() {
             this.isButtonHighlighted = false; // 取消按钮高亮状态
         },
-        getImageUrl(imageName) {
-            if (!imageName) {
-                // 如果 imageName 为空，返回 null 或空字符串
-                return null;
-            }
-
-            const isDevelopment = process.env.NODE_ENV === 'development'; // 判断是否为开发环境
-
-            let imageUrl;
-            if (isDevelopment) {
-                // 开发环境使用 localhost:3000
-                imageUrl = `http://localhost:3000/uploads/${imageName}`;
-            } else {
-                // 生产环境使用当前域名
-                imageUrl = `${window.location.origin}/uploads/${imageName}`;
-            }
-
-            console.log('拼接后的请求路径是', imageUrl);
-            return imageUrl;
-        },
-
-        HomegetImageUrl(imageName) {
+        getImageUrl(imageName, type = 'uploads') {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
                 return null;
@@ -222,13 +201,19 @@ export default {
             const isDevelopment = process.env.NODE_ENV === 'development';
 
             // 根据环境拼接图片路径
-            const imageUrl = isDevelopment
-                ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
-                : `${window.location.origin}/UserImg${imageName}`;  // 生产环境使用当前域名
+            let imageUrl;
+            if (isDevelopment) {
+                // 开发环境使用 localhost:3000
+                imageUrl = `http://localhost:3000/${type}/${imageName}`;
+            } else {
+                // 生产环境使用当前域名
+                imageUrl = `${window.location.origin}/${type}/${imageName}`;
+            }
 
             console.log('拼接后的请求路径是', imageUrl);
             return imageUrl;
         },
+
 
 
         //获取文章
@@ -255,6 +240,8 @@ export default {
             }
         },
         async getUserImgOrObject(userId) {//获取指定用户的信息
+        
+            
             try {
                 const response = await axios.get(`/api/public-user-info/${userId}`);
                 this.SpecifyUserInformation = response.data;
