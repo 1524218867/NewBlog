@@ -82,12 +82,12 @@
                         <div class="article">
 
                             <div class="article-img">
-                                <img :src="HomegetImageUrl(article.coverImage)" alt="Article Image" />
+                                <img :src="getImageUrl(article.coverImage)" alt="Article Image" />
                             </div>
 
                             <h3>{{ article.title }}</h3>
                             <div class="IH-articlesImgAndName">
-                                <img :src="getUser.avatar" />
+                                <img :src="HomegetImageUrl(getUser.avatar)" />
                                 <p>{{ article.author }}</p>
 
 
@@ -196,6 +196,8 @@ export default {
             return `http://localhost:3000/uploads/${imageName}`;
         },
         HomegetImageUrl(imageName) {
+            console.log('拼接后的请求路径是', `http://localhost:3000/UserImg/${imageName}`);
+            
             return `http://localhost:3000/UserImg/${imageName}`;
             // if (!imageName) {
             //     // 如果 imageName 为空，返回 null 或空字符串
