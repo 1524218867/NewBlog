@@ -212,22 +212,29 @@ export default {
             return imageUrl;
         },
 
+
         HomegetImageUrl(imageName) {
             if (!imageName) {
-                // 如果 imageName 为空，返回 null 或空字符串
-                return null;
+                return null;  // 如果 imageName 为空，返回 null
             }
 
-            // 判断当前环境
+            let baseUrl;
             const isDevelopment = process.env.NODE_ENV === 'development';
+            const isLocalhost = window.location.hostname === 'localhost';
 
-            // 根据环境拼接图片路径
-            const imageUrl = isDevelopment
-                ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
-                : `${window.location.origin}/UserImg${imageName}`;  // 生产环境使用当前域名
+            if (isDevelopment) {
+                // 开发环境直接拼接路径
+                baseUrl = `http://localhost:3000/UserImg`;
+            } else if (isLocalhost) {
+                // 生产环境是 localhost 加上端口号
+                baseUrl = `http://localhost:3000/UserImg`;
+            } else {
+                // 生产环境是域名，不加端口号
+                baseUrl = `${window.location.origin}/UserImg`;
+            }
 
-            console.log('拼接后的请求路径是', imageUrl);
-            return imageUrl;
+            console.log('拼接后的请求路径是', `${baseUrl}${imageName}`);
+            return `${baseUrl}${imageName}`;
         },
 
 
