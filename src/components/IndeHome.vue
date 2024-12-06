@@ -191,23 +191,36 @@ export default {
         resetButton() {
             this.isButtonHighlighted = false; // 取消按钮高亮状态
         },
-         getImageUrl(imageName) {
+        getImageUrl(imageName) {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
                 return null;
             }
-            console.log('拼接后的请求路径是', `http://localhost:3000/uploads/${imageName}`);
-            return `http://localhost:3000/uploads/${imageName}`;
+
+            const isDevelopment = process.env.NODE_ENV === 'development'; // 判断是否为开发环境
+
+            let imageUrl;
+            if (isDevelopment) {
+                // 开发环境使用 localhost:3000
+                imageUrl = `http://localhost:3000/uploads/${imageName}`;
+            } else {
+                // 生产环境使用当前域名
+                imageUrl = `${window.location.origin}/uploads/${imageName}`;
+            }
+
+            console.log('拼接后的请求路径是', imageUrl);
+            return imageUrl;
         },
+
         HomegetImageUrl(imageName) {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
                 return null;
             }
             console.log('拼接后的请求路径是', `http://localhost:3000/UserImg${imageName}`);
-            
+
             return `http://localhost:3000/UserImg${imageName}`;
-           
+
         },
 
         //获取文章
