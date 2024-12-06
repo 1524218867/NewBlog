@@ -212,16 +212,24 @@ export default {
             return imageUrl;
         },
 
-        HomegetImageUrl(imageName) {
+        getImageUrl(imageName) {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
                 return null;
             }
-            console.log('拼接后的请求路径是', `http://localhost:3000/UserImg${imageName}`);
 
-            return `http://localhost:3000/UserImg${imageName}`;
+            // 判断当前环境
+            const isDevelopment = process.env.NODE_ENV === 'development';
 
+            // 根据环境拼接图片路径
+            const imageUrl = isDevelopment
+                ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
+                : `${window.location.origin}/UserImg${imageName}`;  // 生产环境使用当前域名
+
+            console.log('拼接后的请求路径是', imageUrl);
+            return imageUrl;
         },
+
 
         //获取文章
         // 异步获取文章列表
