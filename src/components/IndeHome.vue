@@ -196,22 +196,23 @@ export default {
             return `http://localhost:3000/uploads/${imageName}`;
         },
         HomegetImageUrl(imageName) {
-            if (!imageName) {
-                // 如果 imageName 为空，返回 null 或空字符串
-                return null;
-            }
+            return `http://localhost:3000/UserImg/${imageName}`;
+            // if (!imageName) {
+            //     // 如果 imageName 为空，返回 null 或空字符串
+            //     return null;
+            // }
 
-            // 获取当前环境
-            const isDevelopment = process.env.NODE_ENV === 'development';
+            // // 获取当前环境
+            // const isDevelopment = process.env.NODE_ENV === 'development';
 
-            // 根据环境拼接 URL
-            const avatarUrl = isDevelopment
-                ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
-                : `${window.location.origin}${imageName}`;  // 生产环境使用当前域名
+            // // 根据环境拼接 URL
+            // const avatarUrl = isDevelopment
+            //     ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
+            //     : `${window.location.origin}${imageName}`;  // 生产环境使用当前域名
 
-            console.log('拼接后的请求路径', avatarUrl);
+            // console.log('拼接后的请求路径', avatarUrl);
 
-            return avatarUrl;
+            // return avatarUrl;
         },
 
         //获取文章
