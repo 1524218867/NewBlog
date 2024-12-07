@@ -15,7 +15,7 @@
                 <el-input class="ElInp" v-model="form.confirmPassword" type="password"
                     placeholder="Confirm Password"></el-input>
             </el-form-item>
-            <el-button type="primary" class="BtnAft" @click="handleSubmit" block>Create account</el-button>
+            <el-button type="primary" class="BtnAft" @click="handleSubmit" block>创建帐户</el-button>
         </el-form>
         <div class="divider">
             <span class="line"></span>
@@ -24,7 +24,7 @@
         </div>
         <div class="signin-link">
             <small>
-                已经有账户了吗? <a href="#" @click.prevent="toggleForm">Sign in</a>
+                已经有账户了吗? <a href="#" @click.prevent="toggleForm">登陆</a>
             </small>
         </div>
 

@@ -8,7 +8,7 @@
             <el-form-item>
                 <el-input class="ElInp" v-model="form.password" type="password" placeholder="Password"></el-input>
             </el-form-item>
-            <el-button type="primary" class="BtnAft" @click="handleSubmit" block>Sign in</el-button>
+            <el-button type="primary" class="BtnAft" @click="handleSubmit" block>登陆</el-button>
         </el-form>
         <div class="divider">
             <span class="line"></span>
@@ -17,7 +17,7 @@
         </div>
         <div class="signin-link">
             <small>
-                没有账户? <a href="#" @click.prevent="toggleForm">Create account</a>
+                没有账户? <a href="#" @click.prevent="toggleForm">创建账户</a>
             </small>
         </div>
         <!-- <div class="social-buttons">
