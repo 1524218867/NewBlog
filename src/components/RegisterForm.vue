@@ -3,17 +3,17 @@
         <h2>Welcome back!</h2>
         <el-form @submit.prevent="handleSubmit" class="ElFrom">
             <el-form-item>
-                <el-input class="ElInp" v-model="form.name" placeholder="Name"></el-input>
+                <el-input class="ElInp" v-model="form.name" placeholder="用户名"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input class="ElInp" v-model="form.email" placeholder="Email"></el-input>
+                <el-input class="ElInp" v-model="form.email" placeholder="邮箱"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input class="ElInp" v-model="form.password" type="password" placeholder="Password"></el-input>
+                <el-input class="ElInp" v-model="form.password" type="password" placeholder="密码"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-input class="ElInp" v-model="form.confirmPassword" type="password"
-                    placeholder="Confirm Password"></el-input>
+                    placeholder="再次输入密码"></el-input>
             </el-form-item>
             <el-button type="primary" class="BtnAft" @click="handleSubmit" block>创建帐户</el-button>
         </el-form>

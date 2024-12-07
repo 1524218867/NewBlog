@@ -7,11 +7,11 @@
                         name: 'Article',
                         params: { id: category._id || '' },
                     }">
-                        <img :src="HomegetImageUrl(category.coverImage)" alt="Category cover" class="category-cover" />
+                        <img :src="getImageUrl(category.coverImage,'uploads')" alt="Category cover" class="category-cover" />
                         <div class="category-info">
                             <h3 class="category-title">{{ category.title }}</h3>
                             <p class="category-author">
-                                <img :src="authorAvatars[category.user]" alt="Author Avatar" class="author-avatar" />
+                                <img :src="getImageUrl(authorAvatars[category.user],'UserImg')" alt="Author Avatar" class="author-avatar" />
                                 <span>{{ category.author }}</span>
                             </p>
                         </div>
@@ -24,7 +24,7 @@
             <!-- <h2>所有文章</h2> -->
             <div class="article-card" v-for="(article, index) in paginatedArticles" :key="index">
                 <div class="article-cover">
-                    <img :src="`/UserImg/${imageName}`" alt="Article cover"  />
+                    <img :src="getImageUrl(article.coverImage,'uploads')" alt="Article cover" class="article-cover-image" />
 
                 </div>
                
@@ -36,7 +36,7 @@
                      <h3 class="article-title">{{ article.title }}</h3>
                      <p class="article-description">{{ article.description }}</p>
                         <p class="article-author">
-                            <img :src="authorAvatars[article.user]" alt="Author avatar" class="author-avatar" />
+                            <img :src="getImageUrl(authorAvatars[article.user],'UserImg')" alt="Author avatar" class="author-avatar" />
                             <span>{{ article.author }}</span>
                         </p>
                        
@@ -88,6 +88,28 @@ export default {
     },
     watch: {},
     methods: {
+        getImageUrl(imageName, type = 'uploads') {
+            if (!imageName) {
+                // 如果 imageName 为空，返回 null 或空字符串
+                return null;
+            }
+
+            // 判断当前环境
+            const isDevelopment = process.env.NODE_ENV === 'development';
+
+            // 根据环境拼接图片路径
+            let imageUrl;
+            if (isDevelopment) {
+                // 开发环境使用 localhost:3000
+                imageUrl = `http://localhost:3000/${type}/${imageName}`;
+            } else {
+                // 生产环境使用当前域名
+                imageUrl = `${window.location.origin}/${type}/${imageName}`;
+            }
+
+            console.log('拼接后的请求路径是', imageUrl);
+            return imageUrl;
+        },
         async categoriesfetchArticles() {
             try {
                 // 发送GET请求，获取文章列表
@@ -119,9 +141,9 @@ export default {
             }
         },
         //拼接封面图片
-        HomegetImageUrl(imageName) {
-            return `http://localhost:3000/uploads/${imageName}`
-        },
+        // HomegetImageUrl(imageName) {
+        //     return `http://localhost:3000/uploads/${imageName}`
+        // },
         // 跳转到文章详情页
         handlePageChange(page) {
             this.currentPage = page

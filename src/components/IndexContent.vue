@@ -247,7 +247,7 @@
 
 <script>
 import axios from 'axios'; // 引入 axios 用于 HTTP 请求
-
+import { debounce } from 'lodash';
 export default {
   data() {
     return {
@@ -294,18 +294,9 @@ export default {
     handleFileUpload(event) {
       this.coverImage = event.target.files[0];
     },
-    async getUserImgOrObject(userId) {
-      try {
-        const response = await axios.get(`/api/public-user-info/${userId}`);
-        console.log('获取特定用户信息成功:', response.data);
-        
-        return response.data;
-      }catch (error) {
-        console.error('获取特定用户信息失败:', error);
-      }
-    },
+ 
     // 异步保存内容
-    async saveContent() {
+    saveContent: debounce(async function () {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -355,8 +346,9 @@ export default {
         });
         this.errorMessage = true;
       }
-    }
+    
 
+    }, 3000), // 设置 3 秒的去抖动间隔
   }
 };
 
