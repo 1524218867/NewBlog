@@ -69,16 +69,16 @@
             <section class="topic-match">
                 <h2>适合你的话题</h2>
                 <div class="tags">
-
+                    
                     <button v-for="category in articleCategories" :key="category._id"
                         @click="filterArticlesByCategory(category)"
                         :class="{ active: selectedCategory && selectedCategory._id === category._id, }" class="tag">{{
                             category.name }}</button>
                 </div>
 
-                <div class="articles">
+                <div class="articles" v-if="!IsDisplay">
                     <router-link v-for="article in HomefilteredArticles" :key="article._id"
-                        :to="{ name: 'Article', params: { id: article._id } }" class="article-link">
+                        :to="{ name: 'Article', params: { id: article._id } }" class="article-link" >
                         <div class="article">
 
                             <div class="article-img">
@@ -96,11 +96,9 @@
 
                         </div>
                     </router-link>
-                    <div v-if="IsDisplay">
-                        <h3>暂无相关文章</h3>
-                    </div>
+                   
                 </div>
-
+                <div v-else class="no-articles">快去发布文章吧！</div>
             </section>
         </div>
     </div>
@@ -128,7 +126,10 @@ export default {
             isButtonHighlighted: false, // 按钮高亮状态
             SpecifyUserInformation: '',
             articleCategories: [], // 存储文章分类
-
+            allactive:{
+                _id: "all", 
+                name: "全部"
+            },
             selectedCategory: { _id: "all", name: "全部" }, // 默认选中“全部”分类
         };
     },
@@ -142,7 +143,7 @@ export default {
                 // 发送GET请求获取文章分类
                 const response = await axios.get("/api/categories");
                 this.articleCategories = response.data; // 存储文章分类
-                console.log('获取到文章分类：', this.articleCategories);
+                console.log('获取到文章分类：', this.articleCategories.unshift(this.allactive));
 
                 // 默认选择第一个分类作为“全部”分类
                 if (this.articleCategories.length > 0) {
@@ -160,7 +161,7 @@ export default {
 
             if (selectedCategory.name === "全部") {
                 console.log('进入到了全部分类里面');
-
+                this.IsDisplay= false;
                 this.HomefilteredArticles = this.Homearticles; // 显示所有文章
                 console.log('获取到全部分类的文章', this.HomefilteredArticles);
 
@@ -615,7 +616,7 @@ article-cover>div:nth-child(2):active {
     /* 如果需要，可以让超出部分显示省略号 */
 }
 
-.article-info {}
+
 
 .article-info>img {
     width: 20px;
@@ -647,7 +648,13 @@ article-cover>div:nth-child(2):active {
     color: var(--text-color);
     margin-top: 40px;
 }
-
+.no-articles{
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .tags {
     display: flex;
     flex-wrap: wrap;
