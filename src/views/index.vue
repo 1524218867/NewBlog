@@ -1,10 +1,14 @@
 <template>
     <div>
-
-        <transition name="fade">
+<!-- 
+        
+<transition name="fade">
             <Loader v-if="isLoading" :visible="isLoading" />
         </transition>
-        <div v-if="!isLoading" class="container">
+
+-->
+        
+        <div  class="container">
             <!-- 左侧页 -->
             <div class="sidebar">
                 <div class="LogoAndMenu">
@@ -43,7 +47,7 @@
                                     p-id="4266" fill="#ffffff"></path>
                             </svg>
                         </div>
-                        <nav class="popup-window" v-show="isPopupVisible" >
+                        <nav class="popup-window" v-show="isPopupVisible">
 
                             <ul>
                                 <li>
@@ -148,7 +152,12 @@
                                     <router-link :to="getPath(4)" @click.native="setActive('AppUser')">
                                         <button>
 
-                                            <svg t="1733543439950" class="icon" viewBox="0 0 1084 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8145" width="14" height="14"><path d="M655.380078 298.927686a34.354196 34.354196 0 0 1 0-48.268549 33.731765 33.731765 0 0 1 47.947295 0l233.773176 235.52c7.027451 7.087686 10.039216 16.524549 9.59749 25.820863 0.461804 9.296314-2.549961 18.733176-9.59749 25.86102l-233.773176 235.52a33.731765 33.731765 0 0 1-47.947295 0 34.374275 34.374275 0 0 1 0-48.288628L833.054118 546.133333H33.872314C15.199373 546.133333 0 530.873725 0 512c0-18.833569 15.179294-34.133333 33.872314-34.133333H833.054118l-177.653961-178.938981zM948.725961 1024H271.058824c-74.852392 0-135.529412-61.138824-135.529412-136.533333v-136.533334h67.764706v136.533334c0 37.707294 30.33851 68.266667 67.764706 68.266666h677.647058c37.426196 0 67.764706-30.579451 67.764706-68.266666V136.533333c0-37.707294-30.33851-68.266667-67.764706-68.266666H271.058824c-37.426196 0-67.764706 30.559373-67.764706 68.266666v136.533334H135.529412V136.533333C135.529412 61.138824 196.206431 0 271.058824 0h677.647058C1023.558275 0 1084.235294 61.138824 1084.235294 136.533333v750.933334c0 75.39451-60.67702 136.533333-135.529412 136.533333z" p-id="8146"></path></svg>
+                                            <svg t="1733543439950" class="icon" viewBox="0 0 1084 1024" version="1.1"
+                                                xmlns="http://www.w3.org/2000/svg" p-id="8145" width="14" height="14">
+                                                <path
+                                                    d="M655.380078 298.927686a34.354196 34.354196 0 0 1 0-48.268549 33.731765 33.731765 0 0 1 47.947295 0l233.773176 235.52c7.027451 7.087686 10.039216 16.524549 9.59749 25.820863 0.461804 9.296314-2.549961 18.733176-9.59749 25.86102l-233.773176 235.52a33.731765 33.731765 0 0 1-47.947295 0 34.374275 34.374275 0 0 1 0-48.288628L833.054118 546.133333H33.872314C15.199373 546.133333 0 530.873725 0 512c0-18.833569 15.179294-34.133333 33.872314-34.133333H833.054118l-177.653961-178.938981zM948.725961 1024H271.058824c-74.852392 0-135.529412-61.138824-135.529412-136.533333v-136.533334h67.764706v136.533334c0 37.707294 30.33851 68.266667 67.764706 68.266666h677.647058c37.426196 0 67.764706-30.579451 67.764706-68.266666V136.533333c0-37.707294-30.33851-68.266667-67.764706-68.266666H271.058824c-37.426196 0-67.764706 30.559373-67.764706 68.266666v136.533334H135.529412V136.533333C135.529412 61.138824 196.206431 0 271.058824 0h677.647058C1023.558275 0 1084.235294 61.138824 1084.235294 136.533333v750.933334c0 75.39451-60.67702 136.533333-135.529412 136.533333z"
+                                                    p-id="8146"></path>
+                                            </svg>
                                             <span>登陆</span>
 
                                         </button>
@@ -178,8 +187,8 @@
         <div class="Index-content" ref="indexContent" @click="handleClickIndexContent">
             <div class="content-section-Foather">
                 <transition name="fade">
-                    <router-view :getImageUrl="getImageUrl" :key="$route.fullPath"
-                        @themeChanged="updateTheme" @call-parent="logout"></router-view>
+                    <router-view :getImageUrl="getImageUrl" :key="$route.fullPath" @themeChanged="updateTheme"
+                        @call-parent="logout"></router-view>
                 </transition>
             </div>
             <!-- 右侧页 -->
@@ -205,7 +214,7 @@ import ForActicle from "./ForActicle.vue";
 import { Notification } from "element-ui"; // 确保你已经引入了 Notification
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import Loader from "@/components/Loader.vue";
+// import Loader from "@/components/Loader.vue";
 import LeftUser from "@/components/LeftUser.vue";
 export default {
     data() {
@@ -227,7 +236,7 @@ export default {
             noArticlesMessage: false, // 是否显示“继续去发现好的文章”消息
             scrollPosition: 0, // 当前文章的滚动位置
             maxScrollPosition: 0, // 当前文章的最大滚动高度
-            isLoading: true, // 是否显示加载器
+            // isLoading: true, // 是否显示加载器
             JingDuTiao: 0, // 进度条
             isPopupVisible: false, // 控制弹窗的显示与隐藏
 
@@ -260,7 +269,7 @@ export default {
 
     components: {
         ForActicle,
-        Loader,
+        // Loader,
         LeftUser
     },
 
@@ -291,7 +300,7 @@ export default {
         openPopup() {
             if (this.isPopupVisible) {
                 this.isPopupVisible = false;
-            }else {
+            } else {
                 this.isPopupVisible = true;
             }
 
@@ -341,17 +350,16 @@ export default {
         async fetchArticles() {
             try {
                 const response = await axios.get("/api/articles");
-                setTimeout(() => {
-                    this.isLoading = false;
-                }, 2000);
+                // setTimeout(() => {
+                //     this.isLoading = false;
+                // }, 2000);
 
                 this.articles = response.data; // 存储文章列表
                 console.log(response.data);
                 this.filteredArticles = this.articles; // 默认显示所有文章
-                this.latestArticle =
-                    this.articles.length > 0
-                        ? this.articles[this.articles.length - 1]
-                        : {}; // 设置最新文章
+                this.latestArticle = this.articles.length > 0
+                    ? this.articles[this.articles.length - 1]
+                    : {}; // 设置最新文章
 
             } catch (error) {
                 console.error("Error fetching articles:", error);
@@ -496,7 +504,7 @@ export default {
                 1: '/Index/Categories',    // Categories 路由 
                 2: '/Index/Content',    // Content 路由
                 3: '/Index/AppUser',     // AppUser 路由
-                4:'/Login'
+                4: '/Login'
             };
             return paths[key] || '/Index/Home'; // 默认路径
         },
@@ -1471,7 +1479,7 @@ button {
         display: none;
     }
 
-  
+
 
     .menu {
         display: none !important;
