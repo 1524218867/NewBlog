@@ -334,7 +334,7 @@ export default {
                     this.Homearticles.length > 0
                         ? this.Homearticles[this.Homearticles.length - 1]
                         : {}; // 设置最新文章
-                // console.log('文章的所有属性', this.HomelatestArticle);
+                 console.log('文章的所有属性', this.HomelatestArticle);
                 if (this.HomelatestArticle.user == undefined) {
                     return
                 }
