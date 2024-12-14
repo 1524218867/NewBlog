@@ -13,6 +13,7 @@
                     <img :src="getRandomImage()" alt="Random Image" class="article-image" />
                     <div class="overlay">
                         <span class="title">{{ article?.title }}</span>
+                        <p>{{ article.BriefIntroduction }}</p>
                         <p class="article-author"><strong>作者 : </strong> {{ article.author }}</p>
                     </div>
                 </div>

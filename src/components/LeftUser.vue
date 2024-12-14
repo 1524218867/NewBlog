@@ -1,7 +1,7 @@
 <!--  -->
 <template>
     <div class='LU-left-user'>
-        <div class="LU-User" v-if="isLoggedIn">
+        <div class="LU-User" v-if="isLoggedIn" @click="drawer = true">
 
             <div class="LU-User-card">
                 <div class="LU-User-card-inner">
@@ -13,11 +13,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- <div class="LU-image-container">
-
-                <img class="LU-UserImg" :src="getUser.avatar" />
-            </div> -->
             <div class="LU-UserAvatar">
                 <p>{{ getUser.username }}</p>
                 <p>{{ getUser.email }}</p>
@@ -32,6 +27,48 @@
                 <p v-on:click="goToLogin">登录</p>
             </div>
         </div>
+        <el-drawer :direction="direction" title="编辑资料" :visible.sync="drawer" :with-header="false">
+        <!-- 用户信息展示 -->
+        <div class="user-info">
+            <span class="username">Hi, {{ getUser.username }}</span>
+        </div>
+
+        <!-- 头像上传 -->
+        <div class="avatar-upload">
+            <el-upload 
+                class="avatar-uploader" 
+                name="avatar" 
+                :headers="headers" 
+                action="/api/update-avatar"
+                :show-file-list="false" 
+                :on-success="handleAvatarChange" 
+                :before-upload="beforeAvatarUpload"
+            >
+                <div class="avatar-placeholder">
+                    <img v-if="getUser.avatar" :src="HomegetImageUrl(getUser.avatar)" class="LU-UserImg" />
+                    <span v-else><i class="el-icon-upload"></i> 上传头像</span>
+                </div>
+            </el-upload>
+        </div>
+
+        <!-- 昵称修改 -->
+        <div class="username-edit">
+            <el-input 
+                v-model="username" 
+                placeholder="请输入昵称" 
+                class="username-input" 
+                clearable
+            ></el-input>
+            <el-button 
+                @click="saveNickname" 
+                type="primary" 
+                size="small" 
+                class="save-btn"
+            >
+                保存昵称
+            </el-button>
+        </div>
+    </el-drawer>
         <div class="LU-VueCal">
             <vue-cal :hide-progress="true" class="vuecal--date-picker" xsmall hide-view-selector :time="false"
                 active-view="month" :disable-views="['week']" style="width:100%;height: 300px">
@@ -41,10 +78,6 @@
         <div class="LU-BrowsingHistory" v-if="DisplayContinueReadingZi">
 
             <div class="LU-card">
-                <!-- <div class="LU-image" v-if="DisplayContinueReadingZi">
-
-                    <img :src="getImageUrl(lastViewedArticleZi.coverImage)" alt="Article Cover" />
-                </div> -->
                 <div class="LU-content" v-if="lastViewedArticleZi">
 
                     <a href="#">
@@ -54,8 +87,7 @@
                     </a>
 
                     <p class="LU-desc">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae
-                        dolores, possimus pariatur animi temporibus nesciunt praesentium
+                        {{ lastViewedArticleZi.BriefIntroduction }}
                     </p>
                     <div class="LU-progress-container">
                         <div class="LU-progress" :style="{ width: JingDuTiaoZi + '%' }">
@@ -70,13 +102,6 @@
                     </router-link>
                 </div>
                 <div v-else></div>
-                <!-- <div v-else class="LU-LeftUser-card" style="height: 107px;">
-                    <div class="LU-LeftUser-card_load"></div>
-                    <div class="LU-LeftUser-card_load_extreme_title"></div>
-                    <div class="LU-LeftUser-card_load_extreme_descripion"></div>
-
-                </div> -->
-
             </div>
         </div>
 
@@ -87,6 +112,8 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
 import { mapGetters } from "vuex"
+import { Notification } from "element-ui";
+import axios from 'axios';
 export default {
     //import引入的组件需要注入到对象中才能使用
     components: {},
@@ -94,7 +121,12 @@ export default {
         //这里存放数据
         return {
             value: new Date(),
-
+            drawer: false,
+            direction: 'ltr',
+            username: '', // 用于绑定昵称输入框
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`, // 从 localStorage 获取 token
+            },
         };
     },
     props: {
@@ -120,9 +152,7 @@ export default {
     watch: {},
     //方法集合
     methods: {
-        // getImageUrl(imageName) {
-        //     return `http://localhost:3000/UserImg/${imageName}`;
-        // },
+
         HomegetImageUrl(imageName) {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
@@ -134,15 +164,66 @@ export default {
 
             // 根据环境拼接 URL
             const avatarUrl = isDevelopment
-    ? `http://localhost:3000/UserImg${imageName}`  // 开发环境拼接 localhost:3000
-    : `${window.location.origin}/UserImg${imageName}`;  // 生产环境需要加上 /UserImg
+                ? `http://localhost:3000/UserImg/${imageName}`  // 开发环境拼接 localhost:3000
+                : `${window.location.origin}/UserImg/${imageName}`;  // 生产环境需要加上 /UserImg
 
 
             console.log('拼接后的请求路径', avatarUrl);
 
             return avatarUrl;
         },
+        // 处理头像上传成功后的操作
+        handleAvatarChange(state, avatarUrl) {
+            // 更新头像
+            if (avatarUrl.response.avatar) {
+                state.user.details.avatar = avatarUrl.response.avatar; // 更新用户头像
+            }
+            this.$notify({
+                title: '成功',
+                message: '头像上传成功',
+                type: 'success'
+            });
 
+        },
+
+        // 检查上传的头像文件类型，防止上传不合适的文件
+        beforeAvatarUpload(file) {
+            const isImage = file.type.startsWith('image/');
+            if (!isImage) {
+                this.$message.error('只能上传图片文件');
+            }
+            return isImage;
+        },
+
+        // 保存修改后的昵称
+        saveNickname() {
+            console.log(this.username);
+
+            const updateNickname = async () => {
+                try {
+                    // 使用 Vuex 的 state 来访问用户 ID
+                    const response = await axios.put(`/api/users/${this.$store.state.user.details._id}`
+                        , { username: this.username }, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
+                    console.log(response);
+                    this.$message.success('昵称已更新');
+                    // 如果需要，可以在这里更新 Vuex 中的用户名
+                    // 使用 commit 提交 mutation 来更新 Vuex 中的用户名
+
+                    this.$store.commit('updateUsername', response.data.username);
+
+                } catch (error) {
+                    console.error(error);
+                    this.$message.error('修改失败');
+                }
+            };
+
+            // 调用 updateNickname 函数
+            updateNickname();
+        },
 
         goToLogin() {
             this.$router.push("/Login");
@@ -173,8 +254,36 @@ export default {
 }
 </script>
 
+<style>
 
+
+</style>
 <style scoped>
+
+.LU-UserImg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.username-edit {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* 增加底部间距 */
+}
+
+.username-input {
+    flex: 1;
+    margin-right: 10px; /* 输入框和按钮之间增加间距 */
+    font-size: 14px;
+}
+
+.save-btn {
+    padding: 6px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+}
 .LU-User-card {
     width: 50px;
     /* height: 200px; */
@@ -442,7 +551,7 @@ export default {
 
 .LU-title {
     color: var(--text-color);
-    font-size: 1.5rem;
+    font-size: 1rem;
     line-height: 1.75rem;
     font-weight: 700;
 }

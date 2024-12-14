@@ -39,6 +39,9 @@ const store = new Vuex.Store({
         setHasVisitedHome(state, status) {
             state.hasVisitedHome = status; // 更新状态
         },
+        updateUsername(state, newUsername) {
+            state.user.details.username = newUsername;
+        }
     },
 
     actions: {

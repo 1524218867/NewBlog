@@ -5,9 +5,26 @@
     <div class="profile-info">
      
       <!-- 头像 -->
-      <div class="profile-avatar" @click="changeAvatar">
+      <div class="profile-avatar" @click="openDialog">
         <img :src="getImageUrl(user.avatar,'UserImg')" alt="头像" />
       </div>
+       <!-- 弹框 -->
+    <el-dialog title="修改头像" :visible.sync="dialogVisible">
+      <el-upload
+        action="/api/update-avatar"
+        :headers="headers" 
+        name="avatar" 
+        list-type="picture-card"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+      >
+        <i class="el-icon-plus"></i>
+      </el-upload>
+      <p>点击上传新的头像。</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
       <!-- 用户名 -->
       <div class="username">
         <h3> <span>{{ user.username }}</span></h3>
@@ -43,10 +60,13 @@ import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`, // 从 localStorage 获取 token
+      },
       user:"",
       // 浏览记录
       browsingHistory: ["文章1", "文章2", "文章3"],
-
+      dialogVisible: false, // 控制弹框显示
       // 收藏
       favorites: ["文章A", "文章B", "文章C"],
       isMobile: false// 判断是否为移动端
@@ -91,9 +111,15 @@ export default {
             return imageUrl;
         },
     // 修改头像功能
-    changeAvatar() {
-      alert("修改头像功能可以在这里实现");
-      // 这里可以调用文件上传的功能
+    openDialog() {
+      this.dialogVisible = true; // 打开弹框
+    },
+    handleSuccess(response, file) {
+      this.$message.success('头像上传成功！');
+      this.dialogVisible = false; // 关闭弹框
+    },
+    handleError(err) {
+      this.$message.error('头像上传失败，请重试！');
     },
     // 检查设备类型，判断是移动端还是PC端
     checkDeviceType() {

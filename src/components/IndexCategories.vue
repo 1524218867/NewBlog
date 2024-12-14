@@ -34,6 +34,7 @@
                         params: { id: article._id || '' },
                     }">
                      <h3 class="article-title">{{ article.title }}</h3>
+                     <p class="article-date">{{ article.BriefIntroduction }}</p>
                      <p class="article-description">{{ article.description }}</p>
                         <p class="article-author">
                             <img :src="getImageUrl(authorAvatars[article.user],'UserImg')" alt="Author avatar" class="author-avatar" />
@@ -41,7 +42,7 @@
                         </p>
                        
                         
-                        <p class="article-date">{{ new Date(article.lastViewedAt).toLocaleDateString() }}</p>
+                        
                     </router-link>
                 </div>
                 <div >
@@ -454,7 +455,9 @@ export default {
 }
 
 .article-date {
-    font-size: 12px;
+    margin: 0;
+    line-height: 20px;
+    font-size: 10px;
     color: gray;
 }
 

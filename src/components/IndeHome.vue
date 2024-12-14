@@ -4,11 +4,18 @@
         <div class="Zhong-container">
             <header>
                 <div class="Input-but">
-                    <input type="text" placeholder="Search article you want..." class="search-bar"
-                        @focus="highlightButton" @blur="resetButton" />
-                    <button class="search-button" :class="{ highlight: isButtonHighlighted }">
+                    <input type="text" v-model="keyword" @keyup.enter="searchArticles" placeholder="输入关键词搜索..."
+                        @input="onInputChange" class="search-bar" @focus="highlightButton" @blur="resetButton" />
+                    <button class="search-button" @click="searchArticles" :class="{ highlight: isButtonHighlighted }">
                         <img src="../../public/SouSuo.png" alt="搜索" />
                     </button>
+                    <ul>
+                        <li v-for="article in articles" :key="article._id">
+                            <router-link :to="{ name: 'Article', params: { id: article._id } }">
+                                {{ article.title }}
+                            </router-link>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="IN-icons">
@@ -48,17 +55,21 @@
                                 name: 'Article',
                                 params: { id: HomelatestArticle._id || '' },
                             }">
-                                <h2 class="article-title">{{ HomelatestArticle.title || 'No title available'
-                                    }}</h2>
-                                <div class="article-info">
-                                    <img :src="getImageUrl(SpecifyUserInformation.avatar,'UserImg')">
-                                    <span>{{ SpecifyUserInformation.username }}</span>
+                                <div class="article-content">
+                                    <h2 class="article-title">{{ HomelatestArticle.title || 'No title available'
+                                        }}</h2>
+                                    <h3 class="article-brief">{{ HomelatestArticle.BriefIntroduction }}</h3>
+                                    <div class="article-info">
+                                        <img :src="getImageUrl(SpecifyUserInformation.avatar, 'UserImg')">
+                                        <span>{{ SpecifyUserInformation.username }}</span>
+                                    </div>
                                 </div>
+
                                 <button class="article-button">现在阅读</button>
                             </router-link>
                         </div>
                         <div>
-                            <img :src="getImageUrl(HomelatestArticle.coverImage,'uploads')" alt="Article Cover"
+                            <img :src="getImageUrl(HomelatestArticle.coverImage, 'uploads')" alt="Article Cover"
                                 class="cover-image" />
                         </div>
                     </div>
@@ -69,7 +80,7 @@
             <section class="topic-match">
                 <h2>适合你的话题</h2>
                 <div class="tags">
-                    
+
                     <button v-for="category in articleCategories" :key="category._id"
                         @click="filterArticlesByCategory(category)"
                         :class="{ active: selectedCategory && selectedCategory._id === category._id, }" class="tag">{{
@@ -78,16 +89,17 @@
 
                 <div class="articles" v-if="!IsDisplay">
                     <router-link v-for="article in HomefilteredArticles" :key="article._id"
-                        :to="{ name: 'Article', params: { id: article._id } }" class="article-link" >
+                        :to="{ name: 'Article', params: { id: article._id } }" class="article-link">
                         <div class="article">
 
                             <div class="article-img">
-                                <img :src="getImageUrl(article.coverImage,'uploads')" alt="Article Image" />
+                                <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article Image" />
                             </div>
 
                             <h3>{{ article.title }}</h3>
+                            <h4>{{ article.BriefIntroduction }}</h4>
                             <div class="IH-articlesImgAndName">
-                                <img :src="getImageUrl(getUser.avatar,'UserImg')" />
+                                <img :src="getImageUrl(getUser.avatar, 'UserImg')" />
                                 <p>{{ article.author }}</p>
 
 
@@ -96,7 +108,7 @@
 
                         </div>
                     </router-link>
-                   
+
                 </div>
                 <div v-else class="no-articles">快去发布文章吧！</div>
             </section>
@@ -111,6 +123,7 @@
 //例如：import 《组件名称》 from '《组件路径》';
 import axios from "axios";
 import { mapGetters } from "vuex";
+import { Notification } from "element-ui";
 export default {
 
 
@@ -119,6 +132,8 @@ export default {
     },
     data() {
         return {
+            keyword: '',
+            articles: [],
             IsDisplay: null,
             Homearticles: [], // 用于存储文章列表
             HomefilteredArticles: [], // 根据分类筛选后的文章
@@ -126,8 +141,8 @@ export default {
             isButtonHighlighted: false, // 按钮高亮状态
             SpecifyUserInformation: '',
             articleCategories: [], // 存储文章分类
-            allactive:{
-                _id: "all", 
+            allactive: {
+                _id: "all",
                 name: "全部"
             },
             selectedCategory: { _id: "all", name: "全部" }, // 默认选中“全部”分类
@@ -137,13 +152,101 @@ export default {
         ...mapGetters(["isLoggedIn", "getUser"]),
     },
     methods: {
+        // async searchArticles() {
+        //     if (!this.keyword){
+
+        //         return
+        //     }
+        //     console.log(this.keyword);
+
+        //     try {
+        //         const response = await fetch(`/api/articles/search?keyword=${encodeURIComponent(this.keyword)}`);
+        //         if (!response.ok) throw new Error('Failed to fetch articles');
+        //         console.log(response);
+        //         if(response ==404){
+        //             Notification.error({
+        //             title: "退出登录失败",
+        //             message: "退出登录过程中出现错误，请稍后重试。",
+        //             duration: 3000,
+        //         });
+        //         }
+
+        //         this.articles = await response.json();
+        //     } catch (error) {
+
+        //         console.error(error);
+        //     }
+        // },
+        async searchArticles() {
+            if (!this.keyword) {
+                this.message = '请输入关键词进行搜索'; // 提示输入关键词
+                Notification.info({
+                    title: "注意",
+                    message: "请输入关键词进行搜索",
+                    duration: 3000,
+                });
+                return;
+            }
+            try {
+                const response = await fetch(`/api/articles/search?keyword=${encodeURIComponent(this.keyword)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.length > 0) {
+                        this.articles = data; // 展示搜索结果
+                        this.message = ''; // 清空提示
+                    } else {
+                        this.message = '没有找到相关的文章'; // 提示无结果
+                    }
+                } else if (response.status === 404) {
+                    this.message = '没有找到相关的文章'; // 后端显式返回 404
+                    console.log('没有找到相关的文章');
+                    Notification.error({
+                        title: "错误",
+                        message: "没有找到相关的文章",
+                        duration: 3000,
+                    });
+
+                } else if (response.status === 400) {
+                    this.message = '请输入关键词进行搜索'; // 关键词为空
+                    Notification.info({
+                        title: "错误",
+                        message: "请输入关键词进行搜索",
+                        duration: 3000,
+                    });
+                } else {
+                    this.message = '服务器出错，请稍后再试'; // 其他错误
+                    Notification.error({
+                        title: "错误",
+                        message: "服务器出错，请稍后再试",
+                        duration: 3000,
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                this.message = '网络错误，请检查网络连接'; // 网络问题
+                Notification.error({
+                    title: "错误",
+                    message: "网络错误，请检查网络连接",
+                    duration: 3000,
+                });
+            }
+        },
+        onInputChange() {
+            if (!this.keyword.trim()) {
+                // 输入框为空时清空结果和提示
+                this.articles = [];
+                this.message = '请输入关键词进行搜索';
+            }
+        },
 
         async fetchCategories() {
             try {
                 // 发送GET请求获取文章分类
                 const response = await axios.get("/api/categories");
                 this.articleCategories = response.data; // 存储文章分类
-                console.log('获取到文章分类：', this.articleCategories.unshift(this.allactive));
+              
+                this.articleCategories.unshift(this.allactive);// 添加全部分类
+             
 
                 // 默认选择第一个分类作为“全部”分类
                 if (this.articleCategories.length > 0) {
@@ -157,16 +260,16 @@ export default {
         filterArticlesByCategory(selectedCategory) {
 
             this.selectedCategory = selectedCategory; // 更新当前选择的分类
-            console.log('当前选择的分类', this.selectedCategory);
+            // console.log('当前选择的分类', this.selectedCategory);
 
             if (selectedCategory.name === "全部") {
-                console.log('进入到了全部分类里面');
-                this.IsDisplay= false;
+                // console.log('进入到了全部分类里面');
+                this.IsDisplay = false;
                 this.HomefilteredArticles = this.Homearticles; // 显示所有文章
-                console.log('获取到全部分类的文章', this.HomefilteredArticles);
+                // console.log('获取到全部分类的文章', this.HomefilteredArticles);
 
             } else {
-                console.log('获取到当前分类', this.selectedCategory);
+                // console.log('获取到当前分类', this.selectedCategory);
 
                 this.HomefilteredArticles = this.Homearticles.filter((article) =>
                     article.categories.some(
@@ -182,7 +285,7 @@ export default {
                     this.IsDisplay = false;
 
                 }
-                console.log('获取到当前分类的文章', this.HomefilteredArticles);
+                // console.log('获取到当前分类的文章', this.HomefilteredArticles);
 
             }
         },
@@ -211,7 +314,7 @@ export default {
                 imageUrl = `${window.location.origin}/${type}/${imageName}`;
             }
 
-            console.log('拼接后的请求路径是', imageUrl);
+            // console.log('拼接后的请求路径是', imageUrl);
             return imageUrl;
         },
 
@@ -225,13 +328,13 @@ export default {
                 // 发送GET请求，获取文章列表
                 const response = await axios.get("/api/articles");
                 this.Homearticles = response.data; // 存储文章列表
-                console.log(response.data);
+                // console.log(response.data);
                 this.HomefilteredArticles = this.Homearticles; // 默认显示所有文章
                 this.HomelatestArticle =
                     this.Homearticles.length > 0
                         ? this.Homearticles[this.Homearticles.length - 1]
                         : {}; // 设置最新文章
-                console.log('文章的所有属性', this.HomelatestArticle);
+                // console.log('文章的所有属性', this.HomelatestArticle);
                 if (this.HomelatestArticle.user == undefined) {
                     return
                 }
@@ -241,12 +344,12 @@ export default {
             }
         },
         async getUserImgOrObject(userId) {//获取指定用户的信息
-        
-            
+
+
             try {
                 const response = await axios.get(`/api/public-user-info/${userId}`);
                 this.SpecifyUserInformation = response.data;
-                console.log('获取特定用户信息成功:', response.data);
+                // console.log('获取特定用户信息成功:', response.data);
 
                 return response.data;
             } catch (error) {
@@ -298,12 +401,30 @@ header {
 }
 
 .Input-but {
-    width: 80%;
+    width: 65%;
     display: flex;
+    position: relative;
+    justify-content: space-between;
+}
+
+.Input-but ul {
+    position: absolute;
+    top: 70px;
+    width: 100%;
+    background-color: var(--ActiveBgc);
+    /* padding: 20px; */
+    border-radius: 20px;
+    list-style: none;
+    /* box-sizing: border-box; */
+}
+
+.Input-but ul li {
+    margin: 10px;
+
 }
 
 .search-bar {
-    width: 60%;
+    width: 100%;
     padding: 18px;
     border-radius: 20px 0 0 20px;
     border-top: 1px solid var(--Border);
@@ -499,13 +620,14 @@ header {
 
 .article-cover>div:nth-child(1) {
     height: 100%;
-    width: 50%;
+    flex: 1;
 
 
     box-sizing: border-box;
 }
 
 .article-cover>div:nth-child(1)>a {
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -522,6 +644,7 @@ header {
 .article-cover>div:nth-child(2) {
     /* height:;
     width: ; */
+    flex: 1;
     overflow: hidden;
     border-radius: 30px 30px 50px 50px;
     /* min-width: 184px;
@@ -532,11 +655,11 @@ header {
 
 }
 
-article-cover>div:nth-child(2):hover {
+.article-cover>div:nth-child(2):hover {
     transform: scale(1.021);
 }
 
-article-cover>div:nth-child(2):active {
+.article-cover>div:nth-child(2):active {
     transform: scale(0.95) rotateZ(1.1deg);
 }
 
@@ -606,16 +729,29 @@ article-cover>div:nth-child(2):active {
     opacity: 0;
 }
 
+.article-content {
+    width: 100%;
+}
+
 .article-title {
     color: var(--font-color);
     font-size: 1.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-bottom: 15px;
     /* 单行文本 */
     /* 如果需要，可以让超出部分显示省略号 */
 }
 
+.article-brief {
+    font-size: .9375rem;
+    margin-bottom: 10px;
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 
 .article-info>img {
@@ -632,6 +768,7 @@ article-cover>div:nth-child(2):active {
 
 .article-info {
     max-width: 100%;
+    margin-bottom: 10px;
 }
 
 .article-info h3 {
@@ -648,13 +785,15 @@ article-cover>div:nth-child(2):active {
     color: var(--text-color);
     margin-top: 40px;
 }
-.no-articles{
+
+.no-articles {
     height: 100px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .tags {
     display: flex;
     flex-wrap: wrap;
@@ -771,10 +910,15 @@ article-cover>div:nth-child(2):active {
 .article h3 {
     margin: 0;
 
-    padding: 15px 0px;
+    padding: 15px 0px 0;
     font-size: 16px;
     font-weight: 600;
     line-height: 30px;
+}
+
+.article h4 {
+    font-size: 13px;
+    color: gray;
 }
 
 .IH-articlesImgAndName p {
@@ -816,6 +960,11 @@ article-cover>div:nth-child(2):active {
     .search-bar {
         width: 100%;
     }
+
+    .article-cover>div:nth-child(2) {
+        flex: none;
+        margin-bottom: 10px;
+    }
 }
 
 /* 小屏幕（手机横屏） */
@@ -835,6 +984,11 @@ article-cover>div:nth-child(2):active {
 
     .search-bar {
         width: 100%;
+    }
+
+    .article-cover>div:nth-child(2) {
+        flex: none;
+        margin-bottom: 10px;
     }
 }
 

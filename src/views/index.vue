@@ -213,7 +213,7 @@ import { mapState, mapGetters, mapActions } from "vuex";
 import ForActicle from "./ForActicle.vue";
 import { Notification } from "element-ui"; // 确保你已经引入了 Notification
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 // import Loader from "@/components/Loader.vue";
 import LeftUser from "@/components/LeftUser.vue";
 export default {
@@ -317,14 +317,14 @@ export default {
         async logout() {
             try {
 
-                if (!this.$store.getters.isLoggedIn) {
-                    Notification.warning({
-                        title: "未登录",
-                        message: "您尚未登录，无法执行退出操作。",
-                        duration: 3000,
-                    });
-                    return;
-                }
+                // if (!this.$store.getters.isLoggedIn) {
+                //     Notification.warning({
+                //         title: "未登录",
+                //         message: "您尚未登录，无法执行退出操作。",
+                //         duration: 3000,
+                //     });
+                //     return;
+                // }
                 await this.$store.dispatch("logout"); // 调用 Vuex 的 logout action
                 localStorage.removeItem("token"); // 清除本地存储中的 token
                 Notification.success({
@@ -461,34 +461,42 @@ export default {
         },
 
         //处理超时token
-        isTokenExpired(token) {
+        // isTokenExpired() {
+        //     const token = localStorage.getItem("token");
+        //     if (!token) return true;
 
-            if (!token) return true;
+        //     try {
+        //         const decodedToken = jwtDecode(token);
+        //         const currentTime = Math.floor(Date.now() / 1000); // 当前时间（秒）
+        //         if(decodedToken.exp < currentTime){
+        //             this.logout();
 
-            try {
-                const decodedToken = jwtDecode(token);
-                const currentTime = Math.floor(Date.now() / 1000); // 当前时间（秒）
-
-                // 检查当前时间是否超过 token 的过期时间
-                return decodedToken.exp < currentTime;
-            } catch (error) {
-                console.error("Token decoding failed:", error);
-                return true; // 如果解码失败，视为 token 已过期
-            }
-        },
+        //             Notification.error({
+        //             title: "登录信息已失效",
+        //             message: "请从新登录",
+        //             duration: 3000,
+        //         });
+        //         }
+        //         // 检查当前时间是否超过 token 的过期时间
+             
+        //     } catch (error) {
+        //         console.error("Token decoding failed:", error);
+        //         return true; // 如果解码失败，视为 token 已过期
+        //     }
+        // },
         //从本地获取token，然后传给isTokenExpired处理,isTokenExpiredr如果返回true，就调用退出登录方法
-        checkTokenAndRedirect() {
-            const token = localStorage.getItem("token");
+        // checkTokenAndRedirect() {
+        //     const token = localStorage.getItem("token");
 
-            if (this.isTokenExpired(token)) {
-                Notification.error({
-                    title: "登录信息已失效",
-                    message: "请从新登录",
-                    duration: 3000,
-                });
-                this.logout(); // 如果 token 已过期，执行退出登录操作
-            }
-        },
+            // if (this.isTokenExpired(token)) {
+            //     Notification.error({
+            //         title: "登录信息已失效",
+            //         message: "请从新登录",
+            //         duration: 3000,
+            //     });
+            //     this.logout(); // 如果 token 已过期，执行退出登录操作
+            // }
+        // },
         setActive(section) {
             // if (!this.hasToken && this.activeSection === 'categories') {
             //     return; // 如果没有 token 并且 activeSection 是 'categories'，则返回
@@ -586,8 +594,8 @@ export default {
         this.setActiveSection()
         // 在组件挂载后执行获取浏览记录
         this.fetchViewedArticles();
-        this.checkTokenAndRedirect(); // 组件挂载时检查 token过期没有
-
+      // 组件挂载时检查 token过期没有
+        // this.isTokenExpired()
     },
 };
 </script>
