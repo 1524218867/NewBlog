@@ -30,7 +30,7 @@
       </el-form-item>
 
       <!-- 上传封面图片 -->
-      <el-form-item label="上传封面图片" prop="coverImage">
+      <el-form-item label="上传封面图片" prop="articleImage">
         <el-upload class="upload-demo" action="" :file-list="fileList" :on-change="handleFileUpload"
           :auto-upload="false">
           <el-button>点击上传图片</el-button>
@@ -49,6 +49,9 @@
 import axios from "axios";
 import { debounce } from "lodash";
 import { Notification } from 'element-ui';
+import { f } from "vue-cal";
+import 'core-js/features/array';
+
 export default {
   data() {
     return {
@@ -105,11 +108,18 @@ export default {
           console.log("表单验证未通过");
           return;
         }
+        console.log('这是表单数据', this.formData);
+
         const formData = new FormData();
         Object.keys(this.formData).forEach((key) => {
           formData.append(key, this.formData[key]);
         });
 
+
+        // 打印 formData 内容
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+        }
         try {
           const token = localStorage.getItem("token");
           const response = await axios.post("/api/articles", formData, {
@@ -137,20 +147,24 @@ export default {
 </script>
 
 <style>
-.el-input__inner{
+.el-input__inner {
   background-color: var(--ActiveBgc);
   border: 1px solid var(--Border);
 }
-.el-textarea__inner{
+
+.el-textarea__inner {
   background-color: var(--ActiveBgc);
   border: 1px solid var(--Border);
 }
-.ql-toolbar.ql-snow{
+
+.ql-toolbar.ql-snow {
   border: 1px solid var(--Border);
 }
-.ql-container.ql-snow{
+
+.ql-container.ql-snow {
   border: 1px solid var(--Border);
 }
+
 /* 超小屏幕（手机竖屏） */
 @media (max-width: 576px) {
   .el-upload-dragger {
