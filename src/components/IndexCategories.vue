@@ -456,7 +456,12 @@ export default {
 
 .article-date {
     margin: 0;
-    line-height: 20px;
+    display: -webkit-box;        /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
+  -webkit-box-orient: vertical; /* 设置垂直排列 */
+  overflow: hidden;            /* 隐藏超出部分 */
+  -webkit-line-clamp: 1;       /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
+  height: 20px;                /* 固定高度 */
+  line-height: 20px; 
     font-size: 10px;
     color: gray;
 }
