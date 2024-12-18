@@ -278,8 +278,6 @@ button:active {
   font-size: 16px;
   margin-bottom: 5px;
 }
-
-/* 浏览记录和收藏部分 */
 .record-section,
 .favorites-section {
   background-color: #f0f0f0;
@@ -361,6 +359,9 @@ button:active {
   line-height: 20px;
   color: gray;
 }
+
+
+
 
 .profile-aeticleContent img {
   border-radius: 10px;
