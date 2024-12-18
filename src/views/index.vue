@@ -187,7 +187,7 @@
         <div class="Index-content" ref="indexContent" @click="handleClickIndexContent">
             <div class="content-section-Foather">
                 <transition name="fade">
-                    <router-view :getImageUrl="getImageUrl" :key="$route.fullPath" @themeChanged="updateTheme"
+                    <router-view :getImageUrl="getImageUrl" :key="$route.fullPath" @themeChanged="updateTheme" :lastViewedArticleZi="lastViewedArticle"
                         @call-parent="logout"></router-view>
                 </transition>
             </div>

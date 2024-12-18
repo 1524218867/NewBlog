@@ -10,6 +10,7 @@ const store = new Vuex.Store({
         sharedData: null,
         hasVisitedHome: false,  // 初始状态为 false
         // 用户信息状态
+       
         user: {
             token: null, // 用于存储用户的 JWT token（通常用于认证）
             details: {} // 存储用户详细信息（如用户名、邮箱等）
@@ -28,7 +29,7 @@ const store = new Vuex.Store({
             state.user.token = token;
             state.user.details = details;
         },
-
+       
         // 清空用户信息
         deleteUser(state) {
             state.user = {

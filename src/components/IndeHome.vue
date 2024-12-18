@@ -20,27 +20,26 @@
 
                 <div class="IN-icons">
 
-                    <div class="IN-XiaoXiBtn">
-                        <div class="">
-                            <img src="../../public/Xiaoxi.png" alt="消息" />
-                        </div>
-                        <div class="IN-Xiao">1
-                            <svg></svg>
-                            <svg></svg>
-                            <svg></svg>
-                        </div>
-                    </div>
+                    <div class="tooltip-container">
+                        <div class="tooltip">
+                            <div v-for="article in UserColl" :key="article.articleId._id">
+                                <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
+                                <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
+                                <h2>{{ article.articleId.title }}</h2>
+                            </router-link>
+                            </div>
 
-                    <div class="IN-Shoubtn">
-                        <div class="">
-                            <img src="../../public/ShouCang.png" alt="收藏" />
                         </div>
-                        <div class="IN-Shou">2
-                            <svg></svg>
-                            <svg></svg>
-                            <svg></svg>
-                        </div>
+                        <span class="text"><img src="../../public/ShouCang.png" alt="收藏" /></span>
                     </div>
+                    <!-- <div class="tooltip-container">
+                        <div class="tooltip">
+                            111
+                        </div>
+                        <span class="text">
+                            <img src="../../public/Xiaoxi.png" alt="消息" />
+                        </span>
+                    </div> -->
                 </div>
             </header>
 
@@ -124,6 +123,7 @@
 import axios from "axios";
 import { mapGetters } from "vuex";
 import { Notification } from "element-ui";
+import router from "@/router";
 export default {
 
 
@@ -146,37 +146,15 @@ export default {
                 name: "全部"
             },
             selectedCategory: { _id: "all", name: "全部" }, // 默认选中“全部”分类
+            UserColl: [],
         };
     },
     computed: {
         ...mapGetters(["isLoggedIn", "getUser"]),
+
     },
     methods: {
-        // async searchArticles() {
-        //     if (!this.keyword){
-
-        //         return
-        //     }
-        //     console.log(this.keyword);
-
-        //     try {
-        //         const response = await fetch(`/api/articles/search?keyword=${encodeURIComponent(this.keyword)}`);
-        //         if (!response.ok) throw new Error('Failed to fetch articles');
-        //         console.log(response);
-        //         if(response ==404){
-        //             Notification.error({
-        //             title: "退出登录失败",
-        //             message: "退出登录过程中出现错误，请稍后重试。",
-        //             duration: 3000,
-        //         });
-        //         }
-
-        //         this.articles = await response.json();
-        //     } catch (error) {
-
-        //         console.error(error);
-        //     }
-        // },
+        //搜索
         async searchArticles() {
             if (!this.keyword) {
                 this.message = '请输入关键词进行搜索'; // 提示输入关键词
@@ -231,6 +209,7 @@ export default {
                 });
             }
         },
+
         onInputChange() {
             if (!this.keyword.trim()) {
                 // 输入框为空时清空结果和提示
@@ -238,15 +217,15 @@ export default {
                 this.message = '请输入关键词进行搜索';
             }
         },
-
+        //获取分类文章
         async fetchCategories() {
             try {
                 // 发送GET请求获取文章分类
                 const response = await axios.get("/api/categories");
                 this.articleCategories = response.data; // 存储文章分类
-              
+
                 this.articleCategories.unshift(this.allactive);// 添加全部分类
-             
+
 
                 // 默认选择第一个分类作为“全部”分类
                 if (this.articleCategories.length > 0) {
@@ -257,7 +236,9 @@ export default {
                 console.error("Error fetching categories:", error);
             }
         },
+        //获取分类
         filterArticlesByCategory(selectedCategory) {
+
 
             this.selectedCategory = selectedCategory; // 更新当前选择的分类
             // console.log('当前选择的分类', this.selectedCategory);
@@ -317,9 +298,6 @@ export default {
             // console.log('拼接后的请求路径是', imageUrl);
             return imageUrl;
         },
-
-
-
         //获取文章
         // 异步获取文章列表
         async HomefetchArticles() {
@@ -334,7 +312,7 @@ export default {
                     this.Homearticles.length > 0
                         ? this.Homearticles[this.Homearticles.length - 1]
                         : {}; // 设置最新文章
-                 console.log('文章的所有属性', this.HomelatestArticle);
+                console.log('文章的所有属性', this.HomelatestArticle);
                 if (this.HomelatestArticle.user == undefined) {
                     return
                 }
@@ -356,11 +334,39 @@ export default {
                 console.error('获取特定用户信息失败:', error);
             }
         },
+        //获取用户收藏记录
+        async loadFavorites() {
+
+
+            if (!localStorage.getItem('token')) {
+                return;
+            }
+            const response = await axios.get('/api/user', {
+                //获取用户信息。
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
+
+            const LoaduserId = response.data._id // 获取当前用户的 ID
+
+            try {
+                const response = await axios.get(`/api/favorites/${LoaduserId}`)
+
+                this.favorites = response.data; // 确保这是一个数组
+                this.UserColl = this.favorites
+                console.log('在持久化中获取到用户的收藏记录', this.UserColl);
+
+
+            } catch (error) {
+                console.error('加载收藏失败:', error)
+            }
+        },
     },
     created() {
         // 在获取数据之前，设置默认的 "全部" 分类
         this.selectedCategory = { _id: "all", name: "全部" };
-
+        this.loadFavorites();
         // 获取文章和分类数据
         this.HomefetchArticles(); // 获取文章
         this.fetchCategories(); // 获取分类
@@ -384,7 +390,8 @@ export default {
 </script>
 <style scoped>
 a {
-    text-decoration: none;
+    text-decoration: none !important;
+    color: #000;
 }
 
 .content-section {
@@ -412,15 +419,20 @@ header {
     top: 70px;
     width: 100%;
     background-color: var(--ActiveBgc);
-    /* padding: 20px; */
+  
     border-radius: 20px;
     list-style: none;
     /* box-sizing: border-box; */
 }
+.Input-but ul>li:hover{
+    background-color: var(--background-color);
 
+}
 .Input-but ul li {
     margin: 10px;
-
+    border-radius: 15px;
+    padding: 10px;
+    transition: all 250ms;
 }
 
 .search-bar {
@@ -483,43 +495,82 @@ header {
     justify-content: space-evenly;
 }
 
-.IN-XiaoXiBtn {
+
+/* From Uiverse.io by Pipo-13 */
+.tooltip-container {
+    /* --background: #d87639; */
     position: relative;
-    padding: 20px 0 20px 0;
+    /* background: var(--background); */
+    cursor: pointer;
+    transition: all 0.2s;
+    /* font-size: 17px; */
+    /* padding: 0.7em 1.8em; */
+    border-radius: 0.2rem;
 }
 
-.IN-Xiao {
+.tooltip {
     position: absolute;
-    display: none;
-    /* opacity: 0; */
-    width: 100px;
-    height: 100px;
-    background-color: #fff;
-    right: 0%;
-    top: 69px;
-
+    top: 50px;
+    left: -75%;
+    transform: translateX(-50%) rotateX(90deg);
+    padding: 0.6em;
+    opacity: 0.6;
+    transition: all 0.5s ease;
+    background: var(--ActiveBgc);
+    height: 0px;
+    width: 200px;
+    cursor: default;
+    border-radius: 25px;
+    overflow: auto;
 }
 
-.IN-Xiao::after {
-    content: "";
-    width: 13px;
-    height: 13px;
-    background-color: #fff;
-    transform: rotate(45deg);
-    position: absolute;
-    top: -6px;
-    right: 10px;
+.tooltip>div {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-color);
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    transition: all 250ms;
+}
+.tooltip>div:hover {
+    border-color: rgba(0, 0, 0, 0.15);
+ box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+ color: rgba(0, 0, 0, 0.65);
+ transform: translateY(-1px);
+}
+.tooltip>div>a>h2 {
+    margin-left: 5px;
+    font-size: 15px;
+    color: gray;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    height: 40px;
+    line-height: 21px;
 }
 
-.IN-XiaoXiBtn:hover .IN-Xiao {
-    display: block;
-    /* opacity: 1; */
-    width: 100px;
-    /* height: 100px; */
-    background-color: #fff;
-
+.tooltip>div>img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
 }
 
+
+/* 这里隐藏滚动条 */    
+.tooltip::-webkit-scrollbar {
+  display: none; /* 隐藏滚动条 */
+}
+.tooltip-container:hover .tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    /* background: none; */
+    height: 300px;
+    width: 200px;
+    transform: translateX(-50%) rotateX(0deg);
+    /* overflow:auto; */
+}
 
 .IN-Shoubtn {
     position: relative;
@@ -621,7 +672,7 @@ header {
 .article-cover>div:nth-child(1) {
     height: 100%;
     flex: 1;
-overflow: overlay;
+    overflow: overlay;
 
     box-sizing: border-box;
 }
@@ -652,11 +703,12 @@ overflow: overlay;
     display: flex;
     align-items: center;
     justify-content: center;
-
+    transition: all 250ms;
 }
 
 .article-cover>div:nth-child(2):hover {
     transform: scale(1.021);
+    transition: all 250ms;
 }
 
 .article-cover>div:nth-child(2):active {
@@ -667,7 +719,7 @@ overflow: overlay;
     width: 100%;
     height: 100%;
     object-fit: cover;
-
+    transition: all 250ms;
     /* 让图片完整覆盖容器，保持比例 */
 }
 
@@ -919,12 +971,17 @@ overflow: overlay;
 .article span {
     font-size: 13px;
     color: gray;
-    display: -webkit-box;        /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
-  -webkit-box-orient: vertical; /* 设置垂直排列 */
-  overflow: hidden;            /* 隐藏超出部分 */
-  -webkit-line-clamp: 2;       /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
-  height: 40px;                /* 固定高度 */
-  line-height: 20px; 
+    display: -webkit-box;
+    /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
+    -webkit-box-orient: vertical;
+    /* 设置垂直排列 */
+    overflow: hidden;
+    /* 隐藏超出部分 */
+    -webkit-line-clamp: 2;
+    /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
+    height: 40px;
+    /* 固定高度 */
+    line-height: 20px;
 }
 
 .IH-articlesImgAndName p {
@@ -943,7 +1000,7 @@ overflow: overlay;
 
 @media (max-width: 577px) {
     .article-cover {
-
+        height: 400px;
         flex-direction: column-reverse;
     }
 
@@ -968,17 +1025,19 @@ overflow: overlay;
     }
 
     .article-cover>div:nth-child(2) {
-        flex: none;
+        
         margin-bottom: 10px;
     }
+   
 }
 
 /* 小屏幕（手机横屏） */
 @media (min-width: 577px) and (max-width: 768px) {
     .article-cover {
-
+        height: 500px;
         flex-direction: column-reverse;
     }
+
 
     .IN-icons {
         display: none !important;
@@ -993,7 +1052,7 @@ overflow: overlay;
     }
 
     .article-cover>div:nth-child(2) {
-        flex: none;
+  
         margin-bottom: 10px;
     }
 }

@@ -7,11 +7,13 @@
                         name: 'Article',
                         params: { id: category._id || '' },
                     }">
-                        <img :src="getImageUrl(category.coverImage,'uploads')" alt="Category cover" class="category-cover" />
+                        <img :src="getImageUrl(category.coverImage, 'uploads')" alt="Category cover"
+                            class="category-cover" />
                         <div class="category-info">
                             <h3 class="category-title">{{ category.title }}</h3>
                             <p class="category-author">
-                                <img :src="getImageUrl(authorAvatars[category.user],'UserImg')" alt="Author Avatar" class="author-avatar" />
+                                <img :src="getImageUrl(authorAvatars[category.user], 'UserImg')" alt="Author Avatar"
+                                    class="author-avatar" />
                                 <span>{{ category.author }}</span>
                             </p>
                         </div>
@@ -24,35 +26,37 @@
             <!-- <h2>所有文章</h2> -->
             <div class="article-card" v-for="(article, index) in paginatedArticles" :key="index">
                 <div class="article-cover">
-                    <img :src="getImageUrl(article.coverImage,'uploads')" alt="Article cover" class="article-cover-image" />
+                    <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article cover"
+                        class="article-cover-image" />
 
                 </div>
-               
+
                 <div class="article-details">
                     <router-link :to="{
                         name: 'Article',
                         params: { id: article._id || '' },
                     }">
-                     <h3 class="article-title">{{ article.title }}</h3>
-                     <p class="article-date">{{ article.BriefIntroduction }}</p>
-                     <p class="article-description">{{ article.description }}</p>
+                        <h3 class="article-title">{{ article.title }}</h3>
+                        <p class="article-date">{{ article.BriefIntroduction }}</p>
+                        <p class="article-description">{{ article.description }}</p>
                         <p class="article-author">
-                            <img :src="getImageUrl(authorAvatars[article.user],'UserImg')" alt="Author avatar" class="author-avatar" />
+                            <img :src="getImageUrl(authorAvatars[article.user], 'UserImg')" alt="Author avatar"
+                                class="author-avatar" />
                             <span>{{ article.author }}</span>
                         </p>
-                       
-                        
-                        
+
+
+
                     </router-link>
                 </div>
-                <div >
+                <div>
                     <span v-if="userInformation" class="favorite-button" @click="toggleFavorite(article._id)">
-                    <img :src="require(`@/assets/ShouCang-Huang.png`)" v-if="article.isFavorite" />
-                    <img :src="require(`@/assets/ShouCang-Bai.png`)" v-else />
-                </span>
-                <span v-else></span>
+                        <img :src="require(`@/assets/ShouCang-Huang.png`)" v-if="article.isFavorite" />
+                        <img :src="require(`@/assets/ShouCang-Bai.png`)" v-else />
+                    </span>
+                    <span v-else></span>
                 </div>
-               
+
             </div>
 
             <!-- Element UI Pagination -->
@@ -218,6 +222,8 @@ export default {
         },
         //获取用户信息用来或得到用户id，然后通过用户id获取用户收藏的文章id，然后对比文章id，如果相同则显示收藏按钮，否则显示未收藏按钮。
         async loadFavorites() {
+            
+
             if (!localStorage.getItem('token')) {
                 return;
             }
@@ -235,7 +241,7 @@ export default {
 
                 this.favorites = response.data; // 确保这是一个数组
                 console.log('在持久化中获取到用户的收藏记录', this.favorites);
-
+              
                 // 如果没有数据，直接返回
                 if (!Array.isArray(this.favorites)) {
                     console.error("返回的收藏数据不是数组", this.favorites);
@@ -267,7 +273,10 @@ export default {
         this.getuser()
         this.loadFavorites()
         this.categoriesfetchArticles()
+        // 监听登录成功事件
+        
     },
+    
 }
 </script>
 
@@ -380,7 +389,7 @@ export default {
     /* height: 200px; */
     margin-bottom: 20px;
     margin-top: 55px;
-  
+
     padding: 2vw;
 
     background-color: var(--ActiveBgc);
@@ -411,23 +420,27 @@ export default {
 
 .article-cover {
     border-radius: 10px;
-    width: 100%;          /* 设置宽度为父容器的100% */
-  aspect-ratio: 1 / 1;  /* 宽高比为1:1，保持正方形 */
+    width: 100%;
+    /* 设置宽度为父容器的100% */
+    aspect-ratio: 1 / 1;
+    /* 宽高比为1:1，保持正方形 */
     margin-right: 20px;
     flex: 1;
 }
-.article-cover >img{
+
+.article-cover>img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 10px;
 }
+
 .article-details {
 
     width: 100%;
     aspect-ratio: 2 / 1;
     /* height: 100% !important; */
- 
+
     flex: 2;
 }
 
@@ -439,7 +452,7 @@ export default {
     align-items: flex-start;
     text-decoration: none;
     color: var(--font-color);
-  
+
 }
 
 .article-title {
@@ -456,12 +469,17 @@ export default {
 
 .article-date {
     margin: 0;
-    display: -webkit-box;        /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
-  -webkit-box-orient: vertical; /* 设置垂直排列 */
-  overflow: hidden;            /* 隐藏超出部分 */
-  -webkit-line-clamp: 1;       /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
-  height: 20px;                /* 固定高度 */
-  line-height: 20px; 
+    display: -webkit-box;
+    /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
+    -webkit-box-orient: vertical;
+    /* 设置垂直排列 */
+    overflow: hidden;
+    /* 隐藏超出部分 */
+    -webkit-line-clamp: 1;
+    /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
+    height: 20px;
+    /* 固定高度 */
+    line-height: 20px;
     font-size: 10px;
     color: gray;
 }
@@ -486,15 +504,17 @@ export default {
 .el-pagination {
     text-align: center;
 }
+
 @media (max-width: 576px) {
     .article-title {
 
-    font-size: 10px;
- 
-}
-.article-author{
-    font-size: .5rem;
-}
+        font-size: 10px;
+
+    }
+
+    .article-author {
+        font-size: .5rem;
+    }
 
 }
 
@@ -502,28 +522,29 @@ export default {
 @media (min-width: 577px) and (max-width: 768px) {
     .article-title {
 
-font-size: 13px;
+        font-size: 13px;
 
-}
+    }
 }
 
 /* 中等屏幕（平板） */
 @media (min-width: 769px) and (max-width: 992px) {
     .article-title {
 
-font-size: 13px;
+        font-size: 13px;
 
-}
-.article-author{
-    font-size: .625rem;
-}
+    }
+
+    .article-author {
+        font-size: .625rem;
+    }
 }
 
 /* 大屏幕（小笔记本） */
 @media (min-width: 993px) and (max-width: 1200px) {
-    .article-author{
-    font-size: .625rem;
-}
+    .article-author {
+        font-size: .625rem;
+    }
 }
 
 /* 超大屏幕（台式机） */
