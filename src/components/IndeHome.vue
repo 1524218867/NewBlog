@@ -21,8 +21,8 @@
                 <div class="IN-icons">
 
                     <div class="tooltip-container">
-                        <div class="tooltip">
-                            <div v-if="UserColl.length > 0">
+                        <div >
+                            <div v-if="UserColl.length > 0" class="tooltip">
                                 <div v-for="article in UserColl" :key="article.articleId._id">
                                     <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
                                     <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
