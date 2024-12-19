@@ -35,7 +35,6 @@
 
                         <span class="text"><img src="../../public/ShouCang.png" alt="收藏" /></span>
                     </div>
-            
                 </div>
             </header>
 
