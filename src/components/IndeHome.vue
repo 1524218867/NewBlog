@@ -22,14 +22,17 @@
 
                     <div class="tooltip-container">
                         <div class="tooltip">
-                            <div v-for="article in UserColl" :key="article.articleId._id">
-                                <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
-                                <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
-                                <h2>{{ article.articleId.title }}</h2>
-                            </router-link>
+                            <div v-if="UserColl.length > 0">
+                                <div v-for="article in UserColl" :key="article.articleId._id">
+                                    <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
+                                    <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
+                                        <h2>{{ article.articleId.title }}</h2>
+                                    </router-link>
+                                </div>
                             </div>
-
+                            <span v-else>暂无收藏文章哦！</span>
                         </div>
+
                         <span class="text"><img src="../../public/ShouCang.png" alt="收藏" /></span>
                     </div>
                     <!-- <div class="tooltip-container">
@@ -419,15 +422,17 @@ header {
     top: 70px;
     width: 100%;
     background-color: var(--ActiveBgc);
-  
+
     border-radius: 20px;
     list-style: none;
     /* box-sizing: border-box; */
 }
-.Input-but ul>li:hover{
+
+.Input-but ul>li:hover {
     background-color: var(--background-color);
 
 }
+
 .Input-but ul li {
     margin: 10px;
     border-radius: 15px;
@@ -507,7 +512,13 @@ header {
     /* padding: 0.7em 1.8em; */
     border-radius: 0.2rem;
 }
-
+.tooltip span {
+    display: block;
+    width: 100%;
+    margin-top:50% ;
+    text-align: center;
+  
+}
 .tooltip {
     position: absolute;
     top: 50px;
@@ -533,12 +544,14 @@ header {
     margin-bottom: 10px;
     transition: all 250ms;
 }
+
 .tooltip>div:hover {
     border-color: rgba(0, 0, 0, 0.15);
- box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
- color: rgba(0, 0, 0, 0.65);
- transform: translateY(-1px);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+    color: rgba(0, 0, 0, 0.65);
+    transform: translateY(-1px);
 }
+
 .tooltip>div>a>h2 {
     margin-left: 5px;
     font-size: 15px;
@@ -558,10 +571,12 @@ header {
 }
 
 
-/* 这里隐藏滚动条 */    
+/* 这里隐藏滚动条 */
 .tooltip::-webkit-scrollbar {
-  display: none; /* 隐藏滚动条 */
+    display: none;
+    /* 隐藏滚动条 */
 }
+
 .tooltip-container:hover .tooltip {
     opacity: 1;
     pointer-events: auto;
@@ -1025,10 +1040,10 @@ header {
     }
 
     .article-cover>div:nth-child(2) {
-        
+
         margin-bottom: 10px;
     }
-   
+
 }
 
 /* 小屏幕（手机横屏） */
@@ -1052,7 +1067,7 @@ header {
     }
 
     .article-cover>div:nth-child(2) {
-  
+
         margin-bottom: 10px;
     }
 }

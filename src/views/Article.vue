@@ -36,13 +36,13 @@
                 <textarea v-model="newComment" placeholder="写下你的评论..."></textarea>
                 <button @click="submitComment">提交评论</button>
             </div>
-            <div class="comments-list">
+            <div class="comments-list" v-if="comments.length!==0">
                 <h3>最新评论</h3>
                 <div v-for="comment in comments" :key="comment._id" class="comment">
                     <p>{{ comment.content }}</p>
 
                     <small v-if="comment.author && comment.createdAt">
-                        by {{ comment.author.username }} · {{ new Date(comment.createdAt).toLocaleString() }}
+                        来自：{{ comment.author.username }} · {{ new Date(comment.createdAt).toLocaleString() }}
                     </small>
                     <small v-else>
                         Unknown author · Unknown date
@@ -53,7 +53,7 @@
                         <div v-for="reply in comment.replies" :key="reply._id" class="reply">
                             <p>{{ reply.content }}</p>
                             <small v-if="reply.author && reply.createdAt">
-                                by {{ reply.author.username }} · {{ new Date(reply.createdAt).toLocaleString() }}
+                                来自： {{ reply.author.username }} · {{ new Date(reply.createdAt).toLocaleString() }}
                             </small>
                             <small v-else>
                                 Unknown author · Unknown date
@@ -67,11 +67,12 @@
                     <!-- 回复表单 -->
                     <div v-if="replyingTo === comment._id" class="reply-form">
                         <textarea v-model="replyContent" placeholder="输入回复内容..."></textarea>
-                        <button @click="submitReply(comment._id)">提交回复</button>
+                        <button @click="submitReply(comment._id)">提交</button>
                         <button @click="cancelReply">取消</button>
                     </div>
                 </div>
             </div>
+            <div v-else></div>
         </section>
 
 
@@ -357,6 +358,8 @@ export default {
 
                 // 将获取到的评论赋值给this.comments
                 this.comments = response.data.comments;
+                console.log(this.comments);
+                
             } catch (error) {
                 // 如果发生错误，打印错误信息
                 console.error('Error fetching comments:', error);
@@ -523,7 +526,17 @@ export default {
     padding-bottom: 30px;
     text-indent: 2em;
 }
-
+.reply-form{
+    display: flex;
+}
+.reply-form textarea {
+    margin: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+.reply-form button {
+    margin: 10px;
+}
 /*评论 */
 .comment-section {
     padding: 20px;
