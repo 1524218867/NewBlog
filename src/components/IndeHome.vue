@@ -35,14 +35,7 @@
 
                         <span class="text"><img src="../../public/ShouCang.png" alt="收藏" /></span>
                     </div>
-                    <!-- <div class="tooltip-container">
-                        <div class="tooltip">
-                            111
-                        </div>
-                        <span class="text">
-                            <img src="../../public/Xiaoxi.png" alt="消息" />
-                        </span>
-                    </div> -->
+            
                 </div>
             </header>
 
