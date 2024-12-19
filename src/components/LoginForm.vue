@@ -20,11 +20,7 @@
                 没有账户? <a href="#" @click.prevent="toggleForm">创建账户</a>
             </small>
         </div>
-        <!-- <div class="social-buttons">
-            <el-button class="FengXiangBtn" type="default" block>Continue with Google</el-button>
-            <el-button class="FengXiangBtn" type="default" block>Continue with Apple</el-button>
-            <el-button class="FengXiangBtn" type="default" block>Continue with Twitter</el-button>
-        </div> -->
+    
     </div>
 </template>
 
@@ -71,10 +67,7 @@ export default {
                 }
             },
         };
-    },
-
-
-    
+    },    
     methods: {
         ...mapActions(['updateUser']), // 映射 Vuex actions
         async handleSubmit() {
