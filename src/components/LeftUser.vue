@@ -28,47 +28,37 @@
             </div>
         </div>
         <el-drawer :direction="direction" title="编辑资料" :visible.sync="drawer" :with-header="false">
-        <!-- 用户信息展示 -->
-        <div class="user-info">
-            <span class="username">Hi, {{ getUser.username }}</span>
-        </div>
+            <!-- 用户信息展示 -->
+            <div class="user-info">
+                <strong class="username">Hi, {{ getUser.username }} ~</strong>
+            </div>
 
-        <!-- 头像上传 -->
-        <div class="avatar-upload">
-            <el-upload 
-                class="avatar-uploader" 
-                name="avatar" 
-                :headers="headers" 
-                action="/api/update-avatar"
-                :show-file-list="false" 
-                :on-success="handleAvatarChange" 
-                :before-upload="beforeAvatarUpload"
-            >
-                <div class="avatar-placeholder">
-                    <img v-if="getUser.avatar" :src="HomegetImageUrl(getUser.avatar)" class="LU-UserImg" />
-                    <span v-else><i class="el-icon-upload"></i> 上传头像</span>
-                </div>
-            </el-upload>
-        </div>
+            <!-- 头像上传 -->
+            <p>修改头像</p>
+            <div class="avatar-upload">
+                <el-upload class="avatar-uploader" name="avatar" :headers="headers" action="/api/update-avatar"
+                    :show-file-list="false" :on-success="handleAvatarChange" :before-upload="beforeAvatarUpload">
+                    
+                    <div class="avatar-placeholder">
+                        <img v-if="getUser.avatar" :src="HomegetImageUrl(getUser.avatar)" class="LU-UserImg" />
+                        <span v-else><i class="el-icon-upload"></i> 上传头像</span>
+                    </div>
+                </el-upload>
+            </div>
 
-        <!-- 昵称修改 -->
-        <div class="username-edit">
-            <el-input 
-                v-model="username" 
-                placeholder="请输入昵称" 
-                class="username-input" 
-                clearable
-            ></el-input>
-            <el-button 
-                @click="saveNickname" 
-                type="primary" 
-                size="small" 
-                class="save-btn"
-            >
-                保存昵称
-            </el-button>
-        </div>
-    </el-drawer>
+            <!-- 昵称修改 -->
+            <p>修改昵称</p>
+            <div class="username-edit">
+              
+                <el-input v-model="username" placeholder="请输入昵称" class="username-input" clearable></el-input>
+                <el-button @click="saveNickname" type="primary" size="small" class="save-btn">
+                    保存昵称
+                </el-button>
+            </div>
+            <div>
+                <p class="user-Gengduo">更多权限暂未开放</p>
+            </div>
+        </el-drawer>
         <div class="LU-VueCal">
             <vue-cal :hide-progress="true" class="vuecal--date-picker" xsmall hide-view-selector :time="false"
                 active-view="month" :disable-views="['week']" style="width:100%;height: 300px">
@@ -255,11 +245,29 @@ export default {
 </script>
 
 <style>
-
-
+.el-drawer__body{
+    padding: 20px;
+}
+.avatar-upload{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.save-btn{
+    height: 40px;
+}
 </style>
 <style scoped>
-
+.user-Gengduo{
+    height: 300px ;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+.user-info{
+    margin-bottom: 10px;
+}
 .LU-UserImg {
     width: 80px;
     height: 80px;
@@ -270,12 +278,14 @@ export default {
 .username-edit {
     display: flex;
     align-items: center;
-    margin-bottom: 20px; /* 增加底部间距 */
+    margin-bottom: 20px;
+    /* 增加底部间距 */
 }
 
 .username-input {
     flex: 1;
-    margin-right: 10px; /* 输入框和按钮之间增加间距 */
+    margin-right: 10px;
+    /* 输入框和按钮之间增加间距 */
     font-size: 14px;
 }
 
@@ -284,6 +294,7 @@ export default {
     font-size: 14px;
     border-radius: 4px;
 }
+
 .LU-User-card {
     width: 50px;
     /* height: 200px; */
@@ -468,12 +479,17 @@ export default {
     margin: 0 0 0 19px;
     color: var(--text-color);
     font-size: 1rem;
-    display: -webkit-box;        /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
-  -webkit-box-orient: vertical; /* 设置垂直排列 */
-  overflow: hidden;            /* 隐藏超出部分 */
-  -webkit-line-clamp: 1;       /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
-  height: 20px;                /* 固定高度 */
-  line-height: 20px; 
+    display: -webkit-box;
+    /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
+    -webkit-box-orient: vertical;
+    /* 设置垂直排列 */
+    overflow: hidden;
+    /* 隐藏超出部分 */
+    -webkit-line-clamp: 1;
+    /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
+    height: 20px;
+    /* 固定高度 */
+    line-height: 20px;
 }
 
 .LU-Calendar {
