@@ -15,7 +15,6 @@ import Settings from '../components/IndexSettings.vue'
 import VueRouter from 'vue-router'
 import Article from '../views/Article.vue'
 import AppUser from '../components/AppUser.vue';
-
 import { isTokenExpired } from '@/utils/auth';
 import { Notification } from 'element-ui';
 // 引入ElementUI
