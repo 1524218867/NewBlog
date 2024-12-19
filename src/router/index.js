@@ -15,7 +15,7 @@ import Settings from '../components/IndexSettings.vue'
 import VueRouter from 'vue-router'
 import Article from '../views/Article.vue'
 import AppUser from '../components/AppUser.vue';
-import PcUser from '../components/PcUser.vue';
+
 import { isTokenExpired } from '@/utils/auth';
 import { Notification } from 'element-ui';
 // 引入ElementUI
@@ -74,6 +74,7 @@ const routes = [
                 name: 'AppUser',
                 meta: { requiresAuth: true }, // 需要认证的页面
             },
+
             {
                 path: 'settings',
                 component: Settings,
