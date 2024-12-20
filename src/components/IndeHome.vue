@@ -21,8 +21,8 @@
                 <div class="IN-icons">
 
                     <div class="tooltip-container">
-                        <div >
-                            <div v-if="UserColl.length > 0" class="tooltip">
+                        <div class="tooltip">
+                            <div v-if="UserColl.length >0" >
                                 <div v-for="article in UserColl" :key="article.articleId._id">
                                     <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
                                     <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
@@ -82,27 +82,27 @@
                 </div>
 
                 <div class="articles" v-if="!IsDisplay">
-                    <router-link v-for="article in HomefilteredArticles" :key="article._id"
-                        :to="{ name: 'Article', params: { id: article._id } }" class="article-link">
+                    <div v-for="article in HomefilteredArticles" :key="article._id" class="article-link">
+
                         <div class="article">
+                            <router-link :to="{ name: 'Articleams: { id: article._id }' }">
+                                <div class="article-img">
+                                    <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article Image" />
+                                </div>
 
-                            <div class="article-img">
-                                <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article Image" />
-                            </div>
-
-                            <h3>{{ article.title }}</h3>
-                            <span>{{ article.BriefIntroduction }}</span>
-                            <div class="IH-articlesImgAndName">
-                                <img :src="getImageUrl(getUser.avatar, 'UserImg')" />
-                                <p>{{ article.author }}</p>
+                                <h3>{{ article.title }}</h3>
+                                <span>{{ article.BriefIntroduction }}</span>
+                                <div class="IH-articlesImgAndName">
+                                    <img :src="getImageUrl(getUser.avatar, 'UserImg')" />
+                                    <p>{{ article.author }}</p>
 
 
-                            </div>
-
+                                </div>
+                            </router-link>
 
                         </div>
-                    </router-link>
 
+                    </div>
                 </div>
                 <div v-else class="no-articles">快去发布文章吧！</div>
             </section>
@@ -504,13 +504,15 @@ header {
     /* padding: 0.7em 1.8em; */
     border-radius: 0.2rem;
 }
+
 .tooltip span {
     display: block;
     width: 100%;
-    margin-top:50% ;
+    margin-top: 50%;
     text-align: center;
-  
+
 }
+
 .tooltip {
     position: absolute;
     top: 50px;
@@ -888,33 +890,50 @@ header {
 }
 
 .articles {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    justify-content: space-between;
-    width: 100%;
+    /* margin-top: 20px; */
+    column-count: 2;
+    /* 设置为 2 列 */
+    column-gap: 20px;
+    /* 列之间的间距 */
+
 }
 
-.articles>div {
+.article-link {
+    transition: all 0.4s;
+
+    background-color: rgba(243, 233, 233, 0.2);
+    /* 浅灰色 */
+    padding: 20px;
+    margin-bottom: 20px;
+    break-inside: avoid;
+    /* 避免被拆分成两列 */
+    border-radius: 8px;
+    /* 可选，圆角 */
+}
+
+.article-link:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* 添加轻微的阴影来突出 */
+}
+
+/* .articles>div {
+   
     height: 300px;
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-}
+} */
 
-.article-link {
-    /* margin: 0 20px 0 20px; */
-    width: 48%;
-    display: block;
-}
+
 
 .article {
     width: 100%;
     color: var(--text-color);
     overflow: hidden;
-    margin-bottom: 55px;
+    /* margin-bottom: 55px; */
     /* margin: 20px; */
     padding: 10px;
     /* background-color: var(--ActiveBgc); */
