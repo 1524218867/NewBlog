@@ -20,7 +20,7 @@
                 <div class="IN-icons">
                     <div class="tooltip-container">
                         <div class="tooltip">
-                            <div v-if="UserColl.length >0" >
+                            <div v-if="UserColl.length > 0">
                                 <div v-for="article in UserColl" :key="article.articleId._id">
                                     <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
                                     <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
@@ -83,7 +83,8 @@
                     <div v-for="article in HomefilteredArticles" :key="article._id" class="article-link">
 
                         <div class="article">
-                            <router-link :to="{ name: 'Articleams: { id: article._id }' }">
+                            
+                            <router-link :to="{ name: 'Article', params:{ id: article._id } }">
                                 <div class="article-img">
                                     <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article Image" />
                                 </div>
