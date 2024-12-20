@@ -28,9 +28,7 @@
         <p><span>{{ user.email }}</span></p>
       </div>
       <button @click="LU_logout">登出</button>
-
     </div>
-
     <!-- 浏览记录 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
