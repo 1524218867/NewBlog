@@ -35,7 +35,6 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>最近浏览</span>
-
       </div>
       <div class="profile-text item">
         <el-row>
