@@ -17,7 +17,6 @@
                         </li>
                     </ul>
                 </div>
-
                 <div class="IN-icons">
                     <div class="tooltip-container">
                         <div class="tooltip">
