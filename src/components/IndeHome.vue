@@ -19,7 +19,6 @@
                 </div>
 
                 <div class="IN-icons">
-
                     <div class="tooltip-container">
                         <div class="tooltip">
                             <div v-if="UserColl.length >0" >
