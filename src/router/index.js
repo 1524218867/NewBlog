@@ -24,6 +24,7 @@ Vue.use(VueRouter)
 // 路由配置
 // 定义路由数组
 const routes = [
+    
     // 重定向到Index页面
     {
         path: '/',
@@ -101,6 +102,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
+    mode: 'history', // 使用 history 模式
     routes,
 })
 // 设置全局路由守卫

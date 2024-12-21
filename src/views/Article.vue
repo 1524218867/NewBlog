@@ -589,10 +589,15 @@ export default {
 }
 
 .replies {
+    padding: 10px;
+    background-color: var(--article-card-background-color);
+    border-radius: 10px;
     margin-left: 30px;
     margin-top: 10px;
 }
-
+.replies .reply {
+    margin-bottom: 10px;
+}
 
 @media (min-width: 1200px) {
     .articleBox {

@@ -145,10 +145,7 @@ export default {
                 console.error('Error fetching user avatar:', error)
             }
         },
-        //拼接封面图片
-        // HomegetImageUrl(imageName) {
-        //     return `http://localhost:3000/uploads/${imageName}`
-        // },
+       
         // 跳转到文章详情页
         handlePageChange(page) {
             this.currentPage = page
