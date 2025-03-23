@@ -1,114 +1,102 @@
 <template>
-
-    <div class="content-section" id="section1">
-        <div class="Zhong-container">
-            <header>
-                <div class="Input-but">
-                    <input type="text" v-model="keyword" @keyup.enter="searchArticles" placeholder="输入关键词搜索..."
-                        @input="onInputChange" class="search-bar" @focus="highlightButton" @blur="resetButton" />
-                    <button class="search-button" @click="searchArticles" :class="{ highlight: isButtonHighlighted }">
-                        <img src="../../public/SouSuo.png" alt="搜索" />
-                    </button>
-                    <ul>
-                        <li v-for="article in articles" :key="article._id">
-                            <router-link :to="{ name: 'Article', params: { id: article._id } }">
-                                {{ article.title }}
-                            </router-link>
-                        </li>
-                    </ul>
+    <div class="home-container">
+        <!-- 顶部特色文章区域 -->
+        <section class="featured-section">
+            <div class="featured-wrapper">
+                <div class="featured-background">
+                    <img :src="getImageUrl(HomelatestArticle.coverImage, 'uploads')" alt="Featured Article">
+                    <div class="gradient-overlay"></div>
                 </div>
-                <div class="IN-icons">
-                    <div class="tooltip-container">
-                        <div class="tooltip">
-                            <div v-if="UserColl.length > 0">
-                                <div v-for="article in UserColl" :key="article.articleId._id">
-                                    <img :src="getImageUrl(article.articleId.coverImage, 'uploads')" alt="文章封面" />
-                                    <router-link :to="{ name: 'Article', params: { id: article.articleId._id } }">
-                                        <h2>{{ article.articleId.title }}</h2>
-                                    </router-link>
+                <div class="featured-content">
+                    <div class="featured-text">
+                        <router-link :to="{ name: 'Article', params: { id: HomelatestArticle._id || '' } }">
+                            <!-- <span class="featured-label">精选文章</span> -->
+                            <h1 class="featured-title">{{ HomelatestArticle.title || 'No title available' }}</h1>
+                            <p class="featured-brief">{{ HomelatestArticle.BriefIntroduction }}</p>
+                            <div class="featured-meta">
+                                <div class="featured-author">
+                                    <img :src="getImageUrl(SpecifyUserInformation.avatar, 'UserImg')" alt="作者头像">
+                                    <span>{{ SpecifyUserInformation.username }}</span>
+                                </div>
+                                <div class="featured-stats">
+                                    <span><i class="el-icon-view"></i> {{ HomelatestArticle.viewCount || 0 }}</span>
+                                    <span><i class="el-icon-star-off"></i> {{ HomelatestArticle.favoriteCount || 0 }}</span>
                                 </div>
                             </div>
-                            <span v-else>暂无收藏文章哦！</span>
-                        </div>
-
-                        <span class="text"><img src="../../public/ShouCang.png" alt="收藏" /></span>
+                            <button class="read-more-btn">
+                                阅读全文
+                                <i class="el-icon-arrow-right"></i>
+                            </button>
+                        </router-link>
                     </div>
                 </div>
-            </header>
+            </div>
+        </section>
 
-            <section class="article-of-the-day">
-
-                <div class="main-article">
-
-                    <div class="article-cover">
-
-                        <div>
-                            <router-link :to="{
-                                name: 'Article',
-                                params: { id: HomelatestArticle._id || '' },
-                            }">
-                                <div class="article-content">
-                                    <h2 class="article-title">{{ HomelatestArticle.title || 'No title available'
-                                        }}</h2>
-                                    <h3 class="article-brief">{{ HomelatestArticle.BriefIntroduction }}</h3>
-                                    <div class="article-info">
-                                        <img :src="getImageUrl(SpecifyUserInformation.avatar, 'UserImg')">
-                                        <span>{{ SpecifyUserInformation.username }}</span>
-                                    </div>
-                                </div>
-
-                                <button class="article-button">现在阅读</button>
-                            </router-link>
-                        </div>
-                        <div>
-                            <img :src="getImageUrl(HomelatestArticle.coverImage, 'uploads')" alt="Article Cover"
-                                class="cover-image" />
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <section class="topic-match">
-                <h2>适合你的话题</h2>
-                <div class="tags">
-
-                    <button v-for="category in articleCategories" :key="category._id"
+        <!-- 分类导航区域 -->
+        <section class="categories-section">
+            <div class="section-header">
+                <h2>探索分类</h2>
+                <p>发现你感兴趣的内容</p>
+            </div>
+            <div class="categories-grid">
+                <button v-for="category in articleCategories" 
+                        :key="category._id"
                         @click="filterArticlesByCategory(category)"
-                        :class="{ active: selectedCategory && selectedCategory._id === category._id, }" class="tag">{{
-                            category.name }}</button>
-                </div>
+                        :class="{ active: selectedCategory && selectedCategory._id === category._id }" 
+                        class="category-card">
+                    <span class="category-name">{{ category.name }}</span>
+                    <span class="category-count">{{ getCategoryCount(category) }}</span>
+                </button>
+            </div>
+        </section>
 
-                <div class="articles" v-if="!IsDisplay">
-                    <div v-for="article in HomefilteredArticles" :key="article._id" class="article-link">
-
-                        <div class="article">
-                            
-                            <router-link :to="{ name: 'Article', params:{ id: article._id } }">
-                                <div class="article-img">
-                                    <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article Image" />
-                                </div>
-
-                                <h3>{{ article.title }}</h3>
-                                <span>{{ article.BriefIntroduction }}</span>
-                                <div class="IH-articlesImgAndName">
-                                    <img :src="getImageUrl(getUser.avatar, 'UserImg')" />
-                                    <p>{{ article.author }}</p>
-
-
-                                </div>
-                            </router-link>
-
+        <!-- 文章列表区域 -->
+        <section class="articles-section">
+            <div class="section-header">
+                <h2>最新文章</h2>
+                <p>发现更多精彩内容</p>
+            </div>
+            <div class="articles-grid" v-if="!IsDisplay">
+                <article v-for="article in HomefilteredArticles" 
+                         :key="article._id" 
+                         class="article-card">
+                    <router-link :to="{ name: 'Article', params:{ id: article._id } }">
+                        <div class="article-image">
+                            <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article Image">
+                            <div class="article-overlay">
+                                <span class="read-more">阅读更多</span>
+                            </div>
                         </div>
-
-                    </div>
-                </div>
-                <div v-else class="no-articles">快去发布文章吧！</div>
-            </section>
-        </div>
+                        <div class="article-content">
+                            <div class="article-meta">
+                                <span class="article-category">{{ getArticleCategories(article) }}</span>
+                                <span class="article-date">{{ formatDate(article.createdAt) }}</span>
+                            </div>
+                            <h3 class="article-title">{{ article.title }}</h3>
+                            <p class="article-description">{{ article.BriefIntroduction }}</p>
+                            <div class="article-footer">
+                                <div class="article-author">
+                                    <img :src="getImageUrl(getUser.avatar, 'UserImg')" alt="作者头像">
+                                    <span>{{ article.authorName }}</span>
+                                </div>
+                                <div class="article-stats">
+                                    <span><i class="el-icon-view"></i> {{ article.viewCount || 0 }}</span>
+                                    <span><i class="el-icon-star-off"></i> {{ article.favoriteCount || 0 }}</span>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </router-link>
+                </article>
+            </div>
+            <div v-else class="empty-state">
+                <i class="el-icon-document"></i>
+                <h3>暂无文章</h3>
+                <p>快来发布你的第一篇文章吧！</p>
+            </div>
+        </section>
     </div>
-
-
 </template>
 
 <script>
@@ -126,20 +114,20 @@ export default {
     },
     data() {
         return {
-            keyword: '',
+          
             articles: [],
             IsDisplay: null,
             Homearticles: [], // 用于存储文章列表
             HomefilteredArticles: [], // 根据分类筛选后的文章
             HomelatestArticle: {}, // 最新文章，初始化为空对象
-            isButtonHighlighted: false, // 按钮高亮状态
+           
             SpecifyUserInformation: '',
             articleCategories: [], // 存储文章分类
             allactive: {
                 _id: "all",
                 name: "全部"
             },
-            selectedCategory: { _id: "all", name: "全部" }, // 默认选中“全部”分类
+            selectedCategory: { _id: "all", name: "全部" }, // 默认选中"全部"分类
             UserColl: [],
         };
     },
@@ -148,128 +136,47 @@ export default {
 
     },
     methods: {
-        //搜索
-        async searchArticles() {
-            if (!this.keyword) {
-                this.message = '请输入关键词进行搜索'; // 提示输入关键词
-                Notification.info({
-                    title: "注意",
-                    message: "请输入关键词进行搜索",
-                    duration: 3000,
-                });
-                return;
-            }
-            try {
-                const response = await fetch(`/api/articles/search?keyword=${encodeURIComponent(this.keyword)}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.length > 0) {
-                        this.articles = data; // 展示搜索结果
-                        this.message = ''; // 清空提示
-                    } else {
-                        this.message = '没有找到相关的文章'; // 提示无结果
-                    }
-                } else if (response.status === 404) {
-                    this.message = '没有找到相关的文章'; // 后端显式返回 404
-                    console.log('没有找到相关的文章');
-                    Notification.error({
-                        title: "错误",
-                        message: "没有找到相关的文章",
-                        duration: 3000,
-                    });
+       
 
-                } else if (response.status === 400) {
-                    this.message = '请输入关键词进行搜索'; // 关键词为空
-                    Notification.info({
-                        title: "错误",
-                        message: "请输入关键词进行搜索",
-                        duration: 3000,
-                    });
-                } else {
-                    this.message = '服务器出错，请稍后再试'; // 其他错误
-                    Notification.error({
-                        title: "错误",
-                        message: "服务器出错，请稍后再试",
-                        duration: 3000,
-                    });
-                }
-            } catch (error) {
-                console.error(error);
-                this.message = '网络错误，请检查网络连接'; // 网络问题
-                Notification.error({
-                    title: "错误",
-                    message: "网络错误，请检查网络连接",
-                    duration: 3000,
-                });
-            }
-        },
-
-        onInputChange() {
-            if (!this.keyword.trim()) {
-                // 输入框为空时清空结果和提示
-                this.articles = [];
-                this.message = '请输入关键词进行搜索';
-            }
-        },
+       
         //获取分类文章
         async fetchCategories() {
             try {
                 // 发送GET请求获取文章分类
                 const response = await axios.get("/api/categories");
                 this.articleCategories = response.data; // 存储文章分类
-
                 this.articleCategories.unshift(this.allactive);// 添加全部分类
 
 
-                // 默认选择第一个分类作为“全部”分类
+                // 默认选择第一个分类作为"全部"分类
                 if (this.articleCategories.length > 0) {
                     this.selectedCategory = this.articleCategories[0]; // 默认选择第一个分类
                     this.filterArticlesByCategory(this.selectedCategory); // 根据默认分类筛选文章
                 }
             } catch (error) {
-                console.error("Error fetching categories:", error);
             }
         },
         //获取分类
         filterArticlesByCategory(selectedCategory) {
-
-
-            this.selectedCategory = selectedCategory; // 更新当前选择的分类
-            // console.log('当前选择的分类', this.selectedCategory);
-
+            this.selectedCategory = selectedCategory;
             if (selectedCategory.name === "全部") {
-                // console.log('进入到了全部分类里面');
                 this.IsDisplay = false;
-                this.HomefilteredArticles = this.Homearticles; // 显示所有文章
-                // console.log('获取到全部分类的文章', this.HomefilteredArticles);
-
+                this.HomefilteredArticles = this.Homearticles;
             } else {
-                // console.log('获取到当前分类', this.selectedCategory);
-
-                this.HomefilteredArticles = this.Homearticles.filter((article) =>
-                    article.categories.some(
-                        (category) => category._id === selectedCategory._id
-                    )
-
-                );
-                if (this.HomefilteredArticles.length === 0) {//如果当前分类没有文章，则显示
+                this.HomefilteredArticles = this.Homearticles.filter((article) => {
+                    if (Array.isArray(article.categories)) {
+                        return article.categories.some(cat => (cat.name || cat) === selectedCategory.name);
+                    }
+                    return article.categories === selectedCategory.name;
+                });
+                if (this.HomefilteredArticles.length === 0) {
                     this.IsDisplay = true;
-
-
                 } else {
                     this.IsDisplay = false;
-
                 }
-                // console.log('获取到当前分类的文章', this.HomefilteredArticles);
-
             }
         },
-        highlightButton() {
-            this.isButtonHighlighted = true; // 设置按钮为高亮状态
-        },
-        resetButton() {
-            this.isButtonHighlighted = false; // 取消按钮高亮状态
-        },
+       
         getImageUrl(imageName, type = 'uploads') {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
@@ -300,7 +207,7 @@ export default {
                 // 发送GET请求，获取文章列表
                 const response = await axios.get("/api/articles");
                 this.Homearticles = response.data; // 存储文章列表
-                // console.log(response.data);
+                console.log('储存文章的列表',this.Homearticles);
                 this.HomefilteredArticles = this.Homearticles; // 默认显示所有文章
                 this.HomelatestArticle =
                     this.Homearticles.length > 0
@@ -349,13 +256,41 @@ export default {
 
                 this.favorites = response.data; // 确保这是一个数组
                 this.UserColl = this.favorites
-                console.log('在持久化中获取到用户的收藏记录', this.UserColl);
 
 
             } catch (error) {
                 console.error('加载收藏失败:', error)
             }
         },
+        getCategoryCount(category) {
+            if (category.name === "全部") {
+                return this.Homearticles.length;
+            }
+            return this.Homearticles.filter(article => {
+                if (Array.isArray(article.categories)) {
+                    return article.categories.some(cat => (cat.name || cat) === category.name);
+                }
+                return article.categories === category.name;
+            }).length;
+        },
+
+        getArticleCategories(article) {
+            if (!article || !article.categories) return '';
+            if (typeof article.categories === 'string') return article.categories;
+            if (Array.isArray(article.categories)) {
+                return article.categories.map(cat => cat.name || cat).join(', ');
+            }
+            return '';
+        },
+
+        formatDate(date) {
+            if (!date) return '';
+            return new Date(date).toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
     },
     created() {
         // 在获取数据之前，设置默认的 "全部" 分类
@@ -388,706 +323,637 @@ a {
     color: #000;
 }
 
-.content-section {
-    padding: 0px 25px 30px 25px;
-
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 30px;
-    border-bottom: 1px solid var(--article-card-background-color);
-}
-
-.Input-but {
-    width: 65%;
-    display: flex;
+/* 特色文章区域 */
+.featured-section {
+    margin:10px -20px 40px -20px;
     position: relative;
-    justify-content: space-between;
-}
-
-.Input-but ul {
-    position: absolute;
-    top: 70px;
-    width: 100%;
-    background-color: var(--ActiveBgc);
-
-    border-radius: 20px;
-    list-style: none;
-    /* box-sizing: border-box; */
-}
-
-.Input-but ul>li:hover {
-    background-color: var(--background-color);
-
-}
-
-.Input-but ul li {
-    margin: 10px;
-    border-radius: 15px;
-    padding: 10px;
-    transition: all 250ms;
-}
-
-.search-bar {
-    width: 100%;
-    padding: 18px;
-    border-radius: 20px 0 0 20px;
-    border-top: 1px solid var(--Border);
-    border-left: 1px solid var(--Border);
-    border-bottom: 1px solid var(--Border);
-    background-color: var(--background-color);
-    color: var(--text-color);
-}
-
-.search-bar:focus {
-    border-color: var(--Border);
-    outline: none;
-    /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
-    border-right-color: transparent;
-    /* 设置左边框颜色为透明 */
-}
-
-.search-button {
-    padding: 18px;
-    border-top: 1px solid var(--Border);
-    border-right: 1px solid var(--Border);
-
-    border-bottom: 1px solid var(--Border);
-
-    border-radius: 0px 20px 20px 0px;
-    background-color: var(--background-color);
-}
-
-.search-button.highlight {
-    border-color: var(--Border);
-    /* 点击时的边框颜色 */
-    /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
-    /* 添加阴影效果 */
-    border-left-color: transparent;
-}
-
-.search-button>img {
-    width: 23px;
-}
-
-.IN-icons {
-    display: flex;
-}
-
-.IN-icons img {
-    width: 30px;
-
-    cursor: pointer;
-}
-
-.IN-icons {
-    position: relative;
-    /* height: 30px; */
-    width: 20%;
-    display: flex;
-    justify-content: space-evenly;
-}
-
-
-/* From Uiverse.io by Pipo-13 */
-.tooltip-container {
-    /* --background: #d87639; */
-    position: relative;
-    /* background: var(--background); */
-    cursor: pointer;
-    transition: all 0.2s;
-    /* font-size: 17px; */
-    /* padding: 0.7em 1.8em; */
-    border-radius: 0.2rem;
-}
-
-.tooltip span {
-    display: block;
-    width: 100%;
-    margin-top: 50%;
-    text-align: center;
-
-}
-
-.tooltip {
-    position: absolute;
-    top: 50px;
-    left: -75%;
-    transform: translateX(-50%) rotateX(90deg);
-    padding: 0.6em;
-    opacity: 0.6;
-    transition: all 0.5s ease;
-    background: var(--ActiveBgc);
-    height: 0px;
-    width: 200px;
-    cursor: default;
-    border-radius: 25px;
-    overflow: auto;
-}
-
-.tooltip>div {
-    display: flex;
-    align-items: center;
-    background-color: var(--background-color);
-    padding: 5px 10px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    transition: all 250ms;
-}
-
-.tooltip>div:hover {
-    border-color: rgba(0, 0, 0, 0.15);
-    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
-    color: rgba(0, 0, 0, 0.65);
-    transform: translateY(-1px);
-}
-
-.tooltip>div>a>h2 {
-    margin-left: 5px;
-    font-size: 15px;
-    color: gray;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+    height: 80vh;
+    min-height: 600px;
+    max-height: 800px;
     overflow: hidden;
-    -webkit-line-clamp: 2;
-    height: 40px;
-    line-height: 21px;
+    border-radius: 12px;
 }
 
-.tooltip>div>img {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-}
-
-
-/* 这里隐藏滚动条 */
-.tooltip::-webkit-scrollbar {
-    display: none;
-    /* 隐藏滚动条 */
-}
-
-.tooltip-container:hover .tooltip {
-    opacity: 1;
-    pointer-events: auto;
-    /* background: none; */
-    height: 300px;
-    width: 200px;
-    transform: translateX(-50%) rotateX(0deg);
-    /* overflow:auto; */
-}
-
-.IN-Shoubtn {
+.featured-wrapper {
     position: relative;
-    padding: 20px 0 20px 0;
-}
-
-.IN-Shou {
-    position: absolute;
-    display: none;
-    /* opacity: 0; */
-    width: 100px;
-    height: 100px;
-    background-color: #fff;
-    right: 20%;
-
-    top: 69px;
-}
-
-.IN-Shou::after {
-    content: "";
-    width: 13px;
-    height: 13px;
-    background-color: #fff;
-    transform: rotate(45deg);
-    position: absolute;
-    top: -6px;
-    right: 10px;
-}
-
-.IN-Shoubtn:hover .IN-Shou {
-    display: block;
-    /* opacity: 1; */
-    width: 100px;
-    /* height: 100px; */
-    background-color: #fff;
-}
-
-.socials {
-    position: fixed;
-    display: block;
-    left: 20px;
-    bottom: 20px;
-}
-
-.socials>a {
-    display: block;
-    width: 30px;
-    opacity: 0.2;
-    transform: scale(var(--scale, 0.8));
-    transition: transform 0.3s cubic-bezier(0.38, -0.12, 0.24, 1.91);
-}
-
-.socials>a:hover {
-    --scale: 1;
-}
-
-
-
-.article-of-the-day {
-    margin-top: 20px;
-}
-
-.section-header {
-    color: var(--text-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.view-more {
-    /* border: none; */
-    background-color: transparent;
-    color: #333;
-    cursor: pointer;
-    border: 1px solid;
-    padding: 10px 20px;
-    border-radius: 30px;
-}
-
-.main-article {
-    margin-top: 40px;
-    margin-bottom: 80px;
-    color: var(--text-color);
-
-}
-
-
-.article-cover {
-
-    display: flex;
-
-    width: 100%;
-    justify-content: space-between;
-    aspect-ratio: 2 / 1;
-    background-color: var(--font-color);
-    /* 大盒子的宽高比为2:1 */
-}
-
-.article-cover>div:nth-child(1) {
-    height: 100%;
-    flex: 1;
-    overflow: overlay;
-
-    box-sizing: border-box;
-}
-
-.article-cover>div:nth-child(1)>a {
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-around;
-    height: 100%;
-    color: var(--text-color);
-}
-
-.article-cover h2 {
-    width: 85%;
-    text-decoration: none;
-}
-
-.article-cover>div:nth-child(2) {
-    /* height:;
-    width: ; */
-    flex: 1;
-    overflow: hidden;
-    border-radius: 30px 30px 50px 50px;
-    /* min-width: 184px;
-    min-height:  90px; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 250ms;
-}
-
-.article-cover>div:nth-child(2):hover {
-    transform: scale(1.021);
-    transition: all 250ms;
-}
-
-.article-cover>div:nth-child(2):active {
-    transform: scale(0.95) rotateZ(1.1deg);
-}
-
-.article-cover>div:nth-child(2)>img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: all 250ms;
-    /* 让图片完整覆盖容器，保持比例 */
 }
 
-.article-button {
-    background-color: var(--active-background-color);
-
-
-    /* color: #000000; */
-    padding: 10px 30px;
-    border-radius: 30px;
-}
-
-/* From Uiverse.io by cssbuttons-io */
-.article-button {
-    position: relative;
-    font-size: 17px;
-    text-transform: uppercase;
-    text-decoration: none;
-    padding: 1.5em;
-    display: inline-block;
-    border-radius: 6em;
-    transition: all 0.2s;
-    border: none;
-    font-family: inherit;
-    font-weight: 500;
-    color: #fff;
-
-}
-
-.article-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.article-button:active {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-.article-button::after {
-    content: "";
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    border-radius: 100px;
+.featured-background {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: -1;
-    transition: all 1s;
-}
-
-.article-button::after {
-    background-color: #fff;
-}
-
-.article-button:hover::after {
-    transform: scaleX(1.4) scaleY(1.6);
-    opacity: 0;
-}
-
-.article-content {
     width: 100%;
+    height: 100%;
+    z-index: 1;
 }
 
-.article-title {
-    color: var(--font-color);
-    font-size: 1.25rem;
+.featured-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.1);
+    transition: transform 0.8s ease;
+}
+
+.featured-section:hover .featured-background img {
+    transform: scale(1.2);
+}
+
+.gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.2) 100%
+    );
+}
+
+.featured-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 10%;
+}
+
+.featured-text {
+    max-width: 600px;
+    color: white;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.featured-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-bottom: 15px;
-    /* 单行文本 */
-    /* 如果需要，可以让超出部分显示省略号 */
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.article-brief {
-    font-size: .9375rem;
-    margin-bottom: 10px;
-    color: gray;
+.featured-brief {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 30px;
+    line-height: 1.6;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
+.featured-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
 
-.article-info>img {
-    width: 20px;
-    height: 20px;
+.featured-author {
+    display: flex;
+    align-items: center;
+}
+
+.featured-author img {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 12px;
+    border: 2px solid white;
 }
 
-.article-info>span {
-
-    font-size: .8125rem;
+.featured-author span {
+    font-size: 1rem;
+    color: white;
+    font-weight: 500;
 }
 
-.article-info {
-    max-width: 100%;
+.featured-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.featured-stats span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9rem;
+}
+
+.featured-stats i {
+    font-size: 1.1rem;
+}
+.read-more {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 24px;
+    border: 2px solid white;
+    background: rgba(0,0,0,0.4);
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.read-more-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.read-more-btn:hover {
+    background: white;
+    color: var(--active-background-color);
+    transform: translateY(-2px);
+}
+
+.read-more-btn i {
+    transition: transform 0.3s ease;
+}
+
+.read-more-btn:hover i {
+    transform: translateX(4px);
+}
+
+/* 分类区域 */
+.categories-section {
+    margin: 60px 0;
+}
+
+.section-header {
+    margin-bottom: 30px;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
     margin-bottom: 10px;
 }
 
-.article-info h3 {
-    margin: 20px 0;
-    color: #000;
-    font-size: 24px;
+.section-header p {
+    color: #666;
+    font-size: 1.1rem;
 }
 
-.article-info p {
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    background: var(--ActiveBgc);
+    border: none;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.category-card.active {
+    background: var(--active-background-color);
+    color: white;
+}
+
+.category-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.category-count {
+    font-size: 0.9rem;
     color: #666;
 }
 
-.topic-match {
-    color: var(--text-color);
-    margin-top: 40px;
+/* 文章列表区域 */
+.articles-section {
+    margin: 60px 0;
 }
 
-.no-articles {
-    height: 100px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
 }
 
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.tag {
-    padding: 10px 20px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    border: 1px solid var(--Border);
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tags span {
-    background-color: #f0f0f0;
-    padding: 5px 10px;
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-.tag.active {
-    background: var(--active-background-color);
-    color: var(--background-color);
-}
-
-.articles {
-    /* margin-top: 20px; */
-    column-count: 2;
-    /* 设置为 2 列 */
-    column-gap: 20px;
-    /* 列之间的间距 */
-
-}
-
-.article-link {
-    transition: all 0.4s;
-
-    background-color: rgba(243, 233, 233, 0.2);
-    /* 浅灰色 */
-    padding: 20px;
-    margin-bottom: 20px;
-    break-inside: avoid;
-    /* 避免被拆分成两列 */
-    border-radius: 8px;
-    /* 可选，圆角 */
-}
-
-.article-link:hover {
-    transform: scale(1.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* 添加轻微的阴影来突出 */
-}
-
-/* .articles>div {
-   
-    height: 300px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-} */
-
-
-
-.article {
-    width: 100%;
-    color: var(--text-color);
+.article-card {
+    background: var(--ActiveBgc);
+    border-radius: 16px;
     overflow: hidden;
-    /* margin-bottom: 55px; */
-    /* margin: 20px; */
-    padding: 10px;
-    /* background-color: var(--ActiveBgc); */
-    border-radius: 30px;
-
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
-.article:nth-child(2n) {
-    margin-right: 0;
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
+.article-image {
+    position: relative;
+    padding-top: 60%;
+    overflow: hidden;
+}
 
-.article-img>img {
+.article-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    height: auto;
-    overflow: hidden;
-    transition: all 0.5s;
     object-fit: cover;
-    /* 保持图标比例并裁剪 */
+    transition: transform 0.5s ease;
 }
 
-.article-img {
-    /* height: 269px; */
+.article-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
-    border-radius: 30px;
+.article-card:hover .article-overlay {
+    opacity: 1;
+}
+
+.article-content {
+    padding: 20px;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.article-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-color);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-
-    /* 1:1 比例 */
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.article-img>img:hover {
-    transform: scale(1.021);
+.article-description {
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+    max-height: 3em;
 }
 
-.article-img>:active {
-    transform: scale(0.95) rotateZ(1.1deg);
+.article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.IH-articlesImgAndName {
+.article-author {
     display: flex;
     align-items: center;
 }
 
-.IH-articlesImgAndName>img {
-    width: 20px;
-    height: 20px;
+.article-author img {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
-.article h3 {
-    margin: 0;
-
-    padding: 15px 0px 0;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 30px;
+.article-author span {
+    font-size: 0.9rem;
+    color: #666;
 }
 
-.article span {
-    font-size: 13px;
-    color: gray;
-    display: -webkit-box;
-    /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
-    -webkit-box-orient: vertical;
-    /* 设置垂直排列 */
-    overflow: hidden;
-    /* 隐藏超出部分 */
-    -webkit-line-clamp: 2;
-    /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
-    height: 40px;
-    /* 固定高度 */
-    line-height: 20px;
+.article-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: #666;
 }
 
-.IH-articlesImgAndName p {
-    padding: 0 0px;
-    margin: 0;
-    display: block;
-    width: 100%;
-    line-height: 10px;
-    font-size: .625rem;
+.article-stats span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-.author-info {
-    padding: 10px 20px;
-
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--ActiveBgc);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
 }
 
-@media (max-width: 577px) {
-    .article-cover {
-        height: 400px;
-        flex-direction: column-reverse;
+.empty-state i {
+    font-size: 48px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 992px) {
+    .featured-section {
+        height: 70vh;
+        min-height: 500px;
+        margin: 0 -15px 30px;
     }
 
-    .article-cover>div[data-v-1c819015]:nth-child(1) {
+    .featured-content {
+        padding: 0 5%;
+    }
+
+    .featured-title {
+        font-size: 2.8rem;
+    }
+
+    .featured-brief {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-text {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .featured-title {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .featured-brief {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    .featured-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .featured-stats {
         width: 100%;
+        justify-content: space-between;
     }
 
-    .article-cover h2 {
+    .read-more-btn {
         width: 100%;
-    }
-
-    .IN-icons {
-        display: none !important;
-    }
-
-    .Input-but {
-        width: 100%;
-    }
-
-    .search-bar {
-        width: 100%;
-    }
-
-    .article-cover>div:nth-child(2) {
-
-        margin-bottom: 10px;
-    }
-
-}
-
-/* 小屏幕（手机横屏） */
-@media (min-width: 577px) and (max-width: 768px) {
-    .article-cover {
-        height: 500px;
-        flex-direction: column-reverse;
-    }
-
-
-    .IN-icons {
-        display: none !important;
-    }
-
-    .Input-but {
-        width: 100%;
-    }
-
-    .search-bar {
-        width: 100%;
-    }
-
-    .article-cover>div:nth-child(2) {
-
-        margin-bottom: 10px;
+        justify-content: center;
     }
 }
 
-/* 中等屏幕（平板） */
-@media (min-width: 769px) and (max-width: 992px) {}
+@media (max-width: 768px) {
+    .home-container {
+        padding: 0 15px;
+    }
 
-/* 大屏幕（小笔记本） */
-@media (min-width: 993px) and (max-width: 1200px) {}
+    .featured-section {
+        height: 60vh;
+        min-height: 400px;
+        margin: 0 -15px 20px;
+    }
 
-/* 超大屏幕（台式机） */
-@media (min-width: 1201px) {}
+    .featured-content {
+        padding: 0 20px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+
+    .featured-title {
+        font-size: 2rem;
+        line-height: 1.3;
+    }
+
+    .featured-brief {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .featured-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .featured-stats {
+        gap: 15px;
+    }
+
+    .read-more-btn {
+        padding: 10px 25px;
+        font-size: 0.9rem;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+    .category-card {
+        padding: 15px;
+    }
+
+    .category-name {
+        font-size: 1rem;
+    }
+
+    .articles-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .home-container {
+        padding: 0 10px;
+    }
+
+    .featured-section {
+        height: 50vh;
+        min-height: 300px;
+        margin: 0 -10px 15px;
+    }
+
+    .featured-content {
+        padding: 0 15px;
+        padding-top: 30px;
+    }
+
+    .featured-label {
+        padding: 15px 10px;
+        font-size: 0.8rem;
+    }
+
+    .featured-title {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+
+    .featured-brief {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+
+    .featured-author img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .featured-author span {
+        font-size: 0.9rem;
+    }
+
+    .featured-stats span {
+        font-size: 0.8rem;
+    }
+
+    .featured-stats i {
+        font-size: 1rem;
+    }
+
+    .read-more-btn {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+
+    .section-header p {
+        font-size: 0.9rem;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .category-card {
+        padding: 12px;
+    }
+
+    .category-name {
+        font-size: 0.9rem;
+    }
+
+    .category-count {
+        font-size: 0.8rem;
+    }
+
+    .article-card {
+        margin-bottom: 15px;
+    }
+
+    .article-content {
+        padding: 15px;
+    }
+
+    .article-title {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .article-description {
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+
+    .article-meta {
+        font-size: 0.8rem;
+    }
+
+    .article-author img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .article-author span {
+        font-size: 0.8rem;
+    }
+
+    .article-stats {
+        font-size: 0.8rem;
+    }
+}
 </style>
+

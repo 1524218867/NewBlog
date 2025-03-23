@@ -2,6 +2,9 @@ import $ from 'jquery';
 import App from './App.vue';
 import store from './store'; // 引入创建的 Vuex Store
 import axios from 'axios'; // 引入 axios
+
+
+
 // 确保 jQuery 为全局变量，以便在 Vue 组件中使用
 
 window.$ = window.jQuery = $;
@@ -102,7 +105,4 @@ Vue.use(ElementUI);
 Vue.use(VueQuillEditor, /* { default global options } */)
 // 挂载应用
 app.$mount('#app');
-
-// console.log(Vue.prototype);
-// console.log('VueQuillEditor imported:', VueQuillEditor); // 确保 Store 正确导入
 

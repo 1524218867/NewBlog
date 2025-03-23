@@ -1,8 +1,5 @@
 <template>
-    <div class="login-container" @mousedown="handleMouseDown" @mousemove="handleMouseMove" @mouseup="handleMouseUp">
-        <!-- <transition name="fade">
-            <Loader v-if="isLoading" :visible="isLoading" />
-        </transition> -->
+    <div class="login-container">
         <div v-if="!isLoading" class="carousel-container">
             <Carousel :carousel-items="carouselItems" />
         </div>
@@ -34,13 +31,17 @@ import Carousel from '../components/Carousel.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import { Notification } from 'element-ui';
-// import Loader from "@/components/Loader.vue";
+import LunBoTuImg1 from '@/assets/LunBoTuImg1.jpg';
+import LunBoTuImg2 from '@/assets/LunBoTuImg2.jpg';
+import LunBoTuImg3 from '@/assets/LunBoTuImg3.jpg';
+import LunBoTuImg4 from '@/assets/LunBoTuImg4.jpg';
+import LunBoTuImg5 from '@/assets/LunBoTuImg5.jpg';
+
 export default {
     components: {
         Carousel,
         LoginForm,
         RegisterForm,
-        // Loader
     },
     data() {
         return {
@@ -52,49 +53,29 @@ export default {
             },
             carouselItems: [
                 {
-                    id: 1, src: 'LunBoTuImg1.jpg', quote: '“你在哪里投入，结果就在哪里显现.”', author: '(Where you invest, results will show.)'
+                    id: 1,
+                    src: LunBoTuImg1,
+                    quote: '"今天的努力，就是明天的光芒。"',
+                    author: '(Today\'s efforts are tomorrow\'s brilliance.)'
                 },
-                { id: 2, src: 'LunBoTuImg2.jpg', quote: '“做你热爱的事，然后把它做得尽善尽美.”', author: '(Do what you love and do it well)' },
-                { id: 3, src: 'LunBoTuImg3.jpg', quote: '“如果你对某件事情充满热情，就不要担心失败。坚持下去，成功自然会来.”', author: "(If you're passionate about something, don't worry about failure. Keep at it and success will come naturally)" },
-                { id: 4, src: 'LunBoTuImg4.jpg', quote: '“梦想不会逃跑，逃跑的只是你自己.”', author: "(Dreams don't run away, only you run away)" },
-                { id: 5, src: 'LunBoTuImg5.jpg', quote: '“你不能改变过去，但你可以改变未来.” ', author: "(You can't change the past, but you can change the future)" }
+                { id: 2, src: LunBoTuImg2, quote: '"学习是一场永不止步的旅程。"', author: '(Learning is a never-ending journey.)' },
+                { id: 3, src: LunBoTuImg3, quote: '"成功不是偶然，而是日积月累。"', author: '(Success is not accidental, but accumulated day by day.)' },
+                { id: 4, src: LunBoTuImg4, quote: '"勇气不是没有恐惧，而是战胜恐惧。"', author: '(Courage is not the absence of fear, but the triumph over it.)' },
+                { id: 5, src: LunBoTuImg5, quote: '"每一个选择都是新的开始。"', author: '(Every choice is a new beginning.)' }
             ],
             isLoginForm: true,
-            mouseDownX: 0,
-            mouseUpX: 0,
-            isMouseDown: false,
-            // isLoading: true, // 是否显示加载器
         };
     },
     methods: {
         toggleForm() {
             this.isLoginForm = !this.isLoginForm;
         },
-        handleMouseDown(event) {
-            this.isMouseDown = true;
-            this.mouseDownX = event.screenX;
-        },
-        handleMouseMove(event) {
-            if (this.isMouseDown) {
-                this.mouseUpX = event.screenX;
-            }
-        },
-        handleMouseUp() {
-            this.isMouseDown = false;
-            if (this.mouseUpX - this.mouseDownX > 500) {
-                this.goBack();
-            }
-        },
-        goBack() {
-            window.history.back();
-        },
         showWelcomeNotification() {
-
             this.$nextTick(() => {
                 setTimeout(() => {
                     Notification({
                         title: 'Welcome!',
-                        message: 'Welcome 如需退出按住鼠标右滑.',
+                        message: 'Welcome to our platform!',
                         type: 'info',
                         duration: 4000,
                         offset: 20,
@@ -102,21 +83,9 @@ export default {
                 }, 2000);
             });
         },
-        handleTouchStart() { /* Implement touch start logic */ },
-        handleTouchMove() { /* Implement touch move logic */ },
-        handleTouchEnd() { /* Implement touch end logic */ }
     },
     mounted() {
-        // this.isLoading = false;// 关闭加载器
         this.showWelcomeNotification();
-        window.addEventListener('touchstart', this.handleTouchStart);
-        window.addEventListener('touchmove', this.handleTouchMove);
-        window.addEventListener('touchend', this.handleTouchEnd);
-    },
-    beforeDestroy() {
-        window.removeEventListener('touchstart', this.handleTouchStart);
-        window.removeEventListener('touchmove', this.handleTouchMove);
-        window.removeEventListener('touchend', this.handleTouchEnd);
     },
 };
 </script>
@@ -128,19 +97,25 @@ export default {
     justify-content: center;
     align-items: center;
     position: relative;
+    background: var(--background-color);
+    overflow: hidden;
 }
 
 /* 轮播图外视图的宽高，控制轮播图的位置，父元素有flex */
 .carousel-container {
-    /* flex: 1; */
     width: 50%;
     height: 98vh;
-    margin: 10px 10px 10px 10px;
+    margin: 10px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 .card-container {
     flex: 1;
     position: relative;
+    padding: 20px;
+    max-width: 600px;
 }
 
 .card {
@@ -148,6 +123,9 @@ export default {
     position: absolute;
     height: 100%;
     border: 0;
+    background: var(--background-color);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .card-inner {
@@ -192,17 +170,16 @@ export default {
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
+        padding: 20px;
+        height: auto;
+        min-height: 100vh;
     }
 
-    /* 轮播图在移动端的宽高这里是外视图 */
     .carousel-container {
         order: 1;
-        height: 415px;
-        width: 95%;
-        flex: 1;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
+        height: 100%;
+        width: 100%;
+        margin: 0 0 20px 0;
         border-radius: 15px;
     }
 
@@ -210,16 +187,26 @@ export default {
         order: 2;
         width: 100%;
         max-width: 100%;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        position: relative;
+        height: auto;
+        min-height: 400px;
     }
 
     .card-inner {
-        position: relative;
         width: 100%;
-        height: 100%;
+        height: auto;
+        min-height: 650px;
         margin: auto;
+        padding: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
     }
 }
 </style>

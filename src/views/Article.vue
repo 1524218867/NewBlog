@@ -14,7 +14,7 @@
                     <div class="overlay">
                         <span class="title">{{ article?.title }}</span>
                         <p>{{ article.BriefIntroduction }}</p>
-                        <p class="article-author"><strong>作者 : </strong> {{ article.author }}</p>
+                        <p class="article-author"><strong>作者 : </strong> {{ article.authorName }}</p>
                     </div>
                 </div>
             </div>
@@ -188,6 +188,16 @@ export default {
     },
 
     methods: {
+        goBack() {
+            // 使用Vue Router的内置返回功能
+            if (window.history.length > 1) {
+                this.$router.go(-1);
+            } else {
+                // 如果没有历史记录，返回首页
+                this.$router.push('/Index/Home');
+            }
+        },
+
         updateTheme(themeName) {
             console.log(themeName);
 
@@ -266,7 +276,13 @@ export default {
         },
 
         goBack() {
-            this.$router.go(-1); // 使用 Vue Router 返回上一页
+            // 使用Vue Router的内置返回功能
+            if (window.history.length > 1) {
+                this.$router.go(-1);
+            } else {
+                // 如果没有历史记录，返回首页
+                this.$router.push('/Index/Home');
+            }
         },
 
         getRandomImage() {
@@ -373,17 +389,16 @@ export default {
 
 <style scoped>
 .articleBox {
-    /* overflow: auto;
-    height: 100vh; */
-    /* height: 100% !important; */
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px;
     margin: auto;
     background-color: var(--background-color);
+    max-width: 1200px;
+    min-height: 100vh;
+    transition: all 0.3s ease;
 }
-
 /* 整体滚动条 */
 ::-webkit-scrollbar {
     width: 10px;
@@ -444,6 +459,8 @@ export default {
 .articleText {
     width: 100%;
     border-radius: 10px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .articleImgTle {
@@ -471,19 +488,27 @@ export default {
     bottom: 20px;
     left: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-    color: black;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     width: calc(100% - 40px);
-    padding: 20px;
-    border-radius: 10px;
+    padding: 25px;
+    border-radius: 15px;
     box-sizing: border-box;
     color: white;
-    gap: 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(5px);
-    background-color: rgba(255, 255, 255, 0.075);
-    box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 8px;
+    transition: all 0.3s ease;
+}
+
+.overlay .title {
+    font-size: 28px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.overlay p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    opacity: 0.9;
 }
 
 .article-author {
@@ -539,80 +564,289 @@ export default {
 }
 /*评论 */
 .comment-section {
-    padding: 20px;
+    padding: 30px;
     width: 100%;
-    border-top: 1px solid var(--article-card-background-color);
+    border-top: 2px solid var(--article-card-background-color);
     color: var(--text-color);
+    background-color: var(--background-color);
+    border-radius: 15px;
+    margin-top: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .comment-input {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    background-color: var(--article-card-background-color);
+    padding: 20px;
+    border-radius: 12px;
 }
 
 .comment-input textarea {
     width: 100%;
-    height: 100px;
-    padding: 10px;
-    border: 1px solid var(--article-card-background-color);
-    border-radius: 4px;
+    height: 120px;
+    padding: 15px;
+    border: 2px solid var(--article-card-background-color);
+    border-radius: 10px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 16px;
+    transition: all 0.3s ease;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.comment-input textarea:focus {
+    border-color: var(--active-background-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
 .comment-input button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
+    padding: 12px 25px;
+    background-color: var(--active-background-color);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s ease;
 }
 
-.comment-input button:hover {
-    background-color: #0056b3;
-}
-
-.comments-list {
-    margin-top: 20px;
-}
-
-.comment {
-    padding: 17px;
-    border-bottom: 1px solid var(--article-card-background-color);
-}
-
-.comment p {
-    margin: 0;
-}
-
-.comment small {
-    color: #888;
-}
-
-.replies {
-    padding: 10px;
-    background-color: var(--article-card-background-color);
-    border-radius: 10px;
-    margin-left: 30px;
-    margin-top: 10px;
-}
-.replies .reply {
-    margin-bottom: 10px;
-}
-
-@media (min-width: 1200px) {
+@media (max-width: 768px) {
     .articleBox {
-        width: 1100px;
-    }
-}
-
-@media (max-width: 690px) {
-    .articleBox {
-        width: 100%;
         padding: 20px;
+    }
+
+    .header {
+        margin-bottom: 15px;
+    }
+
+    .back-button {
+        padding: 8px 20px;
+        font-size: 14px;
     }
 
     .title {
         font-size: 20px;
+    }
+
+    .overlay {
+        padding: 15px;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        width: calc(100% - 20px);
+    }
+
+    .overlay .title {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .overlay p {
+        font-size: 14px;
+    }
+
+    .articleContent>>>p {
+        font-size: 14px;
+        padding: 15px;
+        text-indent: 28px;
+    }
+
+    .comment-section {
+        padding: 20px;
+    }
+
+    .comment-input {
+        padding: 15px;
+    }
+
+    .comment-input textarea {
+        height: 100px;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .reply-form {
+        flex-direction: column;
+    }
+
+    .reply-form textarea {
+        width: calc(100% - 20px);
+        margin: 10px;
+    }
+
+    .reply-form button {
+        width: calc(100% - 20px);
+        margin: 5px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .articleBox {
+        padding: 15px;
+    }
+
+    .header {
+        margin-bottom: 10px;
+    }
+
+    .back-button {
+        padding: 6px 15px;
+        font-size: 12px;
+    }
+
+    .separator {
+        font-size: 14px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .overlay {
+        padding: 10px;
+    }
+
+    .overlay .title {
+        font-size: 18px;
+    }
+
+    .overlay p {
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .articleContent>>>p {
+        font-size: 12px;
+        padding: 10px;
+        text-indent: 24px;
+    }
+}
+
+.comment-input button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.comments-list {
+    margin-top: 30px;
+}
+
+.comment {
+    padding: 20px;
+    border: 1px solid var(--article-card-background-color);
+    margin-bottom: 25px;
+    background-color: var(--article-card-background-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.comment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comment p {
+    margin: 0 0 15px 0;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.comment small {
+    color: #888;
+    display: block;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+.replies {
+    margin: 20px 0 0 30px;
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    border-left: 3px solid var(--active-background-color);
+}
+
+.reply {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--article-card-background-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.reply:last-child {
+    margin-bottom: 0;
+}
+
+.reply p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.reply small {
+    color: #888;
+    font-size: 12px;
+}
+
+.reply-form {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.reply-form textarea {
+    flex: 1;
+    height: 80px;
+    padding: 12px;
+    border: 1px solid var(--article-card-background-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 14px;
+    resize: vertical;
+}
+
+.reply-form button {
+    padding: 8px 15px;
+    background-color: var(--active-background-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.reply-form button:last-child {
+    background-color: #6c757d;
+}
+
+.reply-form button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 690px) {
+    .comment-section {
+        padding: 20px 15px;
+    }
+
+    .replies {
+        margin-left: 15px;
+        padding: 10px;
+    }
+
+    .reply-form {
+        flex-direction: column;
+    }
+
+    .reply-form button {
+        width: 100%;
+        margin: 5px 0;
     }
 }
 </style>

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Vuex from 'vuex';
+import store from '../store'
 import ElementUI from 'element-ui'
 // 引入ElementUI
 import 'element-ui/lib/theme-chalk/index.css'
@@ -9,14 +9,16 @@ import Index from '../views/index.vue'
 // 引入index.vue
 import Login from '../views/Login.vue'
 import Home from '../components/IndeHome.vue'
-import Categories from "../components/IndexCategories.vue"
-import Content from '../components/IndexContent.vue'
-import Settings from '../components/IndexSettings.vue'
+import Discover from "../components/IndexCategories.vue"
+import Create from '../components/IndexContent.vue'
+// import Settings from '../components/IndexSettings.vue'//设置页面暂时不用
 import VueRouter from 'vue-router'
 import Article from '../views/Article.vue'
-import AppUser from '../components/AppUser.vue';
+import My from '../components/User.vue';
+
 import { isTokenExpired } from '@/utils/auth';
 import { Notification } from 'element-ui';
+
 // 引入ElementUI
 Vue.use(ElementUI)
 // 引入VueRouter
@@ -40,7 +42,6 @@ const routes = [
             {
                 path: '', // 默认子路由
                 redirect: 'home' // 重定向到 home
-
             },
             {
                 path: 'home', // 子路由路径，不带斜杠
@@ -49,15 +50,15 @@ const routes = [
                 meta: { requiresAuth: true }, // 需要认证的页面
             },
             {
-                path: 'categories',
-                component: Categories,
-                name: "Categories",
+                path: 'discover',
+                component: Discover,
+                name: "Discover",
                 meta: { requiresAuth: true }, // 需要认证的页面
             },
             {
-                path: 'content', // 子路由路径，不带斜杠
-                component: Content,
-                name: 'Content',
+                path: 'create', // 子路由路径，不带斜杠
+                component: Create,
+                name: 'Create',
                 meta: { requiresAuth: true }, // 需要认证的页面
                 beforeEnter: (to, from, next) => {//没有token不允许跳转
                     const token = localStorage.getItem('token');
@@ -69,19 +70,19 @@ const routes = [
                 }
             },
             {
-                path: 'appuser', // 子路由路径，不带斜杠
-                component: AppUser,
-                name: 'AppUser',
+                path: 'my', // 子路由路径，不带斜杠
+                component: My,
+                name: 'My',
                 meta: { requiresAuth: true }, // 需要认证的页面
             },
+           
+            // {
+            //     path: 'settings',
+            //     component: Settings,
+            //     name: "Settings",
+            //     meta: { requiresAuth: true }, // 需要认证的页面
 
-            {
-                path: 'settings',
-                component: Settings,
-                name: "Settings",
-                meta: { requiresAuth: true }, // 需要认证的页面
-
-            },
+            // },
         ]
     },
 
@@ -105,15 +106,24 @@ const router = new VueRouter({
     mode: 'history', // 使用 history 模式
     routes,
 })
+
+// 记录路由来源
+router.beforeEach((to, from, next) => {
+    if (to.name === 'Article') {
+        // 使用localStorage存储来源路径
+        localStorage.setItem('articleFrom', from.fullPath);
+    }
+    next();
+})
 // 设置全局路由守卫
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem("token");
-    console.log('前置路由守卫', token);
+
 
     // 如果页面需要认证且 token 过期，跳转到登录页
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!token || isTokenExpired()) {
-            console.log("token 过期");
+
             Notification.error({
                 title: "登录信息已失效",
                 message: "请从新登录",

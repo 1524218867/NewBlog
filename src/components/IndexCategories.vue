@@ -1,74 +1,120 @@
 <template>
-    <div class="categories-section">
-        <div class="categories-container">
-            <div class="category-card" v-for="(category, index) in categorieslatestArticles" :key="index">
-                <div class="category-image-wrapper">
+    <div class="categories-page">
+        <!-- 顶部最新文章展示区 -->
+        <section class="latest-article-section">
+            <div class="latest-article-wrapper">
+                <div class="latest-article-content">
                     <router-link :to="{
                         name: 'Article',
-                        params: { id: category._id || '' },
+                        params: { id: categorieslatestArticles[0]?._id || '' },
                     }">
-                        <img :src="getImageUrl(category.coverImage, 'uploads')" alt="Category cover"
-                            class="category-cover" />
-                        <div class="category-info">
-                            <h3 class="category-title">{{ category.title }}</h3>
-                            <p class="category-author">
-                                <img :src="getImageUrl(authorAvatars[category.user], 'UserImg')" alt="Author Avatar"
-                                    class="author-avatar" />
-                                <span>{{ category.author }}</span>
-                            </p>
+                        <span class="article-label">最新文章</span>
+                        <h1 class="article-title">{{ categorieslatestArticles[0]?.title || '暂无文章' }}</h1>
+                        <p class="article-brief">{{ categorieslatestArticles[0]?.BriefIntroduction }}</p>
+                        <div class="article-meta">
+                            <div class="article-author">
+                                <img :src="getImageUrl(authorAvatars[categorieslatestArticles[0]?.user], 'UserImg')" alt="作者头像">
+                                <span>{{ categorieslatestArticles[0]?.authorName }}</span>
+                            </div>
+                            <div class="article-stats">
+                                <span><i class="el-icon-view"></i> {{ categorieslatestArticles[0]?.viewCount || 0 }}</span>
+                                <span><i class="el-icon-star-off"></i> {{ categorieslatestArticles[0]?.favoriteCount || 0 }}</span>
+                            </div>
                         </div>
                     </router-link>
                 </div>
+                <div class="latest-article-image">
+                    <img :src="getImageUrl(categorieslatestArticles[0]?.coverImage, 'uploads')" alt="最新文章封面">
+                    <div class="image-overlay"></div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="all-articles-container">
-            <!-- <h2>所有文章</h2> -->
-            <div class="article-card" v-for="(article, index) in paginatedArticles" :key="index">
-                <div class="article-cover">
-                    <img :src="getImageUrl(article.coverImage, 'uploads')" alt="Article cover"
-                        class="article-cover-image" />
-
+        <!-- 文章列表区域 -->
+        <section class="articles-section">
+            <div class="section-header">
+                <h2>所有文章</h2>
+                <div class="section-filters">
+                    <el-select v-model="selectedCategory" placeholder="选择分类" clearable @change="handleCategoryChange">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="category in categories" :key="category._id" :label="category.name" :value="category._id">
+                            <span class="category-option">
+                                <i :class="getCategoryIcon(category.name)"></i>
+                                <span class="category-name">{{ category.name }}</span>
+                            </span>
+                        </el-option>
+                    </el-select>
                 </div>
-
-                <div class="article-details">
-                    <router-link :to="{
-                        name: 'Article',
-                        params: { id: article._id || '' },
-                    }">
-                        <h3 class="article-title">{{ article.title }}</h3>
-                        <p class="article-date">{{ article.BriefIntroduction }}</p>
-                        <p class="article-description">{{ article.description }}</p>
-                        <p class="article-author">
-                            <img :src="getImageUrl(authorAvatars[article.user], 'UserImg')" alt="Author avatar"
-                                class="author-avatar" />
-                            <span>{{ article.author }}</span>
-                        </p>
-
-
-
-                    </router-link>
-                </div>
-                <div>
-                    <span v-if="userInformation" class="favorite-button" @click="toggleFavorite(article._id)">
-                        <img :src="require(`@/assets/ShouCang-Huang.png`)" v-if="article.isFavorite" />
-                        <img :src="require(`@/assets/ShouCang-Bai.png`)" v-else />
-                    </span>
-                    <span v-else></span>
-                </div>
-
             </div>
 
-            <!-- Element UI Pagination -->
-            <el-pagination background layout="prev, pager, next" :total="categoriesarticles.length"
-                :page-size="pageSize" :current-page="currentPage" @current-change="handlePageChange"></el-pagination>
-        </div>
+            <div class="articles-grid">
+                <div v-if="isLoading" class="loading-state">
+                    <i class="el-icon-loading"></i>
+                    <p>加载中...</p>
+                </div>
+                <div v-else-if="error" class="error-state">
+                    <i class="el-icon-warning"></i>
+                    <p>{{ error }}</p>
+                </div>
+                <template v-else>
+                    <article v-for="article in filteredArticles" 
+                             :key="article._id" 
+                             class="article-card">
+                        <router-link :to="{ name: 'Article', params: { id: article._id } }">
+                            <div class="article-image">
+                                <img :src="getImageUrl(article.coverImage, 'uploads')" alt="文章封面">
+                                <div class="article-overlay">
+                                    <span class="read-more">阅读更多</span>
+                                </div>
+                            </div>
+                            <div class="article-content">
+                                <div class="article-meta">
+                                    <span class="article-category">{{ getArticleCategories(article) }}</span>
+                                    <span class="article-date">{{ formatDate(article.createdAt) }}</span>
+                                </div>
+                                <h3 class="article-title">{{ article.title }}</h3>
+                                <p class="article-description">{{ article.BriefIntroduction }}</p>
+                                <div class="article-footer">
+                                    <div class="article-author">
+                                        <img :src="getImageUrl(authorAvatars[article.user], 'UserImg')" alt="作者头像">
+                                        <span>{{ article.authorName }}</span>
+                                    </div>
+                                    <div class="article-stats">
+                                        <span><i class="el-icon-view"></i> {{ article.viewCount || 0 }}</span>
+                                        <span><i class="el-icon-star-off"></i> {{ article.favoriteCount || 0 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </router-link>
+                        <div class="article-actions">
+                            <span v-if="userInformation" 
+                                  class="favorite-button" 
+                                  @click.stop="toggleFavorite(article._id)">
+                                <i :class="article.isFavorite ? 'el-icon-star-on' : 'el-icon-star-off'"></i>
+                            </span>
+                        </div>
+                    </article>
+                </template>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination-wrapper">
+                <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="categoriesarticles.length"
+                    :page-size="pageSize"
+                    :current-page="currentPage"
+                    @current-change="handlePageChange"
+                ></el-pagination>
+            </div>
+        </section>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
-
+import { mapActions } from 'vuex';
 export default {
     data() {
         return {
@@ -79,20 +125,32 @@ export default {
             currentPage: 1, // 当前页
             pageSize: 5, // 每页显示文章的数量
             favorites: [], // 初始化为空数组
-        }
+            isLoading: false, // 加载状态
+            error: null, // 错误信息
+            selectedCategory: '', // 当前选中的分类
+            categories: [] // 存储分类列表
+        };
     },
-
     components: {},
     computed: {
         // 计算当前页要显示的文章
         paginatedArticles() {
             const start = (this.currentPage - 1) * this.pageSize
             const end = start + this.pageSize
-            return this.categoriesarticles.slice(start, end)
+            return this.filteredArticles.slice(start, end)
+        },
+        filteredArticles() {
+            if (!this.selectedCategory) {
+                return this.categoriesarticles;
+            }
+            return this.categoriesarticles.filter(article => {
+                return article.categories && article.categories.some(cat => cat._id === this.selectedCategory);
+            });
         },
     },
     watch: {},
     methods: {
+        ...mapActions(["VuexloadFavorites"]),
         getImageUrl(imageName, type = 'uploads') {
             if (!imageName) {
                 // 如果 imageName 为空，返回 null 或空字符串
@@ -112,26 +170,30 @@ export default {
                 imageUrl = `${window.location.origin}/${type}/${imageName}`;
             }
 
-            console.log('拼接后的请求路径是', imageUrl);
+            // console.log('拼接后的请求路径是', imageUrl);
             return imageUrl;
         },
         async categoriesfetchArticles() {
+            this.isLoading = true;
+            this.error = null;
             try {
                 // 发送GET请求，获取文章列表
                 const response = await axios.get('/api/articles')
                 this.categoriesarticles = response.data // 存储文章列表
-                // console.log('获取到了所有文章', response.data)
-
-                // 设置最新文章（假设你想获取最新的两篇文章）
-                this.categorieslatestArticles = this.categoriesarticles.slice(-1) // 获取最后两篇文章
+                this.categorieslatestArticles = this.categoriesarticles.slice(-1) // 获取最新文章
+                
                 // 获取每篇文章的作者信息
-                for (let article of this.categoriesarticles) {
+                await Promise.all(this.categoriesarticles.map(article => {
                     if (article.user) {
-                        this.fetchAuthorAvatar(article.user) // 获取作者头像
+                        return this.fetchAuthorAvatar(article.user)
                     }
-                }
+                    return Promise.resolve()
+                }))
             } catch (error) {
+                this.error = '加载文章失败，请稍后重试'
                 console.error('Error fetching articles:', error)
+            } finally {
+                this.isLoading = false
             }
         },
         // 获取用户头像
@@ -140,7 +202,7 @@ export default {
                 const userResponse = await axios.get(`/api/public-user-info/${userId}`)
                 this.$set(this.authorAvatars, userId, userResponse.data.avatar) // 存储用户的头像信息
 
-                // console.log('打印了authorAvatars', this.authorAvatars)
+
             } catch (error) {
                 console.error('Error fetching user avatar:', error)
             }
@@ -193,6 +255,7 @@ export default {
                     if (article) {
                         article.isFavorite = false // 设置为已收藏
                     }
+                    this.VuexloadFavorites()
                 } else {
                     // 文章未被收藏，执行添加收藏逻辑
                     await axios.post(`/api/favorites`, {
@@ -212,6 +275,7 @@ export default {
                     if (article) {
                         article.isFavorite = true // 设置为已收藏
                     }
+                    this.VuexloadFavorites()
                 }
             } catch (error) {
                 console.error('请求失败:', error)
@@ -219,6 +283,7 @@ export default {
         },
         //获取用户信息用来或得到用户id，然后通过用户id获取用户收藏的文章id，然后对比文章id，如果相同则显示收藏按钮，否则显示未收藏按钮。
         async loadFavorites() {
+            console.log('调用了loadFavorites');
             
 
             if (!localStorage.getItem('token')) {
@@ -250,13 +315,13 @@ export default {
                 this.categoriesarticles.forEach((article) => {
                     // 检查 this.favorites 中是否有与当前 article._id 匹配的收藏记录
                     article.isFavorite = this.favorites.some((fav) => {
-                        console.log("正在检查的收藏:", fav.articleId._id);  // 打印当前收藏的 articleId
-                        console.log("当前文章的 _id:", article._id);      // 打印当前文章的 _id
+                        // console.log("正在检查的收藏:", fav.articleId._id);  // 打印当前收藏的 articleId
+                        // console.log("当前文章的 _id:", article._id);      // 打印当前文章的 _id
                         return String(fav.articleId._id) === String(article._id);
                     });
 
                     // 打印检查后的收藏状态
-                    console.log("更改后的状态", article.isFavorite, article._id);
+                    // console.log("更改后的状态", article.isFavorite, article._id);
                 });
 
 
@@ -264,286 +329,570 @@ export default {
                 console.error('加载收藏失败:', error)
             }
         },
+
+        formatDate(date) {
+            if (!date) return '';
+            return new Date(date).toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        },
+        getArticleCategories(article) {
+            if (!article.categories) return '';
+            return article.categories.map(cat => cat.name).join(', ');
+        },
+        async fetchCategories() {
+            try {
+                const response = await axios.get('/api/categories');
+                this.categories = response.data;
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        },
+        getCategoryIcon(categoryName) {
+            const iconMap = {
+                '技术': 'el-icon-cpu',
+                '生活': 'el-icon-coffee-cup',
+                '笔记': 'el-icon-notebook-2',
+                '分享': 'el-icon-share',
+                '其他': 'el-icon-more'
+            };
+            return iconMap[categoryName] || 'el-icon-folder';
+        },
+        handleCategoryChange() {
+            this.currentPage = 1; // 重置页码
+        }
     },
 
     created() {
         this.getuser()
         this.loadFavorites()
         this.categoriesfetchArticles()
-        // 监听登录成功事件
-        
+        this.fetchCategories()
     },
-    
+
 }
 </script>
 
 <style scoped>
-.categories-section {
-    padding: 30px 25px 30px 25px;
+.categories-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.categories-container {
+/* 最新文章区域 */
+.latest-article-section {
+    margin: 20px -20px 40px;
+    position: relative;
+}
+
+.latest-article-wrapper {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    min-height: 500px;
+    background: linear-gradient(135deg, var(--ActiveBgc) 0%, rgba(255,255,255,0.1) 100%);
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.latest-article-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.latest-article-content {
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.article-label {
+    display: inline-block;
+    padding: 17px 20px;
+    background: linear-gradient(135deg, var(--active-background-color) 0%, #4a90e2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.article-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 25px;
+    color: var(--text-color);
+    letter-spacing: -0.5px;
+    transition: transform 0.3s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.latest-article-wrapper:hover .article-title {
+    transform: translateX(10px);
+}
+
+.article-brief {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 35px;
+    line-height: 1.7;
+    opacity: 0.9;
+    max-width: 90%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+    padding: 20px 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.article-author {
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.latest-article-wrapper:hover .article-author {
+    transform: translateX(5px);
+}
+
+.article-author img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 3px solid var(--active-background-color);
+    transition: transform 0.3s ease;
+}
+
+.article-author img:hover {
+    transform: scale(1.1);
+}
+
+.article-author span {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.article-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.article-stats span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.article-stats i {
+    font-size: 1.1rem;
+}
+
+.latest-article-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.latest-article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0));
+}
+
+/* 文章列表区域 */
+.articles-section {
+    margin: 60px 0;
+}
+
+
+
+.section-header {
     display: flex;
     justify-content: space-between;
-    object-fit: cover;
-    height: 400px;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
-.category-card {
-    border-radius: 15px;
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.section-filters {
+    width: 300px;
+}
+
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.article-card {
+    background: var(--ActiveBgc);
+    border-radius: 16px;
     overflow: hidden;
-    width: 100%;
-
+    transition: all 0.3s ease;
     position: relative;
-
+    backdrop-filter: blur(10px);
 }
 
-.category-image-wrapper {
-
-
-    padding-top: 100%;
-    /* 1:1 aspect ratio */
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
 }
 
-.category-cover {
+.article-card:hover .article-image img {
+    transform: scale(1.05);
+}
+
+.article-image {
+    position: relative;
+    padding-top: 60%;
+    overflow: hidden;
+}
+
+.article-image img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-
+    transition: transform 0.5s ease;
 }
 
-.category-info {
+.article-overlay {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
-    right: 0;
-    padding: 10px;
-    color: white;
-
-    background: rgba(255, 255, 255, 0.5);
-    /* 半透明的白色背景 */
-    /* backdrop-filter: blur(3px); */
-    /* 模糊程度，越大越模糊 */
-    /* border-radius: 10px; */
-    /* 可选，增加圆角让效果更柔和 */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    /* 可选，增加边框增强视觉 */
-    padding: 20px;
-    /* 内边距 */
-    color: #fff;
-    /* 根据需要调整文字颜色 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    /* 可选，为容器增加阴影 */
-    /* Semi-transparent overlay */
-}
-
-.category-title {
-    margin: 0px 0 20px 0;
-    font-size: 25px;
-    font-weight: 700;
-}
-
-.category-author {
-    margin: 10px 0 10px 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
     display: flex;
-    margin: 0;
-    font-size: 14px;
     align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.category-author img {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-right: 10px;
+.article-card:hover .article-overlay {
+    opacity: 1;
+}
+
+.article-content {
+    padding: 20px;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.article-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-color);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-description {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.5;
+    max-height: 3em;
+}
+
+.article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .article-author {
     display: flex;
-    margin: 0;
-    font-size: 14px;
     align-items: center;
-    line-height: 16px;
 }
 
 .article-author img {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
-.all-articles-container {
-    margin-top: 20px;
-    z-index: 10;
+.article-author span {
+    font-size: 0.9rem;
+    color: #666;
 }
 
-.article-card {
+.article-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: #666;
+}
 
-    /* height: 200px; */
-    margin-bottom: 20px;
-    margin-top: 55px;
-
-    padding: 2vw;
-
-    background-color: var(--ActiveBgc);
-
-    backdrop-filter: blur(6px);
-    border-radius: 17px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.5s;
+.article-stats span {
     display: flex;
     align-items: center;
-    justify-content: center;
-    user-select: none;
-    font-weight: bolder;
-    color: var(--text-color);
-    overflow: hidden;
-    /* height: auto;  */
+    gap: 4px;
 }
 
-.article-card:hover {
-    /* border: 1px solid black; */
-    transform: scale(1.05);
-}
-
-.article-card:active {
-    transform: scale(0.95) rotateZ(1.7deg);
-}
-
-.article-cover {
-    border-radius: 10px;
-    width: 100%;
-    /* 设置宽度为父容器的100% */
-    aspect-ratio: 1 / 1;
-    /* 宽高比为1:1，保持正方形 */
-    margin-right: 20px;
-    flex: 1;
-}
-
-.article-cover>img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.article-details {
-
-    width: 100%;
-    aspect-ratio: 2 / 1;
-    /* height: 100% !important; */
-
-    flex: 2;
-}
-
-.article-details>a {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    text-decoration: none;
-    color: var(--font-color);
-
-}
-
-.article-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    text-align: left;
-}
-
-.article-description {
-    margin: 5px 0;
-    font-size: 14px;
-}
-
-.article-date {
-    margin: 0;
-    display: -webkit-box;
-    /* 必须设置为 -webkit-box 才能配合 line-clamp 使用 */
-    -webkit-box-orient: vertical;
-    /* 设置垂直排列 */
-    overflow: hidden;
-    /* 隐藏超出部分 */
-    -webkit-line-clamp: 1;
-    /* 限制显示行数，这里设置为 2 行，超出部分用省略号表示 */
-    height: 20px;
-    /* 固定高度 */
-    line-height: 20px;
-    font-size: 10px;
-    color: gray;
+.article-actions {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 2;
 }
 
 .favorite-button {
-    /* width: 100px;
-    height: 100%;
-    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    flex: 1; */
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.favorite-button img {
-
-    width: 30px;
-    height: 30px;
+.favorite-button:hover {
+    background: white;
+    transform: scale(1.1);
 }
 
-.el-pagination {
-    text-align: center;
+.favorite-button i {
+    font-size: 1.2rem;
+    color: #ffd700;
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+@media (max-width: 992px) {
+    .latest-article-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .latest-article-content {
+        padding: 40px;
+    }
+
+    .article-title {
+        font-size: 2rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .section-filters {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .categories-page {
+        padding: 0 15px;
+    }
+
+    .latest-article-section {
+        margin: 0 -15px 30px;
+    }
+
+    .latest-article-content {
+        padding: 30px;
+    }
+
+    .article-title {
+        font-size: 1.8rem;
+    }
+
+    .articles-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 @media (max-width: 576px) {
+    .categories-page {
+        padding: 0 10px;
+    }
+
+    .latest-article-section {
+        margin: 0 -10px 20px;
+    }
+
+    .latest-article-content {
+        padding: 20px;
+    }
+
+    .article-label {
+        padding: 17px 10px;
+        font-size: 0.8rem;
+    }
+
     .article-title {
-
-        font-size: 10px;
-
+        font-size: 1.5rem;
     }
 
-    .article-author {
-        font-size: .5rem;
+    .article-brief {
+        font-size: 0.9rem;
     }
 
-}
+    .article-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
 
-/* 小屏幕（手机横屏） */
-@media (min-width: 577px) and (max-width: 768px) {
+    .article-author img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .article-content {
+        padding: 15px;
+    }
+
     .article-title {
+        font-size: 1.1rem;
+    }
 
-        font-size: 13px;
+    .article-description {
+        font-size: 0.85rem;
+    }
 
+    .favorite-button {
+        width: 32px;
+        height: 32px;
+    }
+
+    .favorite-button i {
+        font-size: 1rem;
     }
 }
 
-/* 中等屏幕（平板） */
-@media (min-width: 769px) and (max-width: 992px) {
-    .article-title {
-
-        font-size: 13px;
-
-    }
-
-    .article-author {
-        font-size: .625rem;
-    }
+/* 加载状态样式 */
+.loading-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: var(--ActiveBgc);
+    border-radius: 16px;
 }
 
-/* 大屏幕（小笔记本） */
-@media (min-width: 993px) and (max-width: 1200px) {
-    .article-author {
-        font-size: .625rem;
-    }
+.loading-state i {
+    font-size: 2rem;
+    color: var(--active-background-color);
+    margin-bottom: 10px;
 }
 
-/* 超大屏幕（台式机） */
-@media (min-width: 1201px) {}
+.loading-state p {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* 错误状态样式 */
+.error-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: var(--ActiveBgc);
+    border-radius: 16px;
+}
+
+.error-state i {
+    font-size: 2rem;
+    color: #ff4757;
+    margin-bottom: 10px;
+}
+
+.error-state p {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* 优化文章卡片动画效果 */
+.article-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.article-image img {
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.article-overlay {
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(2px);
+}
+
+.read-more {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 12px 16px;
+    border: 2px solid white;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.article-card:hover .read-more {
+    background: white;
+    color: var(--active-background-color);
+}
 </style>
