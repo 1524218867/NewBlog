@@ -269,8 +269,8 @@
         <el-form-item label="文章标题" prop="title">
           <el-input v-model="articleForm.title" placeholder="请输入文章标题" maxlength="100" show-word-limit></el-input>
         </el-form-item>
-        <el-form-item label="文章分类" prop="category">
-          <el-select v-model="articleForm.category" placeholder="请选择文章分类" style="width: 100%">
+        <el-form-item label="文章分类" prop="categories">
+          <el-select v-model="articleForm.categories" placeholder="请选择文章分类" style="width: 100%">
             <el-option v-for="category in categories" :key="category._id" :label="category.name" :value="category._id">
               <span class="category-option">
                 <i :class="getCategoryIcon(category.name)"></i>
@@ -296,7 +296,7 @@
         <el-form-item label="文章简介" prop="briefIntroduction">
           <el-input
             type="textarea"
-            v-model="articleForm.briefIntroduction"
+            v-model="articleForm.BriefIntroduction"
             :rows="3"
             placeholder="请输入文章简介"
             maxlength="200"
@@ -366,14 +366,8 @@ export default {
         title: "",
         BriefIntroduction: "",
         content: "",
-        category: "", // 单个分类ID
+        categories: "", // 单个分类ID
         coverImage: null,
-      },
-      articleRules: {
-        title: [{ required: true, message: "请输入标题名称", trigger: "blur" }],
-        BriefIntroduction: [{ required: true, message: "请输入简介", trigger: "blur" }],
-        category: [{ required: true, message: "请选择分类", trigger: "change" }],
-        content: [{ required: true, message: "请输入文章内容", trigger: "blur" }],
       },
       userArticles: [],
       // 浏览记录
@@ -402,13 +396,7 @@ export default {
       // 创作文章相关数据
       createArticleDialogVisible: false,
       submitting: false,
-      articleForm: {
-        title: '',
-        category: '',
-        coverImage: '',
-        briefIntroduction: '',
-        content: ''
-      },
+     
       categories: [], // 分类数据
       articleRules: {
         title: [
@@ -418,7 +406,7 @@ export default {
         category: [
           { required: true, message: '请选择文章分类', trigger: 'change' }
         ],
-        briefIntroduction: [
+        BriefIntroduction: [
           { required: true, message: '请输入文章简介', trigger: 'blur' },
           { max: 200, message: '简介不能超过200个字符', trigger: 'blur' }
         ],
@@ -858,11 +846,7 @@ export default {
           this.submitting = true;
           const formData = new FormData();
           Object.keys(this.articleForm).forEach((key) => {
-            if (key === 'category') {
-              formData.append('categories', this.articleForm[key]);
-            } else {
-              formData.append(key, this.articleForm[key]);
-            }
+            formData.append(key, this.articleForm[key]);
           });
           formData.append('author', this.user._id);
           console.log(this.articleForm);
