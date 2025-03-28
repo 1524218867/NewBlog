@@ -130,18 +130,16 @@
     justify-content: center;
   }
   .custom-input .el-input__inner:focus {
-    border-color: #45489a; /* 聚焦时的边框颜色为红色 */
-    // box-shadow: 0 0 0 1px #ff0000; /* 聚焦时的边框阴影颜色为红色 */
+    border-color: var(--button-color);
   }
   .custom-button {
-    background-color:#45489a!important;
-    color: #ffffff;
-   border-color: #45489a!important;
+    background-color: var(--button-color) !important;
+    color: var(--background-color);
+    border-color: var(--button-color) !important;
   }
   .custom-button:hover {
-    background-color: #45489a; /* 悬停时的背景颜色为绿色 */
-     /* 悬停时的文本颜色为黑色 */
-     border-color: #45489a;
+    background-color: var(--button-color);
+    border-color: var(--button-color);
   }
   .danmu {
     position: absolute;

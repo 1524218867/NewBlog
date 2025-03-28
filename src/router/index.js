@@ -10,11 +10,11 @@ import Index from '../views/index.vue'
 import Login from '../views/Login.vue'
 import Home from '../components/IndeHome.vue'
 import Discover from "../components/IndexCategories.vue"
-import Create from '../components/IndexContent.vue'
 // import Settings from '../components/IndexSettings.vue'//设置页面暂时不用
 import VueRouter from 'vue-router'
 import Article from '../views/Article.vue'
 import My from '../components/User.vue';
+import OtherUser from '../components/OtherUser.vue';
 
 import { isTokenExpired } from '@/utils/auth';
 import { Notification } from 'element-ui';
@@ -55,24 +55,11 @@ const routes = [
                 name: "Discover",
                 meta: { requiresAuth: true }, // 需要认证的页面
             },
-            {
-                path: 'create', // 子路由路径，不带斜杠
-                component: Create,
-                name: 'Create',
-                meta: { requiresAuth: true }, // 需要认证的页面
-                beforeEnter: (to, from, next) => {//没有token不允许跳转
-                    const token = localStorage.getItem('token');
-                    if (!token) {
-                        return
-                    } else {
-                        next(); // 有 token，允许访问
-                    }
-                }
-            },
+
             {
                 path: 'my', // 子路由路径，不带斜杠
                 component: My,
-                name: 'My',
+                name: 'User',
                 meta: { requiresAuth: true }, // 需要认证的页面
             },
            
@@ -98,6 +85,12 @@ const routes = [
         path: '/Article/:id', // 动态路由，:id 是路由参数
         name: 'Article',
         component: Article,
+        meta: { requiresAuth: true }, // 需要认证的页面
+    },
+    {
+        path: '/user/:id', // 动态路由，用于访问其他用户的主页
+        name: 'OtherUser',
+        component: OtherUser,
         meta: { requiresAuth: true }, // 需要认证的页面
     }
 ]

@@ -29,6 +29,7 @@
     "vue-cal": "^3.10.0",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "3",
+    "vue2-editor": "^2.10.3",
     "vuetify": "2",
     "vuex": "3"
   },

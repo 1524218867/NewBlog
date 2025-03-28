@@ -45,6 +45,7 @@ export default {
     },
     data() {
         return {
+            isLoading: false,
             form: {
                 country: '',
                 phone: '',

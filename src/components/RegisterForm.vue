@@ -81,29 +81,10 @@ export default {
                 ]
             },
             loading: false,
-            themes: {
-                light: {
-                    '--primary-color': '#3498db',
-                    '--ZiBaiBgc': '#f8f9ff',
-                    '--ActiveBgc': '#f7f7f8',
-                    '--background-color': '#ffffff',
-                    '--Border': '#f0f1fb',
-                    '--text-color': '#000000', // 文本颜色
-                    '--active-background-color': '#1988fa', // 按钮颜色
-                    '--article-card-background-color': '#f5f5f5', // 边框颜色
-                    '--Business-card-gradient': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'
-                },
-                dark: {
-                    '--primary-color': '#e74c3c',
-                    '--ActiveBgc': '#1a1a1a',
-                    '--ZiBaiBgc': '#1f1f1f',
-                    '--background-color': '#000000',
-                    '--Border': '#2c2c2c',
-                    '--text-color': '#ecf0f1', // 文本颜色
-                    '--active-background-color': '#015aea', // 按钮颜色
-                    '--article-card-background-color': '#212121', // 边框颜色
-                    '--Business-card-gradient': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
-                }
+            themeVariables: {
+                '--button-color': '#015aea', // 按钮颜色
+                '--card-background': '#212121', // 边框颜色
+                '--gradient-primary': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
             }
         };
     },
@@ -172,18 +153,7 @@ export default {
                 }
             });
         },
-        updateTheme(themeName) {
 
-            // document.body.classList.toggle('dark-theme', themeName === 'dark');
-            this.currentTheme = themeName; // 这里的 currentTheme 是 data 里的，用来在 html 里显示当前主题，并不是子组件的
-            // 根据传入的主题名称更新全局 CSS 变量
-            const theme = this.themes[themeName];
-            for (const key in theme) {
-                document.documentElement.style.setProperty(key, theme[key]);
-            }
-            // 保存到 localStorage 以保持刷新后的主题
-            // localStorage.setItem('theme', themeName);
-        }
     },
     mounted() {
         this.theme = localStorage.getItem('theme') || 'light';
@@ -226,6 +196,9 @@ export default {
     border-radius: 8px;
     padding: 12px 12px 12px 40px;
     transition: all 0.3s ease;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
 }
 
 .ElInp>>>.el-input__inner:focus {
@@ -235,7 +208,8 @@ export default {
 
 .ElInp>>>.el-input__prefix {
     left: 12px;
-    color: #909399;
+    color: var(--text-color);
+    opacity: 0.7;
 }
 
 

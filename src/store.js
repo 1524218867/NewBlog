@@ -6,14 +6,14 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
+        // 从localStorage中恢复用户信息的初始状态
+        user: {
+            token: localStorage.getItem('token') || null,
+            details: JSON.parse(localStorage.getItem('userDetails')) || {}
+        },
         // 存储全局共享数据（例如跨组件使用的数据）
         sharedData: null,
-        hasVisitedHome: false,  // 初始状态为 false
-        // 用户信息状态
-        user: {
-            token: null, // 用于存储用户的 JWT token（通常用于认证）
-            details: {} // 存储用户详细信息（如用户名、邮箱等）
-        },
+        hasVisitedHome: localStorage.getItem('hasVisitedHome') === 'true',  // 从localStorage中恢复状态
         favorites: [], // 存储用户收藏的列表
         userId: null,   // 存储用户 ID
         articleFrom: null // 存储文章页面的来源路径
@@ -34,6 +34,14 @@ const store = new Vuex.Store({
             // 将传入的 token 和 user details 设置到 Vuex 的状态中
             state.user.token = token;
             state.user.details = details;
+            // 将用户信息保存到localStorage
+            if (token) {
+                localStorage.setItem('token', token);
+                localStorage.setItem('userDetails', JSON.stringify(details));
+            } else {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userDetails');
+            }
         },
 
         // 清空用户信息
@@ -42,9 +50,13 @@ const store = new Vuex.Store({
                 token: null, // 清空 token
                 details: {} // 清空用户详情
             };
+            // 清除localStorage中的用户信息
+            localStorage.removeItem('token');
+            localStorage.removeItem('userDetails');
         },
         setHasVisitedHome(state, status) {
             state.hasVisitedHome = status; // 更新状态
+            localStorage.setItem('hasVisitedHome', status); // 保存到localStorage
         },
         updateUsername(state, newUsername) {
             state.user.details.username = newUsername;

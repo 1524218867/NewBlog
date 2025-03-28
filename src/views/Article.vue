@@ -2,7 +2,7 @@
     <div class="articleBox" ref="articleBox">
         <!-- 顶部返回按钮和标题 -->
         <div class="header">
-            <button @click="goBack" class="back-button">←</button>
+            <button @click="goBack" class="back-button"><i class="back-icon">←</i><span class="back-text">返回</span></button>
             <span class="separator">/</span>
             <span class="title">{{ article?.title }}</span>
         </div>
@@ -41,19 +41,23 @@
                 <div v-for="comment in comments" :key="comment._id" class="comment">
                     <p>{{ comment.content }}</p>
 
-                    <small v-if="comment.author && comment.createdAt">
-                        来自：{{ comment.author.username }} · {{ new Date(comment.createdAt).toLocaleString() }}
-                    </small>
-                    <small v-else>
-                        Unknown author · Unknown date
-                    </small>
+                    <div class="comment-info">
+                        <small v-if="comment.author && comment.createdAt">
+                            来自：<router-link :to="{ name: 'OtherUser', params: { id: comment.author._id }}" class="user-link">{{ comment.author.username }}</router-link> · {{ new Date(comment.createdAt).toLocaleString() }}
+                            <button v-if="comment.author._id === $store.state.user.details._id" @click="deleteComment(comment._id)" class="delete-btn">删除</button>
+                        </small>
+                        <small v-else>
+                            Unknown author · Unknown date
+                        </small>
+                    </div>
 
                     <!-- 回复列表 -->
                     <div class="replies" v-if="comment.replies && comment.replies.length">
                         <div v-for="reply in comment.replies" :key="reply._id" class="reply">
                             <p>{{ reply.content }}</p>
                             <small v-if="reply.author && reply.createdAt">
-                                来自： {{ reply.author.username }} · {{ new Date(reply.createdAt).toLocaleString() }}
+                                来自：<router-link :to="{ name: 'OtherUser', params: { id: reply.author._id }}" class="user-link">{{ reply.author.username }}</router-link> · {{ new Date(reply.createdAt).toLocaleString() }}
+                                <button v-if="reply.author._id === $store.state.user.details._id" @click="deleteComment(reply._id)" class="delete-btn">删除</button>
                             </small>
                             <small v-else>
                                 Unknown author · Unknown date
@@ -103,25 +107,25 @@ export default {
             themes: {
                 light: {
                     '--primary-color': '#3498db',
-                    '--ZiBaiBgc': "#f8f9ff",
-                    '--ActiveBgc': '#f7f7f8',
+                    '--secondary-background': "#f8f9ff",
+                    '--active-background': '#f7f7f8',
                     '--background-color': '#ffffff',
-                    '--Border': ' #f0f1fb',
+                    '--border-color': ' #f0f1fb',
                     '--text-color': '#000000',//文本颜色
-                    '--active-background-color': '#1988fa',//按钮颜色
-                    '--article-card-background-color': ' #f5f5f5',//边框颜色
-                    '--Business-card-gradient': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'
+                    '--button-color': '#1988fa',//按钮颜色
+                    '--card-background': ' #f5f5f5',//边框颜色
+                    '--gradient-primary': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'
                 },
                 dark: {
                     '--primary-color': '#e74c3c',
-                    '--ActiveBgc': '#1a1a1a',
-                    '--ZiBaiBgc': "#1f1f1f",
+                    '--active-background': '#1a1a1a',
+                    '--secondary-background': "#1f1f1f",
                     '--background-color': '#000000',
-                    '--Border': ' #2c2c2c',
+                    '--border-color': ' #2c2c2c',
                     '--text-color': '#ecf0f1',//文本颜色
-                    '--active-background-color': '#015aea',//按钮颜色
-                    '--article-card-background-color': ' #212121',//边框颜色
-                    '--Business-card-gradient': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
+                    '--button-color': '#015aea',//按钮颜色
+                    '--card-background': ' #212121',//边框颜色
+                    '--gradient-primary': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
                 }
             },
         };
@@ -136,13 +140,24 @@ export default {
 
     mounted() {
         const savedTheme = localStorage.getItem('theme') || 'light';
+        const token = localStorage.getItem('token');
 
+        // 初始化用户身份验证状态
+        if (token) {
+            axios.get('/api/user', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(response => {
+                this.$store.dispatch('updateUser', {
+                    token: token,
+                    details: response.data
+                });
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            });
+        }
 
         this.updateTheme(savedTheme);
-
-        console.log('本地储存状态', savedTheme);  // 打印存储的主题
-
-
+        console.log('本地储存状态', savedTheme);
 
         this.$nextTick(() => {
             this.handleScroll(); // 初始化获取一次滚动值和高度
@@ -320,7 +335,7 @@ export default {
             }
 
             try {
-                const response = await axios.post('/api/comments', {
+                await axios.post('/api/comments', {
                     content: this.newComment,
                     articleId: this.acid,
                     author: this.user
@@ -329,7 +344,8 @@ export default {
                 });
 
                 this.newComment = '';
-                this.comments.push(response.data.comment);
+                // 重新获取所有评论，确保评论包含完整的用户信息
+                await this.fetchComments(this.acid);
             } catch (error) {
                 console.error('Error submitting comment:', error);
             }
@@ -359,26 +375,55 @@ export default {
         },
 
         async fetchComments(articleId) {
-            // 异步获取文章评论
             try {
-                // 发送GET请求，获取文章评论
-                console.log(articleId);
-
+                const token = localStorage.getItem('token');
                 const response = await axios.get(`/api/comments/${articleId}/comments`, {
-
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                console.log("报错后");
+                // 确保用户状态已加载
+                if (token && !this.$store.state.user.token) {
+                    const userResponse = await axios.get('/api/user', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    this.$store.dispatch('updateUser', {
+                        token: token,
+                        details: userResponse.data
+                    });
+                }
 
-                // 将获取到的评论赋值给this.comments
                 this.comments = response.data.comments;
-                console.log(this.comments);
+                console.log('Comments loaded:', this.comments);
                 
             } catch (error) {
                 // 如果发生错误，打印错误信息
                 console.error('Error fetching comments:', error);
+            }
+        },
+
+        async deleteComment(commentId) {
+            try {
+                // 显示确认对话框
+                const confirmResult = await this.$confirm('确定要删除这条评论吗？删除后将同时删除该评论下的所有回复', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                });
+                
+                if (confirmResult === 'confirm') {
+                    await axios.delete(`/api/comments/${commentId}`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    
+                    // 删除成功后刷新评论列表
+                    await this.fetchComments(this.acid);
+                    this.$message.success('评论删除成功');
+                }
+            } catch (error) {
+                if (error !== 'cancel') {
+                    console.error('Error deleting comment:', error);
+                    this.$message.error('删除评论失败，请重试');
+                }
             }
         },
 
@@ -406,15 +451,15 @@ export default {
 
 /* 滚动条轨道 */
 ::-webkit-scrollbar-track {
-    background-color: #ffffff;
+    background-color: var(--background-color);
     border-radius: 6px;
 }
 
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
-    background-color: #d6d6d6;
+    background-color: var(--card-background);
     border-radius: 6px;
-    border: 2px solid #f1f1f1;
+    border: 2px solid var(--background-color);
 }
 
 /* 滚动条滑块 - 悬停 */
@@ -426,41 +471,122 @@ export default {
     width: 100%;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: var(--text-color);
+    position: sticky;
+    top: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    z-index: 100;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    
+    border-radius: 0 0 20px 20px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 25px;
+    border: 1px solid var(--border-color);
 }
 
 .back-button {
     border: none;
-    background-color: var(--text-color);
-    color: var(--background-color);
-    padding: 10px 30px;
-    /* 增加按钮的长度 */
-    border-radius: 25px;
-    /* 更圆的圆角 */
+    background-color: var(--button-color);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
     cursor: pointer;
     font-size: 16px;
-    margin-right: 10px;
-    /* 按钮和分隔符之间的间距 */
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px var(--shadow-color-strong);
+}
+
+.back-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 15px var(--shadow-color-strong);
+    background-color: var(--primary-color);
+}
+
+.back-icon {
+    font-style: normal;
+    margin-right: 8px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.back-button:hover .back-icon {
+    transform: translateX(-3px);
+}
+
+.back-text {
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 .separator {
-    margin: 0 10px;
-    /* 分隔符的左右间距 */
+    margin: 0 15px;
     font-size: 18px;
-    /* 分隔符的字体大小 */
+    color: var(--text-color);
+    opacity: 0.5;
+    font-weight: 300;
 }
 
 .title {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+    transition: all 0.3s ease;
+    color: right;
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 15px;
+    }
+
+    .back-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .title {
+        font-size: 18px;
+        max-width: 60%;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 12px;
+    }
+
+    .back-button {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .separator {
+        margin: 0 10px;
+        font-size: 16px;
+    }
+
+    .title {
+        font-size: 16px;
+        max-width: 50%;
+    }
 }
 
 .articleText {
     width: 100%;
     border-radius: 10px;
     margin-bottom: 40px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .articleImgTle {
@@ -566,17 +692,17 @@ export default {
 .comment-section {
     padding: 30px;
     width: 100%;
-    border-top: 2px solid var(--article-card-background-color);
+    border-top: 2px solid var(--card-background);
     color: var(--text-color);
     background-color: var(--background-color);
     border-radius: 15px;
     margin-top: 30px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .comment-input {
     margin-bottom: 30px;
-    background-color: var(--article-card-background-color);
+    background-color: var(--card-background);
     padding: 20px;
     border-radius: 12px;
 }
@@ -585,7 +711,7 @@ export default {
     width: 100%;
     height: 120px;
     padding: 15px;
-    border: 2px solid var(--article-card-background-color);
+    border: 2px solid var(--card-background);
     border-radius: 10px;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -596,14 +722,14 @@ export default {
 }
 
 .comment-input textarea:focus {
-    border-color: var(--active-background-color);
+    border-color: var(--button-color);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 3px var(--shadow-color);
 }
 
 .comment-input button {
     padding: 12px 25px;
-    background-color: var(--active-background-color);
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 8px;
@@ -618,16 +744,33 @@ export default {
     }
 
     .header {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
+        padding: 12px 0;
     }
 
     .back-button {
-        padding: 8px 20px;
+        padding: 8px 15px;
         font-size: 14px;
+        margin-right: 10px;
+    }
+    
+    .back-text {
+        display: none;
+    }
+    
+    .back-icon {
+        margin-right: 0;
+        font-size: 16px;
+    }
+
+    .separator {
+        margin: 0 10px;
+        font-size: 16px;
     }
 
     .title {
-        font-size: 20px;
+        font-size: 18px;
+        max-width: 60%;
     }
 
     .overlay {
@@ -688,20 +831,28 @@ export default {
     }
 
     .header {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        padding: 10px 0;
     }
 
     .back-button {
-        padding: 6px 15px;
+        padding: 6px 12px;
         font-size: 12px;
+        margin-right: 8px;
+    }
+    
+    .back-icon {
+        font-size: 14px;
     }
 
     .separator {
         font-size: 14px;
+        margin: 0 8px;
     }
 
     .title {
-        font-size: 18px;
+        font-size: 16px;
+        max-width: 50%;
     }
 
     .overlay {
@@ -735,17 +886,17 @@ export default {
 
 .comment {
     padding: 20px;
-    border: 1px solid var(--article-card-background-color);
+    border: 1px solid var(--card-background);
     margin-bottom: 25px;
-    background-color: var(--article-card-background-color);
+    background-color: var(--card-background);
     border-radius: 12px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .comment:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .comment p {
@@ -766,13 +917,13 @@ export default {
     padding: 15px;
     background-color: var(--background-color);
     border-radius: 10px;
-    border-left: 3px solid var(--active-background-color);
+    border-left: 3px solid var(--button-color);
 }
 
 .reply {
     padding: 15px;
     margin-bottom: 15px;
-    background-color: var(--article-card-background-color);
+    background-color: var(--card-background);
     border-radius: 8px;
     transition: all 0.3s ease;
 }
@@ -802,7 +953,7 @@ export default {
     flex: 1;
     height: 80px;
     padding: 12px;
-    border: 1px solid var(--article-card-background-color);
+    border: 1px solid var(--card-background);
     border-radius: 8px;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -812,7 +963,7 @@ export default {
 
 .reply-form button {
     padding: 8px 15px;
-    background-color: var(--active-background-color);
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 6px;
@@ -856,5 +1007,21 @@ export default {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+</style>
+.delete-btn {
+    background-color: var(--button-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    opacity: 0.8;
 }
 </style>

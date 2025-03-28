@@ -3,12 +3,12 @@
     <el-form ref="uploadForm" :model="formData" :rules="rules" label-width="100px">
       <!-- 标题 -->
       <el-form-item label="标题名称" prop="title">
-        <el-input v-model="formData.title" placeholder="请输入标题"></el-input>
+        <el-input v-model="formData.title" placeholder="请输入标题" ></el-input>
       </el-form-item>
 
       <!-- 简介 -->
       <el-form-item label="简介" prop="BriefIntroduction">
-        <el-input v-model="formData.BriefIntroduction" type="textarea" placeholder="请输入简介" rows="4"></el-input>
+        <el-input v-model="formData.BriefIntroduction" type="textarea" placeholder="请输入简介" rows="4" ></el-input>
       </el-form-item>
 
       <!-- 文章内容 -->
@@ -38,8 +38,8 @@
       </el-form-item>
 
       <!-- 保存按钮 -->
-      <el-form-item>
-        <el-button type="primary" @click="saveContent">保存内容</el-button>
+      <el-form-item class="save-button">
+        <el-button type="primary" @click="saveContent" >保存内容</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -113,6 +113,19 @@ export default {
       this.$message.warning('只能上传一张封面图片');
     },
     handleFileUpload(file, fileList) {
+      // 检查文件大小是否超过5MB
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        this.$notify({
+          title: '上传失败',
+          message: '图片大小不能超过5MB',
+          type: 'error',
+          duration: 3000
+        });
+        // 从文件列表中移除超大文件
+        fileList.splice(fileList.indexOf(file), 1);
+        return;
+      }
       if (fileList.length > 1) {
         fileList.splice(0, 1);
       }
@@ -172,119 +185,215 @@ export default {
 <style>
 .upload-article-container {
   width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 30px;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 10px;
   background: var(--background-color);
-  border-radius: 12px;
-  /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); */
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: transform 0.3s ease;
+}
+
+.upload-article-container:hover {
+  transform: translateY(-2px);
 }
 
 .el-form {
   background: var(--background-color);
-  padding: 30px;
-  border-radius: 8px;
+  /* padding: 40px; */
+  border-radius: 12px;
 }
 
 .el-form-item {
-  margin-bottom: 25px;
+  margin-bottom: 32px;
+  transition: all 0.3s ease;
+}
+
+.el-form-item:hover {
+  transform: translateX(5px);
 }
 
 .el-form-item__label {
   font-weight: 600;
   color: var(--text-color);
+  font-size: 16px;
+  margin-bottom: 8px;
 }
-
+.el-textarea__inner{
+  color: var(--text-color)!important;
+}
 .el-input__inner,
 .el-textarea__inner {
-  background-color: var(--ActiveBgc);
-  border: 1px solid var(--Border);
-  border-radius: 8px;
+  background-color: var(--card-background);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
   transition: all 0.3s ease;
+}
+
+.el-input__inner:hover,
+.el-textarea__inner:hover {
+  border-color: var(--button-color);
 }
 
 .el-input__inner:focus,
 .el-textarea__inner:focus {
   border-color: var(--active-background-color);
-  box-shadow: 0 0 0 2px rgba(25, 136, 250, 0.1);
+  box-shadow: 0 0 0 3px var(--shadow-color);
+  transform: translateY(-1px);
 }
 
 .quill-editor {
-  height: 400px;
-  margin-bottom: 20px;
+  height: 450px;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  overflow: hidden;
+  /* box-shadow: 0 2px 12px var(--shadow-color); */
+  border: 2px solid var(--border-color);
+  background-color: var(--card-background);
+  color: var(--text-color);
 }
-
+.quill-editor:hover{
+  border-color: var(--button-color);
+  
+}
+.el-input__inner{
+  color: var(--text-color) !important;
+}
 .ql-toolbar.ql-snow {
-  border: 1px solid var(--Border);
-  border-radius: 8px 8px 0 0;
+  border: 2px solid var(--Border);
+  border-radius: 12px 12px 0 0;
   background: var(--ActiveBgc);
+  padding: 12px;
 }
 
 .ql-container.ql-snow {
-  border: 1px solid var(--Border);
-  border-radius: 0 0 8px 8px;
+  border: 2px solid var(--Border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
   background: var(--ActiveBgc);
-  height: 350px;
+  height: 400px;
+}
+.el-select .el-input__inner:hover{
+  border-color: var(--button-color) !important;
+}
+.category-select {
+  width: 100%;
+}
+
+.category-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.category-name {
+  font-weight: 500;
+}
+
+.category-desc {
+  color: #999;
+  font-size: 13px;
+  margin-left: 8px;
 }
 
 .upload-demo {
-  border: 2px dashed var(--Border);
-  border-radius: 8px;
-  padding: 20px;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 30px;
   text-align: center;
   transition: all 0.3s ease;
+  background: var(--ActiveBgc);
 }
-.upload-demo a{
-  line-height: 20px !important;
-}
+
 .upload-demo:hover {
-  border-color: var(--active-background-color);
+  border-color: var(--button-color);
+  background: rgba(25, 136, 250, 0.05);
+}
+
+.upload-demo a {
+  line-height: 24px !important;
+  color: var(--text-color);
+}
+
+.el-upload__tip {
+  margin-top: 12px;
+  color: #999;
 }
 
 .el-button--primary {
-  background: var(--active-background-color);
+  /* background: var(--active-background-color); */
   border: none;
-  padding: 12px 30px;
-  border-radius: 8px;
+  padding: 14px 36px;
+  border-radius: 12px;
   font-weight: 600;
+  font-size: 16px;
   transition: all 0.3s ease;
+  margin-top: 20px;
 }
 
 .el-button--primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(25, 136, 250, 0.2);
+  box-shadow: 0 6px 16px var(--shadow-color-strong);
 }
 
+.el-button--primary:active {
+  transform: translateY(0);
+}
+.save-button{
+display: flex;
+justify-content: center;
+}
 /* 响应式布局优化 */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .upload-article-container {
-    padding: 20px;
+    max-width: 95%;
+    /* padding: 30px; */
   }
   
   .el-form {
-    padding: 20px;
+    /* padding: 30px; */
+  }
+}
+
+@media (max-width: 768px) {
+  .upload-article-container {
+    /* padding: 25px; */
+    margin: 15px auto;
+  }
+  
+  .el-form {
+    /* padding: 25px; */
   }
   
   .quill-editor {
-    height: 300px;
+    height: 350px;
   }
   
   .ql-container.ql-snow {
-    height: 250px;
+    height: 300px;
   }
   
   .el-form-item {
-    margin-bottom: 40px;
+    margin-bottom: 28px;
+  }
+  
+  .el-button--primary {
+    /* width: 33%; */
+    padding: 12px;
   }
 }
 
 @media (max-width: 576px) {
   .upload-article-container {
-    padding: 15px;
+    /* padding: 20px; */
+    margin: 10px auto;
   }
   
   .el-form {
-    padding: 15px;
+    /* padding: 20px; */
   }
   
   .el-form-item__label {
@@ -293,6 +402,7 @@ export default {
     text-align: left;
     padding: 0 0 8px;
     line-height: 1.5;
+    font-size: 15px;
   }
   
   .el-form-item__content {
@@ -304,11 +414,19 @@ export default {
   }
   
   .quill-editor {
-    height: 250px;
+    height: 300px;
   }
   
   .ql-container.ql-snow {
-    height: 200px;
+    height: 250px;
+  }
+  
+  .upload-demo {
+    padding: 20px;
+  }
+  
+  .el-form-item:hover {
+    transform: none;
   }
 }
 </style>

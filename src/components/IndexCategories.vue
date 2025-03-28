@@ -56,6 +56,17 @@
                     <i class="el-icon-warning"></i>
                     <p>{{ error }}</p>
                 </div>
+                <div v-else-if="filteredArticles.length === 0" class="empty-state">
+                    <div class="empty-state-content">
+                        <i class="el-icon-document-delete empty-icon"></i>
+                        <h3>这里空空如也</h3>
+                        <p>这个分类下还没有文章发布<br>不如先去看看其他精彩内容吧</p>
+                        <el-button type="primary" class="browse-button" @click="selectedCategory = ''">
+                            <i class="el-icon-discover"></i>
+                            浏览全部文章
+                        </el-button>
+                    </div>
+                </div>
                 <template v-else>
                     <article v-for="article in filteredArticles" 
                              :key="article._id" 
@@ -310,11 +321,13 @@ export default {
                     return;
                 }
 
-
-
                 this.categoriesarticles.forEach((article) => {
                     // 检查 this.favorites 中是否有与当前 article._id 匹配的收藏记录
                     article.isFavorite = this.favorites.some((fav) => {
+                        // 添加防御性检查，确保fav.articleId不为null
+                        if (!fav.articleId) {
+                            return false;
+                        }
                         // console.log("正在检查的收藏:", fav.articleId._id);  // 打印当前收藏的 articleId
                         // console.log("当前文章的 _id:", article._id);      // 打印当前文章的 _id
                         return String(fav.articleId._id) === String(article._id);
@@ -395,13 +408,13 @@ export default {
     background: linear-gradient(135deg, var(--ActiveBgc) 0%, rgba(255,255,255,0.1) 100%);
     border-radius: 30px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 40px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .latest-article-wrapper:hover {
     transform: translateY(-5px);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    box-shadow: 0 25px 50px var(--shadow-color-strong);
 }
 
 .latest-article-content {
@@ -446,7 +459,7 @@ export default {
 
 .article-brief {
     font-size: 1.2rem;
-    color: #666;
+    color: var(--text-color-secondary);
     margin-bottom: 35px;
     line-height: 1.7;
     opacity: 0.9;
@@ -504,7 +517,7 @@ export default {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #666;
+    color: var(--text-color-secondary);
     font-size: 0.9rem;
 }
 
@@ -564,17 +577,19 @@ export default {
 }
 
 .article-card {
-    background: var(--ActiveBgc);
+    background: var(--card-background);
     border-radius: 16px;
     overflow: hidden;
     transition: all 0.3s ease;
     position: relative;
     backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color)
 }
 
 .article-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 30px var(--shadow-color-strong);
 }
 
 .article-card:hover .article-image img {
@@ -624,7 +639,7 @@ export default {
     justify-content: space-between;
     margin-bottom: 12px;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .article-title {
@@ -640,7 +655,7 @@ export default {
 
 .article-description {
     font-size: 0.95rem;
-    color: #666;
+    color: var(--text-color-secondary);
     margin-bottom: 20px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -670,14 +685,14 @@ export default {
 
 .article-author span {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .article-stats {
     display: flex;
     gap: 12px;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .article-stats span {
@@ -712,7 +727,7 @@ export default {
 
 .favorite-button i {
     font-size: 1.2rem;
-    color: #ffd700;
+    color: var(--button-color);
 }
 
 .pagination-wrapper {
@@ -843,27 +858,102 @@ export default {
 }
 
 .loading-state p {
-    color: #666;
+    color: var(--text-color-secondary);
     font-size: 1rem;
 }
 
 /* 错误状态样式 */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--ActiveBgc);
+    border-radius: 16px;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-content {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--active-background-color);
+    margin-bottom: 20px;
+    opacity: 0.8;
+    animation: float 3s ease-in-out infinite;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: var(--text-color-secondary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.browse-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.browse-button i {
+    margin-right: 8px;
+}
+
+.browse-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .error-state {
     grid-column: 1 / -1;
     text-align: center;
     padding: 40px;
-    background: var(--ActiveBgc);
+    background: var(--card-background);
     border-radius: 16px;
+    border: 1px solid var(--border-color);
 }
 
 .error-state i {
     font-size: 2rem;
-    color: #ff4757;
+    color: var(--button-color);
     margin-bottom: 10px;
 }
 
 .error-state p {
-    color: #666;
+    color: var(--text-color-secondary);
     font-size: 1rem;
 }
 

@@ -20,14 +20,7 @@
                                 <span>发现</span>
                             </router-link>
                         </li>
-                        <li :class="{ active: activeSection === 'create' }">
-                            <template v-if="!isDisabled">
-                                <router-link :to="getPath(2)" @click.native="setActive('create')">
-                                    <span>创作</span>
-                                </router-link>
-                            </template>
-                            <span v-else>创作</span>
-                        </li>
+
                         <li :class="{ active: activeSection === 'my' }">
                             <router-link :to="getPath(3)" @click.native="setActive('my')">
                                 <span>我的</span>
@@ -35,9 +28,11 @@
                         </li>
                     </ul>
                 </div>
+               
                 <div class="right-container">
+                    <ThemeToggle />
                     <div class="InputContainer" :class="{ 'expanded': isSearchExpanded }" @click.stop="toggleSearch">
-                        <input placeholder="Search" id="input" class="input" name="text" type="text" v-model="keyword"
+                        <input placeholder="搜索" id="input" class="input" name="text" type="text" v-model="keyword"
                             @keyup.enter="searchArticles" @input="onInputChange" @focus="highlightButton"
                             @blur="resetButton" />
 
@@ -117,36 +112,7 @@
                                         </button>
                                     </router-link>
                                 </li>
-                                <li>
-                                    <router-link v-if="!isDisabled" :to="getPath(2)" @click.native="setActive('create')">
-                                        <button :class="{ active: activeSection === 'create' }">
-                                            <svg t="1731748751506" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                                                xmlns="http://www.w3.org/2000/svg" p-id="10213" width="14" height="14">
-                                                <path
-                                                    d="M434.631111 903.395556c-18.887111 0-34.133333-15.246222-34.133333-34.133334V672.768c0-7.850667 2.730667-15.587556 7.736889-21.617778l410.510222-500.280889c9.671111-11.832889 26.055111-15.701333 40.049778-9.557333s22.186667 20.821333 20.138666 35.953778l-93.411555 664.917333c-1.479111 10.922667-8.305778 20.48-17.976889 25.486222-9.784889 5.12-21.390222 5.12-31.288889 0.113778l-213.105778-108.430222c-16.839111-8.533333-23.438222-29.127111-14.904889-45.852445 8.533333-16.839111 29.127111-23.438222 45.852445-14.904888l170.552889 86.812444 69.859555-497.208889L468.764444 685.056V869.262222c0 18.887111-15.36 34.133333-34.133333 34.133334z"
-                                                    p-id="10214"></path>
-                                                <path
-                                                    d="M331.776 659.911111c-5.233778 0-10.581333-1.251556-15.587556-3.754667l-174.08-89.884444c-11.264-5.802667-18.432-17.408-18.432-30.151111-0.113778-12.743111 6.940444-24.348444 18.204445-30.378667l687.331555-363.406222c16.611556-8.760889 37.319111-2.389333 46.08 14.222222 8.760889 16.611556 2.389333 37.319111-14.222222 46.08L231.424 535.552l116.053333 59.960889c16.725333 8.647111 23.324444 29.240889 14.677334 45.966222-6.030222 11.719111-17.976889 18.432-30.378667 18.432z"
-                                                    p-id="10215"></path>
-                                            </svg>
-                                            <span>创作</span>
-                                        </button>
-                                    </router-link>
-                                    <div v-else @click="Indexpublish()">
-                                        <button :class="{ active: activeSection === 'create' }">
-                                            <svg t="1731748751506" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                                                xmlns="http://www.w3.org/2000/svg" p-id="10213" width="14" height="14">
-                                                <path
-                                                    d="M434.631111 903.395556c-18.887111 0-34.133333-15.246222-34.133333-34.133334V672.768c0-7.850667 2.730667-15.587556 7.736889-21.617778l410.510222-500.280889c9.671111-11.832889 26.055111-15.701333 40.049778-9.557333s22.186667 20.821333 20.138666 35.953778l-93.411555 664.917333c-1.479111 10.922667-8.305778 20.48-17.976889 25.486222-9.784889 5.12-21.390222 5.12-31.288889 0.113778l-213.105778-108.430222c-16.839111-8.533333-23.438222-29.127111-14.904889-45.852445 8.533333-16.839111 29.127111-23.438222 45.852445-14.904888l170.552889 86.812444 69.859555-497.208889L468.764444 685.056V869.262222c0 18.887111-15.36 34.133333-34.133333 34.133334z"
-                                                    p-id="10214"></path>
-                                                <path
-                                                    d="M331.776 659.911111c-5.233778 0-10.581333-1.251556-15.587556-3.754667l-174.08-89.884444c-11.264-5.802667-18.432-17.408-18.432-30.151111-0.113778-12.743111 6.940444-24.348444 18.204445-30.378667l687.331555-363.406222c16.611556-8.760889 37.319111-2.389333 46.08 14.222222 8.760889 16.611556 2.389333 37.319111-14.222222 46.08L231.424 535.552l116.053333 59.960889c16.725333 8.647111 23.324444 29.240889 14.677334 45.966222-6.030222 11.719111-17.976889 18.432-30.378667 18.432z"
-                                                    p-id="10215"></path>
-                                            </svg>
-                                            <span>创作</span>
-                                        </button>
-                                    </div>
-                                </li>
+
                                 <li v-if="!isDisabled">
                                     <router-link :to="getPath(3)" @click.native="setActive('my')">
                                         <button :class="{ active: activeSection === 'my' }">
@@ -190,6 +156,7 @@
                     @call-parent="logout">
                 </router-view>
             </div>
+            <!-- <Footer /> -->
         </div>
     </div>
 
@@ -197,6 +164,7 @@
 
 <script>
 import "slick-carousel";
+import ThemeToggle from '../components/ThemeToggle.vue';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // import '../utils/index'
@@ -206,25 +174,52 @@ import { Notification } from "element-ui"; // 确保你已经引入了 Notificat
 import axios from "axios";
 // import { jwtDecode } from "jwt-decode";
 // import Loader from "@/components/Loader.vue";
+import Footer from "@/components/Footer.vue";
 
 export default {
+    components: {
+        ThemeToggle,
+        Footer
+    },
     data() {
         return {
-
             articles: [], // 用于存储文章列表
             filteredArticles: [], // 根据分类筛选后的文章
             latestArticle: {}, // 最新文章，初始化为空对象
-
             isDisabled: false, // 控制按钮是否禁用，初始化为 false
             activeSection: "home", // 当前激活的菜单项
             LoginActive: null,
             currentTheme: 'light',  // 默认主题，updateTheme（）函数会根据用户设置的主题更新这个值
-
+            // 主题配置
+            themes: {
+                light: {
+                    '--primary-color': '#3498db',
+                    '--secondary-background': '#f8f9ff',  // 原 --ZiBaiBgc
+                    '--active-background': '#f7f7f8',     // 原 --ActiveBgc
+                    '--background-color': '#ffffff',
+                    '--border-color': '#f0f1fb',          // 原 --Border
+                    '--text-color': '#000000',
+                    '--button-color': '#1988fa',          // 原 --active-background-color
+                    '--card-background': '#f5f5f5',       // 原 --article-card-background-color
+                    '--gradient-primary': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'  // 原 --Business-card-gradient
+                },
+                dark: {
+                    '--primary-color': '#808080',
+                    '--secondary-background': '#1a1a1a',
+                    '--active-background': '#2a2a2a',
+                    '--background-color': '#121212',
+                    '--border-color': '#333333',
+                    '--text-color': '#e0e0e0',
+                    '--button-color': '#666666',
+                    '--card-background': '#1f1f1f',
+                    '--gradient-primary': 'linear-gradient(to right, #4a4a4a 0%, #666666 50%, #808080 100%)'
+                }
+            },
             DisplayContinueReading: false, // 是否显示"继续阅读"部分
             // defaultCategoryId: "all", // 默认分类 ID
             viewedArticles: [], //浏览记录
             lastViewedArticle: null, // 要显示的文章
-            noArticlesMessage: false, // 是否显示"继续去发现好的文章"消息
+            noArticlesMessage: false, // 是否显示"继续去发现好的文章""消息
             scrollPosition: 0, // 当前文章的滚动位置
             maxScrollPosition: 0, // 当前文章的最大滚动高度
             // isLoading: true, // 是否显示加载器
@@ -236,36 +231,8 @@ export default {
             SouSuoContent: false,
             isSearchExpanded: false,
 
-            themes: {
-                light: {
-                    '--primary-color': '#3498db',
-                    '--ZiBaiBgc': "#f8f9ff",
-                    '--ActiveBgc': '#f7f7f8',
-                    '--background-color': '#ffffff',
-                    '--Border': ' #f0f1fb',
-                    '--text-color': '#000000',//文本颜色
-                    '--active-background-color': '#1988fa',//按钮颜色
-                    '--article-card-background-color': ' #f5f5f5',//边框颜色
-                    '--Business-card-gradient': 'linear-gradient(to right, #1988fa 0%, #33c4f9 50%, #00f2fe 100%)'
-                },
-                dark: {
-                    '--primary-color': '#e74c3c',
-                    '--ActiveBgc': '#1a1a1a',
-                    '--ZiBaiBgc': "#1f1f1f",
-                    '--background-color': '#000000',
-                    '--Border': ' #2c2c2c',
-                    '--text-color': '#ecf0f1',//文本颜色
-                    '--active-background-color': '#015aea',//按钮颜色
-                    '--article-card-background-color': ' #212121',//边框颜色
-                    '--Business-card-gradient': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
-                }
-            },
+           
         };
-    },
-
-    components: {
-  
-       
     },
 
     computed: {
@@ -290,8 +257,7 @@ export default {
                     this.activeSection = 'home';
                 } else if (to.path.includes('/Index/Discover')) {
                     this.activeSection = 'discover';
-                } else if (to.path.includes('/Index/Create')) {
-                    this.activeSection = 'create';
+
                 } else if (to.path.includes('/Index/My')) {
                     this.activeSection = 'my';
                 }
@@ -480,7 +446,7 @@ export default {
             const paths = {
                 0: '/Index/Home',         // Home 路由
                 1: '/Index/Discover',     // Discover 路由 
-                2: '/Index/Create',       // Create 路由
+
                 3: '/Index/My',           // My 路由
                 4: '/Login'
             };
@@ -501,9 +467,7 @@ export default {
                 case 'discover':
                     path = '/Index/Discover';
                     break;
-                case 'create':
-                    path = '/Index/Create';
-                    break;
+
                 case 'my':
                     path = '/Index/My';
                     break;
@@ -706,7 +670,9 @@ export default {
 <style scoped>
 /* 子路由的动画。 */
 
-
+.el-card__body{
+  padding: 0 !important;
+}
 body,
 html {
     height: 100%;
@@ -750,7 +716,8 @@ html {
 .right-container {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
+    height: 100%;
 }
 
 .logo {
@@ -797,7 +764,7 @@ html {
 }
 
 .menu li.active a {
-    background: var(--active-background-color);
+    background: var(--button-color);
     color: white;
     padding: 20px 20px;
 }
@@ -845,7 +812,7 @@ html {
     }
     
     .content-wrapper {
-        padding: 10px;
+        /* padding: 10px; */
     }
 
     .popup-window ul li button {
@@ -888,7 +855,7 @@ html {
         width: 95%;
     }
     .content-wrapper {
-        padding: 15px;
+        /* padding: 15px; */
     }
 
     .IN-icons {
@@ -915,10 +882,18 @@ html {
       .header {
         width: 85%;
     }
+    .InputContainer {
+  
+  width: 100px !important;
+  }
 }
 
 /* 大屏幕（小笔记本） */
 @media (min-width: 993px) and (max-width: 1200px) {
+    .InputContainer {
+  
+    width: 230px !important;
+    }
     .popup {
         display: none;
     }
@@ -967,10 +942,10 @@ html {
 .content-wrapper {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 10px;
     background: var(--background-color);
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px var(--shadow-color);
 }
 
 /* IN-icons样式 */
@@ -994,7 +969,7 @@ html {
 }
 
 .tooltip-container .text:hover {
-    background: var(--ActiveBgc);
+    background: var(--active-background);
 }
 
 .tooltip-container .text img {
@@ -1013,9 +988,9 @@ html {
     right: -123px;
     width: 300px;
     background: var(--background-color);
-    border: 1px solid var(--Border);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px var(--shadow-color);
     padding: 15px;
     margin-top: 10px;
     opacity: 0;
@@ -1114,14 +1089,14 @@ html {
     top: 100%;
     right: 0;
     background: var(--background-color);
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: -2px 0 10px var(--shadow-color);
     transition: right 0.3s ease;
     z-index: 1014;
     padding: 0px 6px 0px;
     overflow-y: auto;
     min-width: 100px;
     border-radius: 8px;
-    border: 1px solid var(--Border);
+    border: 1px solid var(--border-color);
 }
 .popup-window svg{
     width: 15px;
@@ -1157,16 +1132,16 @@ html {
 }
 
 .popup-window ul li button.active {
-    background: var(--active-background-color);
+    background: var(--button-color);
     color: white;
 }
 
 .popup-window ul li button:hover {
-    background: var(--ActiveBgc);
+    background: var(--active-background);
 }
 
 .popup-window ul li button.active:hover {
-    background: var(--active-background-color);
+    background: var(--button-color);
     color: white;
 }
 
@@ -1196,14 +1171,15 @@ html {
     position: relative;
     width: 300px;
     height: 40px;
-    border-radius: 20px;
-    background: var(--ActiveBgc);
+    border-radius: 12px;
+    /* background: var(); */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 12px var(--shadow-color);
 }
 
 @media (max-width: 768px) {
@@ -1232,12 +1208,12 @@ html {
     padding: 0 40px 0 15px;
     font-size: 16px;
     color: var(--text-color);
-    border-radius: 20px;
+    border-radius: 12px;
 }
 
 .labelforsearch {
     position: absolute;
-    right: 10px;
+    right: 1px;
     width: 30px;
     height: 30px;
     display: flex;
@@ -1267,7 +1243,7 @@ html {
     width: 100%;
     background: var(--background-color);
     border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px var(--shadow-color);
     z-index: 1000;
     max-height: 400px;
     overflow-y: auto;
@@ -1341,7 +1317,7 @@ html {
 }
 
 .InputContainer ul li:hover {
-    background: var(--ActiveBgc);
+    background: var(--active-background);
 }
 
 .InputContainer ul li a {

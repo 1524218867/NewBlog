@@ -77,8 +77,8 @@
                             <p class="article-description">{{ article.BriefIntroduction }}</p>
                             <div class="article-footer">
                                 <div class="article-author">
-                                    <img :src="getImageUrl(getUser.avatar, 'UserImg')" alt="作者头像">
-                                    <span>{{ article.authorName }}</span>
+                                    <img :src="getImageUrl(article.authorInfo?.avatar, 'UserImg')" alt="作者头像">
+                                    <span>{{ article.authorInfo?.username }}</span>
                                 </div>
                                 <div class="article-stats">
                                     <span><i class="el-icon-view"></i> {{ article.viewCount || 0 }}</span>
@@ -91,9 +91,15 @@
                 </article>
             </div>
             <div v-else class="empty-state">
-                <i class="el-icon-document"></i>
-                <h3>暂无文章</h3>
-                <p>快来发布你的第一篇文章吧！</p>
+                <div class="empty-state-content">
+                    <i class="el-icon-document-delete empty-icon"></i>
+                    <h3>这里空空如也</h3>
+                    <p>这个分类下还没有文章发布<br>不如先去看看其他精彩内容吧</p>
+                    <el-button type="primary" class="browse-button" @click="filterArticlesByCategory(allactive)">
+                        <i class="el-icon-discover"></i>
+                        浏览全部文章
+                    </el-button>
+                </div>
             </div>
         </section>
     </div>
@@ -202,22 +208,28 @@ export default {
         //获取文章
         // 异步获取文章列表
         async HomefetchArticles() {
-
             try {
                 // 发送GET请求，获取文章列表
                 const response = await axios.get("/api/articles");
                 this.Homearticles = response.data; // 存储文章列表
-                console.log('储存文章的列表',this.Homearticles);
                 this.HomefilteredArticles = this.Homearticles; // 默认显示所有文章
                 this.HomelatestArticle =
                     this.Homearticles.length > 0
                         ? this.Homearticles[this.Homearticles.length - 1]
                         : {}; // 设置最新文章
-                console.log('文章的所有属性', this.HomelatestArticle);
-                if (this.HomelatestArticle.user == undefined) {
-                    return
+
+                // 获取每篇文章作者的信息
+                await Promise.all(this.Homearticles.map(async (article) => {
+                    if (article.user) {
+                        const authorInfo = await this.getUserImgOrObject(article.user);
+                        article.authorInfo = authorInfo;
+                    }
+                }));
+
+                // 获取最新文章作者信息
+                if (this.HomelatestArticle.user) {
+                    this.SpecifyUserInformation = await this.getUserImgOrObject(this.HomelatestArticle.user);
                 }
-                this.getUserImgOrObject(this.HomelatestArticle.user);
             } catch (error) {
                 console.error("Error fetching articles:", error);
             }
@@ -255,6 +267,18 @@ export default {
                 const response = await axios.get(`/api/favorites/${LoaduserId}`)
 
                 this.favorites = response.data; // 确保这是一个数组
+                
+                // 如果没有数据，直接返回
+                if (!Array.isArray(this.favorites)) {
+                    console.error("返回的收藏数据不是数组", this.favorites);
+                    return;
+                }
+                
+                // 检查收藏数据中是否有无效记录
+                this.favorites.forEach(fav => {
+                    // 移除无效收藏记录的检测代码
+                });
+                
                 this.UserColl = this.favorites
 
 
@@ -320,7 +344,7 @@ export default {
 <style scoped>
 a {
     text-decoration: none !important;
-    color: #000;
+    color: var(--text-color);
 }
 
 .home-container {
@@ -419,9 +443,10 @@ a {
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-size: 1.2rem;
-    color: rgba(255,255,255,0.9);
+    color: var(--text-color-secondary);
     margin-bottom: 30px;
     line-height: 1.6;
+
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
@@ -460,7 +485,7 @@ a {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: rgba(255,255,255,0.9);
+    color: var(--background-color);
     font-size: 0.9rem;
 }
 
@@ -525,7 +550,7 @@ a {
 }
 
 .section-header p {
-    color: #666;
+    color: var(--text-color-secondary);
     font-size: 1.1rem;
 }
 
@@ -536,7 +561,7 @@ a {
 }
 
 .category-card {
-    background: var(--ActiveBgc);
+    background: var(--card-background);
     border: none;
     border-radius: 16px;
     padding: 20px;
@@ -555,7 +580,7 @@ a {
 }
 
 .category-card.active {
-    background: var(--active-background-color);
+    background: var(--button-color);
     color: white;
 }
 
@@ -563,11 +588,12 @@ a {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 8px;
+    color: var(--text-color);
 }
 
 .category-count {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 /* 文章列表区域 */
@@ -582,16 +608,23 @@ a {
 }
 
 .article-card {
-    background: var(--ActiveBgc);
+    background: var(--card-background);
     border-radius: 16px;
     overflow: hidden;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color);
+    position: relative;
+    z-index: 1;
 }
 
 .article-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px var(--shadow-color-strong);
+    /* box-shadow: 0 8px 25px rgba(0,0,0,0.15); */
+    /* border-color: var(--button-color); */
 }
 
 .article-image {
@@ -616,14 +649,18 @@ a {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
-
+.article-card:hover .article-image img {
+    transform: scale(1.05);
+}
 .article-card:hover .article-overlay {
     opacity: 1;
 }
@@ -637,7 +674,7 @@ a {
     justify-content: space-between;
     margin-bottom: 12px;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .article-title {
@@ -686,14 +723,14 @@ a {
 
 .article-author span {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .article-stats {
     display: flex;
     gap: 12px;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .article-stats span {
@@ -707,24 +744,72 @@ a {
     padding: 60px 20px;
     background: var(--ActiveBgc);
     border-radius: 16px;
-    backdrop-filter: blur(10px);
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.empty-state i {
-    font-size: 48px;
-    color: #999;
+.empty-state-content {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--active-background-color);
     margin-bottom: 20px;
+    opacity: 0.8;
+    animation: float 3s ease-in-out infinite;
 }
 
 .empty-state h3 {
     font-size: 1.5rem;
     color: var(--text-color);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
 }
 
 .empty-state p {
-    color: #666;
+    color: var(--text-color-secondary);
     font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.browse-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.browse-button i {
+    margin-right: 8px;
+}
+
+.browse-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 992px) {
