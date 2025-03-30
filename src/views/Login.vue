@@ -1,5 +1,8 @@
 <template>
     <div class="login-container">
+        <div class="theme-toggle-container">
+            <ThemeToggle />
+        </div>
         <div v-if="!isLoading" class="carousel-container">
             <Carousel :carousel-items="carouselItems" />
         </div>
@@ -30,6 +33,7 @@
 import Carousel from '../components/Carousel.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
+import ThemeToggle from '../components/ThemeToggle.vue';
 import { Notification } from 'element-ui';
 import LunBoTuImg1 from '@/assets/LunBoTuImg1.jpg';
 import LunBoTuImg2 from '@/assets/LunBoTuImg2.jpg';
@@ -42,6 +46,7 @@ export default {
         Carousel,
         LoginForm,
         RegisterForm,
+        ThemeToggle,
     },
     data() {
         return {
@@ -166,6 +171,13 @@ export default {
 /* .fade-leave-active in <2.1.8 */
     {
     opacity: 0;
+}
+
+.theme-toggle-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
 
 @media (max-width: 768px) {

@@ -293,7 +293,7 @@
             <div slot="tip" class="el-upload__tip">只能上传一张封面图片</div>
           </el-upload>
         </el-form-item>
-        <el-form-item label="文章简介" prop="briefIntroduction">
+        <el-form-item label="文章简介" prop="BriefIntroduction">
           <el-input
             type="textarea"
             v-model="articleForm.BriefIntroduction"
@@ -863,6 +863,16 @@ export default {
             message: '文章发布成功',
             type: 'success'
           });
+          // 重置表单数据
+          this.articleForm = {
+            title: "",
+            BriefIntroduction: "",
+            content: "",
+            categories: "",
+            coverImage: null
+          };
+          // 清空文件上传列表
+          this.fileList = [];
           this.createArticleDialogVisible = false;
           this.loadUserArticles(); // 重新加载文章列表
         } catch (error) {
@@ -1262,17 +1272,63 @@ export default {
 
 /* 创作文章弹窗样式 */
 .create-article-dialog {
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  background: var(--background-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
 }
 
 .create-article-dialog .el-dialog__body {
   padding: 30px;
 }
 
+.create-article-dialog .el-form {
+  background: var(--background-color);
+  border-radius: 12px;
+}
+
+.create-article-dialog .el-form-item {
+  margin-bottom: 32px;
+  transition: all 0.3s ease;
+}
+
+.create-article-dialog .el-form-item:hover {
+  transform: translateX(5px);
+}
+
+.create-article-dialog .el-form-item__label {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.create-article-dialog .el-input__inner,
+.create-article-dialog .el-textarea__inner {
+  background-color: var(--card-background);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  color: var(--text-color);
+}
+
+.create-article-dialog .el-input__inner:hover,
+.create-article-dialog .el-textarea__inner:hover {
+  border-color: var(--button-color);
+}
+
+.create-article-dialog .el-input__inner:focus,
+.create-article-dialog .el-textarea__inner:focus {
+  border-color: var(--active-background-color);
+  box-shadow: 0 0 0 3px var(--shadow-color);
+  transform: translateY(-1px);
+}
+
 .cover-uploader {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -1281,15 +1337,19 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
+  background-color: var(--card-background);
 }
 
 .cover-uploader:hover {
   border-color: var(--button-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .cover-uploader-icon {
   font-size: 28px;
-  color: #8c939d;
+  color: var(--text-color);
   width: 100%;
   height: 100%;
   line-height: 120px;
@@ -1300,11 +1360,70 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 8px;
 }
 
 .editor-container {
-  border: 1px solid #DCDFE6;
-  border-radius: 4px;
+  border: 2px solid var(--border-color);
+  /* border-radius: 12px; */
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.editor-container:hover {
+  border-color: var(--button-color);
+  transform: translateY(-2px);
+}
+
+/* 响应式布局优化 */
+@media (max-width: 768px) {
+  .create-article-dialog .el-dialog__body {
+    padding: 20px;
+  }
+
+  .create-article-dialog .el-form-item {
+    margin-bottom: 24px;
+  }
+
+  .create-article-dialog .el-form-item__label {
+    font-size: 15px;
+  }
+
+  .editor-container {
+    /* height: 350px; */
+  }
+}
+
+@media (max-width: 576px) {
+  .create-article-dialog .el-dialog__body {
+    padding: 15px;
+  }
+
+  .create-article-dialog .el-form-item__label {
+    float: none;
+    display: block;
+    text-align: left;
+    padding: 0 0 8px;
+    line-height: 1.5;
+  }
+
+  .create-article-dialog .el-form-item__content {
+    margin-left: 0 !important;
+  }
+
+  .cover-uploader {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .editor-container {
+    /* height: 300px; */
+  }
+
+  .create-article-dialog .el-form-item:hover {
+    transform: none;
+  }
 }
 
 .editor-container .ql-editor {

@@ -4,6 +4,7 @@
       <div class="footer-info">
         <p>如有问题请联系站长：<a href="mailto:admin@cloudwhisper.com">18569923150@163.com</a></p>
         <p>© {{ currentYear }} 云端轻语 - 版权所有</p>
+        <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">豫ICP备2024101096号</a></p>
       </div>
     </div>
   </div>

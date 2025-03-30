@@ -14,6 +14,13 @@
             <el-form-item prop="confirmPassword">
                 <el-input class="ElInp" v-model="form.confirmPassword" type="password" placeholder="再次输入密码" prefix-icon="el-icon-lock" show-password></el-input>
             </el-form-item>
+            <el-form-item prop="verificationCode" class="verification-code-item">
+                <el-input class="ElInp verification-input" v-model="form.verificationCode" placeholder="验证码" prefix-icon="el-icon-message">
+                    <template slot="append">
+                        <el-button @click="sendVerificationCode" :disabled="countdown > 0">{{ countdown > 0 ? `${countdown}s后重试` : '获取验证码' }}</el-button>
+                    </template>
+                </el-input>
+            </el-form-item>
             <el-button type="primary" class="BtnAft" @click="submitForm('registerForm')" :loading="loading" block>创建帐户</el-button>
         </el-form>
         <div class="divider">
@@ -51,7 +58,8 @@ export default {
                 name: '',
                 email: '',
                 password: '',
-                confirmPassword: ''
+                confirmPassword: '',
+                verificationCode: ''
             },
             rules: {
                 name: [
@@ -78,17 +86,58 @@ export default {
                         },
                         trigger: 'blur'
                     }
+                ],
+                verificationCode: [
+                    { required: true, message: '请输入验证码', trigger: 'blur' },
+                    { len: 6, message: '验证码长度必须为6位', trigger: 'blur' }
                 ]
             },
             loading: false,
-            themeVariables: {
-                '--button-color': '#015aea', // 按钮颜色
-                '--card-background': '#212121', // 边框颜色
-                '--gradient-primary': 'linear-gradient(to right, #012a63, #015aea, #4d9ef7)'
-            }
+            currentTheme: '',
+            countdown: 0
         };
     },
     methods: {
+        async sendVerificationCode() {
+            try {
+                // 验证邮箱格式
+                await this.$refs.registerForm.validateField('email');
+                
+                // 立即显示发送中提示并开始倒计时
+                this.countdown = 60;
+                const startTime = Date.now();
+                const timer = setInterval(() => {
+                    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                    this.countdown = Math.max(60 - elapsedTime, 0);
+                    if (this.countdown === 0) {
+                        clearInterval(timer);
+                    }
+                }, 1000);
+
+                Notification.info({
+                    title: '发送中',
+                    message: '验证码发送中，请稍候查收',
+                    duration: 3000
+                });
+
+                // 发送验证码请求
+                await axios.post('/api/auth/send-verification-code', {
+                    email: this.form.email
+                });
+
+                Notification.success({
+                    title: '发送成功',
+                    message: '验证码已发送到您的邮箱',
+                    duration: 3000
+                });
+            } catch (error) {
+                Notification.error({
+                    title: '发送失败',
+                    message: error.response?.data?.message || '验证码发送失败，请稍后重试',
+                    duration: 3000
+                });
+            }
+        },
         submitForm(formName) {
             this.$refs[formName].validate(async (valid) => {
                 if (!valid) {
@@ -100,7 +149,8 @@ export default {
                     const requestData = {
                         username: this.form.name,
                         email: this.form.email,
-                        password: this.form.password
+                        password: this.form.password,
+                        code: this.form.verificationCode
                     };
 
                     // 检查确认密码是否匹配
@@ -156,9 +206,15 @@ export default {
 
     },
     mounted() {
-        this.theme = localStorage.getItem('theme') || 'light';
-
-        this.updateTheme(this.theme);
+        this.currentTheme = localStorage.getItem('theme') || 'light';
+    },
+    watch: {
+        theme: {
+            immediate: true,
+            handler(newTheme) {
+                this.currentTheme = newTheme;
+            }
+        }
     }
 };
 </script>
@@ -190,6 +246,24 @@ export default {
 .ElInp {
     width: 60%;
     margin: auto;
+}
+
+.verification-code-item .verification-input {
+    width: 60%;
+    margin: auto;
+}
+
+.verification-code-item .el-input-group__append {
+    background-color: var(--text-color);
+    border-color: var(--text-color);
+    color: var(--background-color);
+}
+
+.verification-code-item .el-input-group__append .el-button {
+    border: none;
+    background: none;
+    color: inherit;
+    padding: 0 15px;
 }
 
 .ElInp>>>.el-input__inner {

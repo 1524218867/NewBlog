@@ -102,4 +102,29 @@ a {
   padding:8px 35px  !important;
 
 }
+.el-upload-list__item-name{
+  height: 30px !important;
+  line-height: 29px !important;
+}
+.el-dialog{
+  width: 95% !important;
+}
+.el-input__inner{
+  background-color: var(--card-background) !important;
+  color: var(--text-color)!important;
+  /* border: 1px solid var(--border-color)!important; */
+}
+
+.el-textarea__inner{
+  background-color: var(--card-background)!important;
+  color: var(--text-color)!important;
+}
+.editor-container{
+  background-color: var(--card-background)!important;
+  color: var(--text-color)!important;
+}
+.el-textarea .el-input__count{
+  background-color: var(--card-background)!important;
+}
+
 </style>

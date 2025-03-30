@@ -68,9 +68,7 @@
                     </div>
                 </div>
                 <template v-else>
-                    <article v-for="article in filteredArticles" 
-                             :key="article._id" 
-                             class="article-card">
+                    <article v-for="article in paginatedArticles" :key="article._id" class="article-card">
                         <router-link :to="{ name: 'Article', params: { id: article._id } }">
                             <div class="article-image">
                                 <img :src="getImageUrl(article.coverImage, 'uploads')" alt="文章封面">
@@ -134,7 +132,7 @@ export default {
             authorAvatars: {}, // 用于存储文章作者的头像，key 为用户ID
             userInformation: '', // 当前用户的ID
             currentPage: 1, // 当前页
-            pageSize: 5, // 每页显示文章的数量
+            pageSize: 6, // 每页显示文章的数量
             favorites: [], // 初始化为空数组
             isLoading: false, // 加载状态
             error: null, // 错误信息
