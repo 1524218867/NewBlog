@@ -383,7 +383,7 @@ export default {
 
                 // 确保用户状态已加载
                 if (token && !this.$store.state.user.token) {
-                    const userResponse = await axios.get('/api/user', {
+                    const userResponse = await axios.get('/api/users', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     this.$store.dispatch('updateUser', {
@@ -442,7 +442,7 @@ export default {
     background-color: var(--background-color);
     max-width: 1200px;
     min-height: 100vh;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 /* 整体滚动条 */
 ::-webkit-scrollbar {
@@ -478,10 +478,9 @@ export default {
     padding: 20px;
     background-color: var(--background-color);
     z-index: 100;
-    box-shadow: 0 4px 15px var(--shadow-color);
-    
+    box-shadow: 0 2px 8px var(--shadow-color);
     border-radius: 0 0 20px 20px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     margin-bottom: 25px;
@@ -500,13 +499,13 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px var(--shadow-color-strong);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .back-button:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 15px var(--shadow-color-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     background-color: var(--primary-color);
 }
 
@@ -514,11 +513,11 @@ export default {
     font-style: normal;
     margin-right: 8px;
     font-weight: bold;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .back-button:hover .back-icon {
-    transform: translateX(-3px);
+    transform: translateX(-2px);
 }
 
 .back-text {
@@ -546,14 +545,14 @@ export default {
 }
 
 @media (max-width: 768px) {
-    .header {
+    /* .header {
         padding: 15px;
-    }
+    } */
 
-    .back-button {
+    /* .back-button {
         padding: 10px 20px;
         font-size: 14px;
-    }
+    } */
 
     .title {
         font-size: 18px;
@@ -562,14 +561,14 @@ export default {
 }
 
 @media (max-width: 480px) {
-    .header {
+    /* .header {
         padding: 12px;
-    }
+    } */
 
-    .back-button {
+    /* .back-button {
         padding: 8px 16px;
         font-size: 13px;
-    }
+    } */
 
     .separator {
         margin: 0 10px;
@@ -743,25 +742,25 @@ export default {
         padding: 20px;
     }
 
-    .header {
+    /* .header {
         margin-bottom: 20px;
         padding: 12px 0;
-    }
+    } */
 
-    .back-button {
+    /* .back-button {
         padding: 8px 15px;
         font-size: 14px;
         margin-right: 10px;
-    }
+    } */
     
-    .back-text {
+    /* .back-text {
         display: none;
-    }
+    } */
     
-    .back-icon {
+    /* .back-icon {
         margin-right: 0;
         font-size: 16px;
-    }
+    } */
 
     .separator {
         margin: 0 10px;
@@ -830,20 +829,20 @@ export default {
         padding: 15px;
     }
 
-    .header {
+    /* .header {
         margin-bottom: 15px;
         padding: 10px 0;
-    }
+    } */
 
-    .back-button {
+    /* .back-button {
         padding: 6px 12px;
         font-size: 12px;
         margin-right: 8px;
-    }
+    } */
     
-    .back-icon {
+    /* .back-icon {
         font-size: 14px;
-    }
+    } */
 
     .separator {
         font-size: 14px;
@@ -877,7 +876,7 @@ export default {
 
 .comment-input button:hover {
     opacity: 0.9;
-    transform: translateY(-1px);
+    transform: translateY(0);
 }
 
 .comments-list {
@@ -890,13 +889,13 @@ export default {
     margin-bottom: 25px;
     background-color: var(--card-background);
     border-radius: 12px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px var(--shadow-color);
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 .comment:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .comment p {
@@ -1008,7 +1007,7 @@ export default {
     margin-left: auto;
     margin-right: auto;
 }
-</style>
+
 .delete-btn {
     background-color: var(--button-color);
     color: white;

@@ -97,7 +97,7 @@ export default {
                     this.$store.dispatch('updateUser', { token, details: userDetails });
 
                     // 登录成功后获取用户详细信息
-                    axios.get('/api/user', {
+                    axios.get('/api/users', {
                         headers: { Authorization: `Bearer ${token}` }
                     }).then(userResponse => {
                         // 处理用户详细信息

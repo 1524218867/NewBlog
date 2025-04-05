@@ -34,6 +34,14 @@
             <div class="stat-value">{{ userArticles.length }}</div>
             <div class="stat-label">文章数</div>
           </div>
+          <div class="stat-item clickable" @click="showFollowers">
+            <div class="stat-value">{{ followersCount }}</div>
+            <div class="stat-label">关注者</div>
+          </div>
+          <div class="stat-item clickable" @click="showFollowing">
+            <div class="stat-value">{{ followingCount }}</div>
+            <div class="stat-label">关注</div>
+          </div>
           <el-button type="primary" class="create-article-btn" @click="openCreateArticleDialog">
             <i class="el-icon-edit"></i> 创作文章
           </el-button>
@@ -44,7 +52,7 @@
             <el-tab-pane label="已发布" name="first">
               <div class="tab-content">
                 <div v-if="userArticles && userArticles.length > 0" class="articles-list">
-                  <div v-for="article in userArticles" :key="article._id" class="article-item">
+                  <div v-for="article in paginatedArticles" :key="article._id" class="article-item">
                     <router-link :to="{ name: 'Article', params: { id: article._id }}">
                       <div class="article-content">
                         <img v-if="article.coverImage" :src="getImageUrl(article.coverImage, 'uploads')" alt="封面图片">
@@ -60,6 +68,17 @@
                       </div>
                     </router-link>
                   </div>
+                  
+                  <!-- 文章分页器 -->
+                  <div class="pagination-container">
+                    <el-pagination
+                      @current-change="handleArticlesPageChange"
+                      :current-page.sync="articlesCurrentPage"
+                      :page-size="pageSize"
+                      layout="prev, pager, next"
+                      :total="userArticles.length">
+                    </el-pagination>
+                  </div>
                 </div>
                 <div v-else class="no-data">暂无发布文章</div>
               </div>
@@ -67,7 +86,7 @@
             <el-tab-pane label="收藏" name="second">
               <div class="tab-content">
                 <div v-if="favorites && favorites.length > 0" class="favorites-list">
-                  <div v-for="actions in favorites" :key="actions.articleId?._id || actions._id" class="article-item">
+                  <div v-for="actions in paginatedFavorites" :key="actions.articleId?._id || actions._id" class="article-item">
                     <!-- 处理有效的收藏记录 -->
                     <router-link v-if="actions.articleId?._id" :to="{ name: 'Article', params: { id: actions.articleId._id }}">
                       <div class="article-content">
@@ -94,6 +113,17 @@
                       </div>
                     </div>
                   </div>
+                  
+                  <!-- 收藏分页器 -->
+                  <div class="pagination-container">
+                    <el-pagination
+                      @current-change="handleFavoritesPageChange"
+                      :current-page.sync="favoritesCurrentPage"
+                      :page-size="pageSize"
+                      layout="prev, pager, next"
+                      :total="favorites.length">
+                    </el-pagination>
+                  </div>
                 </div>
                 <div v-else class="no-data">暂无收藏文章</div>
               </div>
@@ -109,7 +139,7 @@
             <span>最近浏览</span>
           </div>
           <div v-if="viewedArticles && viewedArticles.length > 0" class="recent-view-content">
-            <div v-for="article in viewedArticles" :key="article.articleId" class="article-item">
+            <div v-for="article in paginatedViewedArticles" :key="article.articleId" class="article-item">
               <router-link :to="{ name: 'Article', params: { id: article.articleId }}">
                 <div class="article-content">
                   <img v-if="article.coverImage" :src="getImageUrl(article.coverImage, 'uploads')" alt="封面图片">
@@ -134,6 +164,17 @@
                   </div>
                 </div>
               </router-link>
+            </div>
+            
+            <!-- 浏览记录分页器 -->
+            <div class="pagination-container">
+              <el-pagination
+                @current-change="handleViewedArticlesPageChange"
+                :current-page.sync="viewedArticlesCurrentPage"
+                :page-size="pageSize"
+                layout="prev, pager, next"
+                :total="viewedArticles.length">
+              </el-pagination>
             </div>
           </div>
           <div v-else class="no-data">暂无浏览记录</div>
@@ -321,6 +362,56 @@
 
     <!-- 页面底部 -->
     <Footer />
+    
+    <!-- 关注者列表对话框 -->
+    <el-dialog
+      title="关注者"
+      :visible.sync="followersDialogVisible"
+      width="50%"
+      center
+    >
+      <div v-loading="loadingFollowers">
+        <div v-if="followersList.length > 0" class="user-list">
+          <div v-for="user in followersList" :key="user._id" class="user-list-item" @click="navigateToUser(user._id)">
+            <div class="user-avatar small">
+              <img :src="getImageUrl(user.avatar, 'UserImg') || defaultAvatar" :alt="user.username">
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ user.username }}</span>
+              <span class="user-bio" v-if="user.bio">{{ user.bio }}</span>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="!loadingFollowers" class="empty-list">
+          暂无关注者
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 关注列表对话框 -->
+    <el-dialog
+      title="关注"
+      :visible.sync="followingDialogVisible"
+      width="50%"
+      center
+    >
+      <div v-loading="loadingFollowing">
+        <div v-if="followingList.length > 0" class="user-list">
+          <div v-for="user in followingList" :key="user._id" class="user-list-item" @click="navigateToUser(user._id)">
+            <div class="user-avatar small">
+              <img :src="getImageUrl(user.avatar, 'UserImg') || defaultAvatar" :alt="user.username">
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ user.username }}</span>
+              <span class="user-bio" v-if="user.bio">{{ user.bio }}</span>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="!loadingFollowing" class="empty-list">
+          暂无关注
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -440,7 +531,20 @@ export default {
             }
           }, trigger: 'blur' }
         ]
-      }
+      },
+      followersCount: 0,
+      followingCount: 0,
+      defaultAvatar: '/UserImg/default-avatar.png',
+      followersDialogVisible: false,
+      followingDialogVisible: false,
+      followersList: [],
+      followingList: [],
+      loadingFollowers: false,
+      loadingFollowing: false,
+      articlesCurrentPage: 1,
+      favoritesCurrentPage: 1,
+      viewedArticlesCurrentPage: 1,
+      pageSize: 10,
     };
   },
   props: {
@@ -450,7 +554,24 @@ export default {
   },
   computed: {
     ...mapGetters(['getUser', 'isLoggedIn']),
-
+    // 分页后的文章列表
+    paginatedArticles() {
+      const start = (this.articlesCurrentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.userArticles.slice(start, end);
+    },
+    // 分页后的收藏列表
+    paginatedFavorites() {
+      const start = (this.favoritesCurrentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.favorites.slice(start, end);
+    },
+    // 分页后的浏览记录列表
+    paginatedViewedArticles() {
+      const start = (this.viewedArticlesCurrentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.viewedArticles.slice(start, end);
+    }
   },
   created() {
     // 从store获取用户信息
@@ -481,10 +602,16 @@ export default {
   },
 
   async mounted() {
-    await this.loadUserArticles(); // 加载用户文章
-    await this.loadViewedArticles(); // 加载浏览记录
-    await this.$store.dispatch('VuexloadFavorites'); // 加载收藏
-    this.favorites = this.$store.getters.getFavorites; // 从Vuex获取收藏数据
+    // 如果已经有用户信息
+    if (this.isLoggedIn && this.user && this.user._id) {
+      // 这里我们按序加载各种数据
+      await this.loadUserArticles(); // 加载用户文章
+      await this.loadTotalViews(); // 加载总浏览量
+      await this.loadViewedArticles(); // 加载浏览记录
+      await this.loadFavorites(); // 加载收藏
+      await this.fetchUserStats(); // 加载用户统计信息
+      this.fetchCategories(); // 获取分类列表
+    }
   },
 
 
@@ -532,6 +659,9 @@ export default {
         console.error('获取浏览记录失败:', error);
         this.$message.error('获取浏览记录失败');
       }
+      
+      // 获取用户关注信息
+      await this.fetchUserStats();
     },
 
     // 加载用户发布的文章
@@ -548,7 +678,7 @@ export default {
       }
     },
 
-    // 加载用户浏览记录
+    // 获取用户的所有浏览记录
     async loadViewedArticles() {
       try {
         const response = await axios.get('/api/user/viewed-articles', {
@@ -556,9 +686,11 @@ export default {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        this.viewedArticles = response.data;
+        this.viewedArticles = response.data.sort((a, b) => new Date(b.lastViewedAt) - new Date(a.lastViewedAt));
+
       } catch (error) {
         console.error('加载浏览记录失败:', error);
+        this.$message.error('加载浏览记录失败');
       }
     },
 
@@ -594,7 +726,7 @@ export default {
         this.categories = response.data;
       } catch (error) {
         console.error("Error fetching categories:", error);
-        this.$message.error("获取分类列表失败");
+        this.$message.error('获取分类列表失败');
       }
     },
     getCategoryIcon(categoryName) {
@@ -721,33 +853,30 @@ export default {
 
     //获取用户收藏记录
     async loadFavorites() {
-      if (!localStorage.getItem('token')) {
+      if (!this.isLoggedIn || !this.user || !this.user._id) {
+        console.log('用户未登录或用户信息不完整，无法加载收藏');
         return;
       }
-      const response = await axios.get('/api/user', {
-        //获取用户信息。
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-
-      const LoaduserId = response.data._id // 获取当前用户的 ID
-
+      
       try {
-        const response = await axios.get(`/api/favorites/${LoaduserId}`)
+        console.log('正在加载用户收藏，用户ID:', this.user._id);
+        const response = await axios.get(`/api/favorites/${this.user._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
-        this.favorites = response.data; // 确保这是一个数组
+        this.favorites = response.data;
+        console.log('获取到的收藏列表:', this.favorites);
         
         // 如果没有数据，直接返回
         if (!Array.isArray(this.favorites)) {
-            console.error("返回的收藏数据不是数组", this.favorites);
-            return;
+          console.error("返回的收藏数据不是数组", this.favorites);
+          return;
         }
-        
-        // 移除检查收藏数据中是否有无效记录的代码和提示
-
       } catch (error) {
-        console.error('加载收藏失败:', error)
+        console.error('加载收藏失败:', error.response || error);
+        this.$message.error('加载收藏列表失败');
       }
     },
     // 获取用户总浏览量
@@ -761,22 +890,6 @@ export default {
       } catch (error) {
         console.error('加载总浏览量失败:', error);
         this.$message.error('加载总浏览量失败');
-      }
-    },
-
-    // 获取用户的所有浏览记录
-    async loadViewedArticles() {
-      try {
-        const response = await axios.get('/api/user/viewed-articles', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        this.viewedArticles = response.data.sort((a, b) => new Date(b.lastViewedAt) - new Date(a.lastViewedAt));
-
-      } catch (error) {
-        console.error('加载浏览记录失败:', error);
-        this.$message.error('加载浏览记录失败');
       }
     },
 
@@ -794,17 +907,6 @@ export default {
         this.$refs.articleForm?.resetFields();
         this.fetchCategories(); // 获取分类列表
       });
-    },
-
-    // 获取分类列表
-    async fetchCategories() {
-      try {
-        const response = await axios.get("/api/categories");
-        this.categories = response.data;
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        this.$message.error('获取分类列表失败');
-      }
     },
 
     handleExceed(files, fileList) {
@@ -958,13 +1060,136 @@ export default {
           this.$message.error(error.response?.data?.message || '修改密码失败，请重试');
         }
       });
-    }
+    },
+
+    async fetchUserStats() {
+      try {
+        if (!this.user || !this.user._id) return;
+        
+        console.log('正在获取用户统计信息...', this.user._id);
+        const response = await axios.get(`/api/user-stats/${this.user._id}`);
+        const stats = response.data;
+        
+        this.followersCount = stats.followersCount || 0;
+        this.followingCount = stats.followingCount || 0;
+        
+        console.log('用户统计信息', stats);
+      } catch (error) {
+        console.error('获取用户统计信息失败:', error.response || error);
+        this.$message.error('获取用户统计信息失败');
+      }
+    },
+    
+    // 添加一个方法来刷新用户数据
+    async refreshUserData() {
+      if (!this.isLoggedIn) return;
+      
+      try {
+        // 获取最新的用户信息
+        const response = await axios.get('/api/user', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        
+        const userDetails = response.data;
+        // 更新store中的用户信息
+        this.$store.dispatch('updateUser', { 
+          token: localStorage.getItem('token'), 
+          details: userDetails 
+        });
+        this.user = userDetails;
+        
+        // 刷新用户相关数据
+        await this.loadUserArticles();
+        await this.loadViewedArticles();
+        await this.loadFavorites();
+        await this.fetchUserStats();
+        
+      } catch (error) {
+        console.error('刷新用户数据失败:', error);
+        this.$message.error('刷新用户数据失败');
+      }
+    },
+    
+    // 修改navigateToUser方法以适应用户页面
+    navigateToUser(userId) {
+      if (userId === this.user._id) {
+        // 如果是当前用户，刷新当前页面数据
+        this.refreshUserData();
+      } else {
+        // 否则跳转到其他用户页面
+        this.$router.push(`/user/${userId}`);
+      }
+    },
+
+    async showFollowers() {
+      console.log('显示关注者列表，当前关注者数量:', this.followersCount);
+      
+      if (this.followersCount === 0) {
+        this.$message.info('暂无关注者');
+        return;
+      }
+      
+      this.followersDialogVisible = true;
+      this.loadingFollowers = true;
+      
+      try {
+        console.log('正在获取关注者列表，用户ID:', this.user._id);
+        const response = await axios.get(`/api/follow/followers/${this.user._id}`);
+        this.followersList = response.data;
+        console.log('获取到的关注者列表:', this.followersList);
+      } catch (error) {
+        console.error('获取关注者列表失败:', error.response || error);
+        this.$message.error('获取关注者列表失败');
+      } finally {
+        this.loadingFollowers = false;
+      }
+    },
+    
+    async showFollowing() {
+      console.log('显示关注列表，当前关注数量:', this.followingCount);
+      
+      if (this.followingCount === 0) {
+        this.$message.info('暂无关注');
+        return;
+      }
+      
+      this.followingDialogVisible = true;
+      this.loadingFollowing = true;
+      
+      try {
+        console.log('正在获取关注列表，用户ID:', this.user._id);
+        const response = await axios.get(`/api/follow/following/${this.user._id}`);
+        this.followingList = response.data;
+        console.log('获取到的关注列表:', this.followingList);
+      } catch (error) {
+        console.error('获取关注列表失败:', error.response || error);
+        this.$message.error('获取关注列表失败');
+      } finally {
+        this.loadingFollowing = false;
+      }
+    },
+
+    // 文章页码变化处理函数
+    handleArticlesPageChange(page) {
+      this.articlesCurrentPage = page;
+    },
+    
+    // 收藏页码变化处理函数
+    handleFavoritesPageChange(page) {
+      this.favoritesCurrentPage = page;
+    },
+    
+    // 浏览记录页码变化处理函数
+    handleViewedArticlesPageChange(page) {
+      this.viewedArticlesCurrentPage = page;
+    },
   },
   mounted() {
     this.loadFavorites();
     this.loadUserArticles();
     this.loadTotalViews(); // 加载总浏览量
     this.loadViewedArticles(); // 加载浏览记录
+    this.fetchUserStats(); // 确保关注信息被加载
     this.fetchCategories(); // 获取分类列表
   }
 };
@@ -986,12 +1211,12 @@ export default {
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 10px;
-  box-shadow: 0 4px 20px var(--shadow-color);
-  transition: transform 0.3s ease;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  transition: transform 0.2s ease;
 }
 
 .user-header:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .user-banner {
@@ -1003,11 +1228,11 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.3s ease;
 }
 
 .user-banner:hover img {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .user-avatar {
@@ -1020,13 +1245,13 @@ export default {
   border: 5px solid var(--border-color);
   overflow: hidden;
   background: var(--background-color);
-  box-shadow: 0 4px 15px var(--shadow-color);
-  transition: transform 0.3s ease;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: transform 0.2s ease;
   cursor: pointer;
 }
 
 .user-avatar:hover {
-  transform: scale(1.05) rotate(5deg);
+  transform: scale(1.03);
 }
 
 .user-avatar img {
@@ -1044,7 +1269,6 @@ export default {
 }
 
 .user-info .user-details {
-  /* margin-left: 50px; */
   flex: 1;
 }
 
@@ -1071,11 +1295,11 @@ export default {
   padding: 0;
   font-size: 18px;
   color: var(--text-color);
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .username-container .el-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   color: var(--button-color);
 }
 
@@ -1118,18 +1342,19 @@ export default {
   border-radius: 16px;
   padding: 25px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 15px var(--shadow-color);
-  transition: transform 0.3s ease;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  transition: transform 0.2s ease;
 }
 
 .statistics-card:hover,
 .menu-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px var(--shadow-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .statistics-card {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
   padding: 30px 25px;
 }
@@ -1137,10 +1362,18 @@ export default {
 .stat-item {
   text-align: center;
   transition: transform 0.3s ease;
+  margin: 0 10px;
+  flex: 0 0 40%;
+  margin-bottom: 15px;
 }
 
-.stat-item:hover {
+.stat-item.clickable {
+  cursor: pointer;
+}
+
+.stat-item.clickable:hover {
   transform: translateY(-3px);
+  color: var(--button-color);
 }
 
 .stat-value {
@@ -1169,14 +1402,14 @@ export default {
   overflow: visible;
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 6px var(--shadow-color);
+  box-shadow: 0 3px 10px var(--shadow-color);
   margin-bottom: 15px
 }
 
 .article-item:hover {
-  transform: translateY(-3px) translateX(3px);
+  transform: translateY(-2px) translateX(2px);
   border-color: var(--button-color);
-  box-shadow: 0 4px 15px var(--shadow-color);
+  box-shadow: 0 3px 10px var(--shadow-color);
 }
 
 .article-content {
@@ -1197,7 +1430,7 @@ export default {
 }
 
 .article-content:hover img {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 /* 自定义对话框样式 */
@@ -1262,12 +1495,12 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .create-article-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-color);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px var(--shadow-color);
 }
 
 /* 创作文章弹窗样式 */
@@ -1454,18 +1687,7 @@ export default {
   word-wrap: break-word;
 }
 
-/* .article-info h4 {
-  margin: 0 0 10px;
-  color: var(--text-color);
-  font-size: 18px;
-  line-height: 1.4;
-  font-weight: 600;
-  
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  flex-shrink: 1;
-} */
+/* 调整文章标题样式 */
 .article-info h4 {
   /* 限制行数（2行） */
   display: -webkit-box;
@@ -1475,13 +1697,14 @@ export default {
   text-overflow: ellipsis;
 
   /* 标题字体优化 */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* 现代字体栈 */
-  font-size: 20px;               /* 适当增大字号 */
-  font-weight: 700;              /* 加粗，标题更醒目 */
-  line-height: 1.3;              /* 合适的行高，避免拥挤 */
-  color: #222;                   /* 深色更易读 */
-  margin: 0 0 12px;              /* 调整外边距，增加标题与内容的间距 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-color);
+  margin: 0 0 12px;
 }
+
 .article-info p {
   margin: 0 0 12px;
   color: #666;
@@ -1493,6 +1716,20 @@ export default {
   overflow: hidden;
   max-width: 100%;
   flex-shrink: 1;
+}
+
+/* 特殊处理.article-info-title类 */
+.article-info-title {
+  gap: 10px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.article-info-title h4 {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 10px;
 }
 
 .article-meta {
@@ -1556,20 +1793,6 @@ export default {
 
 .recent-view-content {
   padding: 20px;
-}
-
-.article-info-title {
-  gap: 10px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.article-info-title h4 {
-  width: 100%;
-  /* white-space: nowrap; */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 10px;
 }
 
 .reading-progress {
@@ -1697,11 +1920,16 @@ export default {
   }
 
   .user-info {
-    padding: 50px 15px 20px;
+    padding: 23px 15px 20px;
   }
 
   .user-info h2 {
     font-size: 20px;
+  }
+
+  .user-info p {
+    font-size: 14px;
+    margin: 8px 0;
   }
 
   .statistics-card {
@@ -1749,5 +1977,89 @@ export default {
     font-size: 11px;
     margin-left: 0;
   }
+}
+
+/* 关注列表样式 */
+.user-list {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.user-list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-list-item:hover {
+  background-color: rgba(var(--button-color-rgb), 0.1);
+  transform: translateY(-2px);
+}
+
+.user-list-item .user-avatar.small {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+  border: none;
+  position: static;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-list-item .user-avatar.small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-list-item .user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.user-list-item .user-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.user-list-item .user-bio {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empty-list {
+  padding: 24px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.recent-view-content .pagination-container {
+  background-color: var(--background-color);
+  border-radius: 8px;
+  padding: 15px 0;
+  margin-top: 15px;
 }
 </style>

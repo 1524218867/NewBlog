@@ -15,6 +15,7 @@ import VueRouter from 'vue-router'
 import Article from '../views/Article.vue'
 import My from '../components/User.vue';
 import OtherUser from '../components/OtherUser.vue';
+import Messages from '@/views/Messages'
 
 import { isTokenExpired } from '@/utils/auth';
 import { Notification } from 'element-ui';
@@ -92,6 +93,14 @@ const routes = [
         name: 'OtherUser',
         component: OtherUser,
         meta: { requiresAuth: true }, // 需要认证的页面
+    },
+    {
+        path: '/messages',
+        name: 'Messages',
+        component: Messages,
+        meta: {
+            requiresAuth: true
+        }
     }
 ]
 

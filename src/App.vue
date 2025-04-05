@@ -106,9 +106,7 @@ a {
   height: 30px !important;
   line-height: 29px !important;
 }
-.el-dialog{
-  width: 95% !important;
-}
+
 .el-input__inner{
   background-color: var(--card-background) !important;
   color: var(--text-color)!important;

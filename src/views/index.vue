@@ -20,6 +20,16 @@
                                 <span>发现</span>
                             </router-link>
                         </li>
+                        
+                        <!-- 添加消息标签页 -->
+                        <li :class="{ active: activeSection === 'messages' }">
+                            <router-link to="/messages" @click.native="setActive('messages')">
+                                <span class="message-nav-item">
+                                    消息
+                                    <span class="message-badge" v-if="unreadMessagesCount > 0">{{ unreadMessagesCount > 99 ? '99+' : unreadMessagesCount }}</span>
+                                </span>
+                            </router-link>
+                        </li>
 
                         <li :class="{ active: activeSection === 'my' }">
                             <router-link :to="getPath(3)" @click.native="setActive('my')">
@@ -109,6 +119,24 @@
                                                     fill="#000002" p-id="9144"></path>
                                             </svg>
                                             <span>发现</span>
+                                        </button>
+                                    </router-link>
+                                </li>
+
+                                <!-- 移动端消息入口 -->
+                                <li>
+                                    <router-link to="/messages" @click.native="setActive('messages')">
+                                        <button :class="{ active: activeSection === 'messages' }">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M17 3.33782C15.5291 2.48697 13.8214 2 12 2C6.47715 2 2 6.47715 2 12C2 13.5997 2.37562 15.1116 3.04346 16.4525C3.22094 16.8088 3.28001 17.2161 3.17712 17.6006L2.58151 19.8267C2.32295 20.793 3.20701 21.677 4.17335 21.4185L6.39939 20.8229C6.78393 20.72 7.19121 20.7791 7.54753 20.9565C8.88837 21.6244 10.4003 22 12 22C17.5228 22 22 17.5228 22 12C22 10.1786 21.513 8.47087 20.6622 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                <path d="M8 12H8.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                                                <path d="M12 12H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                                                <path d="M16 12H16.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                            <span class="mobile-message-item">
+                                                消息
+                                                <span class="mobile-message-badge" v-if="unreadMessagesCount > 0">{{ unreadMessagesCount > 99 ? '99+' : unreadMessagesCount }}</span>
+                                            </span>
                                         </button>
                                     </router-link>
                                 </li>
@@ -230,8 +258,8 @@ export default {
             SouSuoarticles: [], // 用于存储搜索后的文章列表
             SouSuoContent: false,
             isSearchExpanded: false,
-
-           
+            unreadMessagesCount: 0, // 添加未读消息数量
+            checkMessagesInterval: null, // 用于定期检查新消息的计时器
         };
     },
 
@@ -267,17 +295,39 @@ export default {
     },
 
     created() {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-            this.$store.dispatch("updateUser", { token, details: {} }); // 更新用户信息
+        this.activeSection = this.getActiveSection();
+        this.isDisabled = !this.isLoggedIn;
+        if (localStorage.getItem('theme') === 'dark') {
+            this.updateTheme('dark');
+        } else {
+            this.updateTheme('light');
         }
-
-
+        
+        // 监听未读消息更新事件
+        this.$root.$on('update-unread-count', (count) => {
+            console.log('收到未读消息数更新:', count);
+            this.unreadMessagesCount = count;
+        });
+        
+        // 开始检查未读消息
+        this.startCheckingMessages();
     },
 
     methods: {
         ...mapActions(["logout", "VuexloadFavorites"]),
         // 触发 Vuex 中的 VuexloadFavorites 动作
+
+        getActiveSection() {
+            const path = this.$route.path;
+            if (path.includes('/Index/Home')) {
+                return 'home';
+            } else if (path.includes('/Index/Discover')) {
+                return 'discover';
+            } else if (path.includes('/Index/My')) {
+                return 'my';
+            }
+            return 'home';
+        },
   
 
 
@@ -438,6 +488,12 @@ export default {
         setActive(section) {
 
             this.activeSection = section; // 设置当前激活的菜单项
+            if (section === 'messages') {
+                // 当用户点击消息标签时，重置未读消息计数
+                // 在实际项目中，这里应该调用API标记消息为已读
+                // 模拟清除未读消息数
+                this.unreadMessagesCount = 0;
+            }
         },
         LoginActiveCLick(button) {//登陆是否显示
             this.LoginActive = button;
@@ -638,6 +694,37 @@ export default {
                 }
             }
         },
+        // 添加未读消息检查方法
+        startCheckingMessages() {
+            // 立即检查一次
+            this.checkUnreadMessages();
+            
+            // 每分钟检查一次是否有新消息
+            this.checkMessagesInterval = setInterval(() => {
+                this.checkUnreadMessages();
+            }, 60000); // 60秒检查一次
+        },
+        
+        // 检查未读消息数量
+        async checkUnreadMessages() {
+            if (!this.isLoggedIn) return;
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+                
+                const response = await axios.get('/api/conversations/unread-count', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (response.data && typeof response.data.unreadCount === 'number') {
+                    this.unreadMessagesCount = response.data.unreadCount;
+                    console.log('未读消息数量:', this.unreadMessagesCount);
+                }
+            } catch (error) {
+                console.error('获取未读消息数失败:', error);
+            }
+        },
     },
 
     mounted() {
@@ -664,6 +751,10 @@ export default {
     beforeDestroy() {
         // 移除点击事件监听器
         document.removeEventListener('click', this.handleDocumentClick);
+        // 组件销毁前清除定时器
+        if (this.checkMessagesInterval) {
+            clearInterval(this.checkMessagesInterval);
+        }
     },
 };
 </script>
@@ -1378,6 +1469,63 @@ html {
 
     .InputContainer ul {
         width: 200px;
+    }
+}
+
+/* 添加消息导航项的样式 */
+.message-nav-item {
+    position: relative;
+    display: inline-block;
+}
+
+/* 未读消息红色提示徽章 */
+.message-badge {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background-color: #ff4d4f;
+    color: white;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 移动端消息徽章样式 */
+.mobile-message-item {
+    position: relative;
+    display: inline-block;
+}
+
+.mobile-message-badge {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background-color: #ff4d4f;
+    color: white;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 媒体查询，确保在小屏幕上红点正确显示 */
+@media (max-width: 576px) {
+    .mobile-message-badge {
+        top: -6px;
+        right: -8px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 10px;
+        line-height: 16px;
     }
 }
 </style>

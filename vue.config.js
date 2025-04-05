@@ -20,7 +20,8 @@ module.exports = defineConfig({
       '/api': {
         target: 'http://localhost:3000', // 后端服务地址
         changeOrigin: true,             // 如果是跨域请求，需要设置为 true
-        logLevel: "debug"
+        logLevel: "debug",
+        ws: true                      // 启用WebSocket代理
       },
       '/uploads': {
         target: 'http://localhost:3000', // 后端服务地址
